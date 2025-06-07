@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prismas 33 - Tecnologia que Refrata Soluções</title>
+    <meta name="description" content="Ferramentas inteligentes para desenvolvedores, empresas e mentes criativas">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header/Hero Section -->
+    <header class="hero">
+        <div class="container">            <div class="logo-container">
+                <div class="logo">                    <div class="logo-wrapper">
+                        <!-- Logo Real da Prismas 33 -->
+                        <div class="real-logo">
+                            <img src="assets/logos/logo.jpg" alt="Prismas 33 Logo" class="logo-image" 
+                                 onerror="this.src='assets/logos/prismas33-logo.svg'; this.onerror=function(){this.parentElement.classList.add('hidden'); document.querySelector('.geometric-logo').classList.remove('hidden');}">
+                        </div>
+                        
+                        <!-- Logo Geométrico (Fallback) -->
+                        <div class="geometric-logo hidden">
+                            <div class="prism">
+                                <div class="prism-face face-1"></div>
+                                <div class="prism-face face-2"></div>
+                                <div class="prism-face face-3"></div>
+                                <div class="shine"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <h1 class="logo-text">Prismas 33</h1>
+                </div>
+            </div>
+            
+            <div class="hero-content">
+                <h2 class="hero-title">Tecnologia que Refrata Soluções</h2>
+                <p class="hero-subtitle">Ferramentas inteligentes para desenvolvedores, empresas e mentes criativas</p>
+                <button class="cta-button" onclick="scrollToMarketplace()">
+                    <span>Explore os Apps</span>
+                    <i class="fas fa-arrow-down"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="hero-background">
+            <div class="gradient-orb orb-1"></div>
+            <div class="gradient-orb orb-2"></div>
+            <div class="gradient-orb orb-3"></div>
+        </div>
+    </header>
+
+    <!-- Marketplace Section -->
+    <section id="marketplace" class="marketplace">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Coming Soon</h2>
+                <p class="section-subtitle">Aplicativos inovadores em desenvolvimento</p>
+            </div>
+            
+            <div class="apps-grid">
+                <!-- Nexus 5 -->
+                <div class="app-card" data-app="nexus5">
+                    <div class="app-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h3 class="app-title">Nexus 5</h3>
+                    <p class="app-description">Conversor Node.js → Android/EXE. Liberte seu código de plataformas.</p>
+                    <button class="notify-btn" onclick="openNotifyModal('nexus5')">
+                        <i class="fas fa-bell"></i>
+                        Notify Me
+                    </button>
+                </div>
+                
+                <!-- Cerebra 7 -->
+                <div class="app-card" data-app="cerebra7">
+                    <div class="app-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="app-title">Cerebra 7</h3>
+                    <p class="app-description">Organizador de informação com IA. Nunca perca uma ideia.</p>
+                    <button class="notify-btn" onclick="openNotifyModal('cerebra7')">
+                        <i class="fas fa-bell"></i>
+                        Notify Me
+                    </button>
+                </div>
+                
+                <!-- Puzzle 33 -->
+                <div class="app-card" data-app="puzzle33">
+                    <div class="app-icon">
+                        <i class="fas fa-puzzle-piece"></i>
+                    </div>
+                    <h3 class="app-title">Puzzle 33</h3>
+                    <p class="app-description">Jogos educativos para crianças. Aprender lógica nunca foi tão divertido.</p>
+                    <button class="notify-btn" onclick="openNotifyModal('puzzle33')">
+                        <i class="fas fa-bell"></i>
+                        Notify Me
+                    </button>
+                </div>
+                
+                <!-- DocFlow 4 -->
+                <div class="app-card" data-app="docflow4">
+                    <div class="app-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 class="app-title">DocFlow 4</h3>
+                    <p class="app-description">Conversor PDF → Word perfeito. Edite sem erros.</p>
+                    <button class="notify-btn" onclick="openNotifyModal('docflow4')">
+                        <i class="fas fa-bell"></i>
+                        Notify Me
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal de Notificação -->
+    <div id="notifyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeNotifyModal()">&times;</span>
+            <div class="modal-header">
+                <i class="fas fa-bell modal-icon"></i>
+                <h3>Receba Notificações</h3>
+            </div>
+            <p id="modalText">Seja notificado quando este app estiver disponível!</p>
+            <form id="notifyForm" onsubmit="handleNotifySubmit(event)">
+                <input type="email" id="emailInput" placeholder="seu@email.com" required>
+                <input type="hidden" id="appName" value="">
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    Notificar-me
+                </button>
+            </form>            <div id="successMessage" class="success-message hidden">
+                <i class="fas fa-check-circle"></i>
+                <span>Obrigado! Você será notificado em breve.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#contact" onclick="showComingSoon()">Contato</a>
+                    <a href="#terms" onclick="showComingSoon()">Termos</a>
+                    <a href="#privacy" onclick="showComingSoon()">Privacidade</a>
+                </div>
+                
+                <div class="social-links">
+                    <a href="#" onclick="showComingSoon()" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="#" onclick="showComingSoon()" aria-label="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" onclick="showComingSoon()" aria-label="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-signature">
+                <p>&copy; 2025 Prismas 33 – Transformando ideias em código.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
