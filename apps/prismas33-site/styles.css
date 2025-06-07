@@ -569,32 +569,31 @@ body {
 
 .prism {
     position: relative;
-    width: 400px;
-    height: 400px;
+    width: 100%;
+    height: 100%;
     transform-style: preserve-3d;
     animation: prismRotate3D 8s linear infinite;
 }
 
 .prism-face {
     position: absolute;
-    width: 400px;
-    height: 400px;
+    width: 100%;
+    height: 100%;
     background: var(--gradient-orange);
-    border: 3px solid rgba(255, 107, 53, 0.5);
-    box-shadow: 0 0 40px rgba(255, 107, 53, 0.3),
-                inset 0 0 40px rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 107, 53, 0.5);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
 }
 
 .face-1 {
-    transform: rotateY(0deg) translateZ(200px);
+    transform: rotateY(0deg) translateZ(50px);
 }
 
 .face-2 {
-    transform: rotateY(60deg) translateZ(200px);
+    transform: rotateY(60deg) translateZ(50px);
 }
 
 .face-3 {
-    transform: rotateY(120deg) translateZ(200px);
+    transform: rotateY(120deg) translateZ(50px);
 }
 
 .shine {
@@ -605,24 +604,11 @@ body {
     animation: shine3D 4s ease-in-out infinite;
 }
 
-@keyframes logoFloat {
-    0%, 100% { transform: translateY(0px) rotateX(15deg); }
-    50% { transform: translateY(-20px) rotateX(15deg); }
-}
-
-@keyframes logoRotate3D {
-    0% { transform: rotateX(15deg) rotateY(0deg); }
-    25% { transform: rotateX(10deg) rotateY(90deg); }
-    50% { transform: rotateX(15deg) rotateY(180deg); }
-    75% { transform: rotateX(20deg) rotateY(270deg); }
-    100% { transform: rotateX(15deg) rotateY(360deg); }
-}
-
 @keyframes prismRotate3D {
-    0% { transform: rotateY(0deg) rotateX(15deg) rotateZ(0deg); }
-    33% { transform: rotateY(120deg) rotateX(10deg) rotateZ(5deg); }
-    66% { transform: rotateY(240deg) rotateX(20deg) rotateZ(-5deg); }
-    100% { transform: rotateY(360deg) rotateX(15deg) rotateZ(0deg); }
+    0% { transform: rotateY(0deg) rotateX(15deg); }
+    33% { transform: rotateY(120deg) rotateX(10deg); }
+    66% { transform: rotateY(240deg) rotateX(20deg); }
+    100% { transform: rotateY(360deg) rotateX(15deg); }
 }
 
 @keyframes shine3D {
@@ -630,15 +616,8 @@ body {
     50% { opacity: 1; transform: translateX(100%) rotateZ(45deg); }
 }
 
-.logo-text {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 3rem;
-    font-weight: 700;
-    background: var(--gradient-orange);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.02em;
+.hidden {
+    display: none;
 }
 
 /* Hero Content */
@@ -1010,96 +989,422 @@ body {
     font-size: 0.9rem;
 }
 
-/* Responsive Design */
+/* ===== GDPR/RGPD COMPLIANCE STYLES ===== */
+
+/* Cookie Banner */
+.cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(13, 13, 13, 0.98);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0, 255, 255, 0.3);
+    padding: 20px;
+    z-index: 10000;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cookie-banner.show {
+    transform: translateY(0);
+}
+
+.cookie-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.cookie-icon {
+    color: #00ffff;
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.cookie-text {
+    flex: 1;
+    min-width: 300px;
+}
+
+.cookie-text h4 {
+    color: #ffffff;
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.cookie-text p {
+    color: #cccccc;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.cookie-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cookie-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.cookie-btn.accept {
+    background: linear-gradient(135deg, #00ffff, #0099cc);
+    color: #000000;
+}
+
+.cookie-btn.accept:hover {
+    background: linear-gradient(135deg, #33ffff, #00ccff);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 255, 255, 0.3);
+}
+
+.cookie-btn.reject {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.cookie-btn.reject:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.cookie-btn.configure {
+    background: rgba(0, 255, 255, 0.1);
+    color: #00ffff;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.cookie-btn.configure:hover {
+    background: rgba(0, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.cookie-btn.save {
+    background: linear-gradient(135deg, #00cc66, #009944);
+    color: #ffffff;
+}
+
+.cookie-btn.save:hover {
+    background: linear-gradient(135deg, #00ff80, #00cc66);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 204, 102, 0.3);
+}
+
+/* Cookie Settings Modal */
+.cookie-settings-modal .modal-content {
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.cookie-categories {
+    margin: 20px 0;
+}
+
+.cookie-category {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+}
+
+.cookie-category:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(0, 255, 255, 0.3);
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.category-info h4 {
+    color: #ffffff;
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.category-info p {
+    color: #cccccc;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.toggle-switch input[type="checkbox"] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.switch:before {
+    content: "";
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+input:checked + .switch {
+    background-color: #00ffff;
+}
+
+input:checked + .switch:before {
+    transform: translateX(26px);
+}
+
+input:disabled + .switch {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.cookie-settings-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Privacy Policy and Terms Modals */
+.privacy-modal .modal-content,
+.terms-modal .modal-content {
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.privacy-content,
+.terms-content {
+    padding: 20px 0;
+}
+
+.privacy-content h4,
+.terms-content h4 {
+    color: #00ffff;
+    margin: 24px 0 12px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.privacy-content h4:first-child,
+.terms-content h4:first-child {
+    margin-top: 0;
+}
+
+.privacy-content p,
+.terms-content p {
+    color: #cccccc;
+    margin: 12px 0;
+    line-height: 1.6;
+}
+
+.privacy-content ul,
+.terms-content ul {
+    color: #cccccc;
+    margin: 12px 0;
+    padding-left: 20px;
+}
+
+.privacy-content li,
+.terms-content li {
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+/* Notification System */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(13, 13, 13, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    z-index: 10001;
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 350px;
+}
+
+.notification.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.notification.success {
+    border-color: rgba(0, 204, 102, 0.5);
+}
+
+.notification.error {
+    border-color: rgba(255, 77, 77, 0.5);
+}
+
+.notification.info {
+    border-color: rgba(0, 255, 255, 0.5);
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.notification-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.notification.success .notification-icon {
+    color: #00cc66;
+}
+
+.notification.error .notification-icon {
+    color: #ff4d4d;
+}
+
+.notification.info .notification-icon {
+    color: #00ffff;
+}
+
+.notification-text {
+    color: #ffffff;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Modal Improvements for GDPR */
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-icon {
+    color: #00ffff;
+    font-size: 1.5rem;
+}
+
+.modal-header h3 {
+    color: #ffffff;
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+/* Responsive Design for GDPR Elements */
 @media (max-width: 768px) {
-    .hero-title {
-        font-size: 2.5rem;
-    }
-    
-    .hero-subtitle {
-        font-size: 1.1rem;
-    }
-    
-    .logo-text {
-        font-size: 2rem;
-    }
-    
-    .section-title {
-        font-size: 2.5rem;
-    }
-    
-    .apps-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .footer-content {
+    .cookie-content {
         flex-direction: column;
-        gap: 30px;
         text-align: center;
+        gap: 16px;
     }
     
-    .footer-links {
-        flex-wrap: wrap;
+    .cookie-actions {
         justify-content: center;
+        width: 100%;
     }
     
-    .modal-content {
-        width: 95%;
-        padding: 30px 20px;
+    .cookie-btn {
+        flex: 1;
+        min-width: 120px;
     }
     
-    .prism {
-        width: 60px;
-        height: 60px;
+    .category-header {
+        flex-direction: column;
+        gap: 12px;
     }
     
-    .prism-face {
-        width: 60px;
-        height: 60px;
+    .toggle-switch {
+        align-self: flex-start;
     }
     
-    .face-1 {
-        transform: rotateY(0deg) translateZ(30px);
+    .cookie-settings-actions {
+        flex-direction: column;
     }
     
-    .face-2 {
-        transform: rotateY(60deg) translateZ(30px);
+    .notification {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        transform: translateY(-100px);
     }
     
-    .face-3 {
-        transform: rotateY(120deg) translateZ(30px);
+    .notification.show {
+        transform: translateY(0);
     }
 }
 
 @media (max-width: 480px) {
-    .hero-title {
-        font-size: 2rem;
+    .cookie-banner {
+        padding: 16px;
     }
     
-    .logo {
-        flex-direction: column;
-        gap: 15px;
+    .cookie-text h4 {
+        font-size: 1.1rem;
     }
     
-    .logo-text {
-        font-size: 1.8rem;
+    .cookie-text p {
+        font-size: 0.9rem;
     }
     
-    .section-title {
-        font-size: 2rem;
+    .cookie-btn {
+        padding: 10px 16px;
+        font-size: 0.85rem;
     }
     
-    .app-card {
-        padding: 30px 20px;
-    }
-}
-
-/* Smooth Animations */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+    .privacy-modal .modal-content,
+    .terms-modal .modal-content,
+    .cookie-settings-modal .modal-content {
+        margin: 10px;
+        max-height: calc(100vh - 20px);
     }
 }

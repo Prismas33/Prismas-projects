@@ -125,13 +125,185 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Scroll Indicator -->
+          <!-- Scroll Indicator -->
         <div class="scroll-indicator">
             <div class="scroll-line"></div>
             <div class="scroll-text">Explore</div>
         </div>
     </header>
+
+    <!-- Cookie Banner -->
+    <div id="cookieBanner" class="cookie-banner">
+        <div class="cookie-content">
+            <div class="cookie-icon">
+                <i class="fas fa-cookie-bite"></i>
+            </div>
+            <div class="cookie-text">
+                <h4>Este website utiliza cookies</h4>
+                <p>Utilizamos cookies para melhorar a sua experiência de navegação, analisar o tráfego do site e personalizar conteúdo. Pode gerir as suas preferências de cookies em qualquer momento.</p>
+            </div>
+            <div class="cookie-actions">
+                <button id="acceptAllCookies" class="cookie-btn accept">Aceitar Todos</button>
+                <button id="rejectCookies" class="cookie-btn reject">Rejeitar</button>
+                <button id="configureCookies" class="cookie-btn configure">Configurar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Settings Modal -->
+    <div id="cookieSettingsModal" class="modal cookie-settings-modal">
+        <div class="modal-content">
+            <span class="close" id="closeCookieSettings">&times;</span>
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <h3>Configurações de Cookies</h3>
+            </div>
+            <div class="cookie-categories">
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <div class="category-info">
+                            <h4>Cookies Essenciais</h4>
+                            <p>Necessários para o funcionamento básico do website</p>
+                        </div>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="essentialCookies" checked disabled>
+                            <label for="essentialCookies" class="switch"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <div class="category-info">
+                            <h4>Cookies Analíticos</h4>
+                            <p>Ajudam-nos a compreender como os visitantes utilizam o website</p>
+                        </div>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="analyticalCookies">
+                            <label for="analyticalCookies" class="switch"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <div class="category-info">
+                            <h4>Cookies de Marketing</h4>
+                            <p>Utilizados para personalizar anúncios e conteúdo</p>
+                        </div>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="marketingCookies">
+                            <label for="marketingCookies" class="switch"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cookie-settings-actions">
+                <button id="saveCookieSettings" class="cookie-btn save">Guardar Preferências</button>
+                <button id="acceptAllFromSettings" class="cookie-btn accept">Aceitar Todos</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="modal privacy-modal">
+        <div class="modal-content">
+            <span class="close" id="closePrivacy">&times;</span>
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Política de Privacidade</h3>
+            </div>
+            <div class="privacy-content">
+                <h4>1. Responsável pelo Tratamento de Dados</h4>
+                <p>Prismas 33, com sede em Portugal, é responsável pelo tratamento dos seus dados pessoais.</p>
+                
+                <h4>2. Dados Recolhidos</h4>
+                <p>Recolhemos apenas os dados necessários para fornecer os nossos serviços, incluindo:</p>
+                <ul>
+                    <li>Dados de contacto (email)</li>
+                    <li>Dados de navegação (cookies)</li>
+                    <li>Informações técnicas (endereço IP, browser)</li>
+                </ul>
+                
+                <h4>3. Finalidades do Tratamento</h4>
+                <p>Os seus dados são utilizados para:</p>
+                <ul>
+                    <li>Fornecer os nossos serviços</li>
+                    <li>Comunicar sobre produtos e atualizações</li>
+                    <li>Melhorar a experiência do utilizador</li>
+                    <li>Cumprir obrigações legais</li>
+                </ul>
+                
+                <h4>4. Base Legal</h4>
+                <p>O tratamento baseia-se no consentimento, interesse legítimo e cumprimento de obrigações legais.</p>
+                
+                <h4>5. Partilha de Dados</h4>
+                <p>Não partilhamos os seus dados com terceiros, exceto quando legalmente obrigatório.</p>
+                
+                <h4>6. Direitos do Titular</h4>
+                <p>Tem direito a:</p>
+                <ul>
+                    <li>Aceder aos seus dados</li>
+                    <li>Retificar dados incorretos</li>
+                    <li>Apagar dados (direito ao esquecimento)</li>
+                    <li>Portabilidade dos dados</li>
+                    <li>Opor-se ao tratamento</li>
+                    <li>Limitação do tratamento</li>
+                </ul>
+                
+                <h4>7. Retenção de Dados</h4>
+                <p>Os dados são conservados pelo tempo necessário para as finalidades estabelecidas.</p>
+                
+                <h4>8. Contacto</h4>
+                <p>Para exercer os seus direitos ou esclarecimentos, contacte-nos através do email: privacy@prismas33.com</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div id="termsModal" class="modal terms-modal">
+        <div class="modal-content">
+            <span class="close" id="closeTerms">&times;</span>
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <h3>Termos e Condições</h3>
+            </div>
+            <div class="terms-content">
+                <h4>1. Aceitação dos Termos</h4>
+                <p>Ao utilizar este website, aceita estar vinculado a estes termos e condições.</p>
+                
+                <h4>2. Uso do Website</h4>
+                <p>Este website destina-se a fins informativos sobre os produtos e serviços da Prismas 33.</p>
+                
+                <h4>3. Propriedade Intelectual</h4>
+                <p>Todo o conteúdo deste website é propriedade da Prismas 33 e está protegido por direitos de autor.</p>
+                
+                <h4>4. Limitação de Responsabilidade</h4>
+                <p>A Prismas 33 não se responsabiliza por danos decorrentes do uso deste website.</p>
+                
+                <h4>5. Modificações</h4>
+                <p>Reservamo-nos o direito de modificar estes termos a qualquer momento.</p>
+                
+                <h4>6. Lei Aplicável</h4>
+                <p>Estes termos são regidos pela lei portuguesa.</p>
+                
+                <h4>7. Contacto</h4>
+                <p>Para questões sobre estes termos, contacte: legal@prismas33.com</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notification" class="notification">
+        <div class="notification-content">
+            <i class="notification-icon"></i>
+            <span class="notification-text"></span>
+        </div>
+    </div>
 
     <!-- Marketplace Section -->
     <section id="marketplace" class="marketplace">
@@ -195,9 +367,7 @@
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- Modal de Notificação -->
+    </section>    <!-- Modal de Notificação -->
     <div id="notifyModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeNotifyModal()">&times;</span>
@@ -213,21 +383,21 @@
                     <i class="fas fa-paper-plane"></i>
                     Notificar-me
                 </button>
-            </form>            <div id="successMessage" class="success-message hidden">
+            </form>
+            <div id="successMessage" class="success-message hidden">
                 <i class="fas fa-check-circle"></i>
                 <span>Obrigado! Você será notificado em breve.</span>
             </div>
         </div>
-    </div>
-
-    <!-- Footer -->
+    </div>    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-links">
                     <a href="#contact" onclick="showComingSoon()">Contato</a>
-                    <a href="#terms" onclick="showComingSoon()">Termos</a>
-                    <a href="#privacy" onclick="showComingSoon()">Privacidade</a>
+                    <a href="#terms" onclick="openTermsModal()">Termos e Condições</a>
+                    <a href="#privacy" onclick="openPrivacyModal()">Política de Privacidade</a>
+                    <a href="#cookies" onclick="openCookieSettingsModal()">Configurar Cookies</a>
                 </div>
                 
                 <div class="social-links">
@@ -242,9 +412,15 @@
                     </a>
                 </div>
             </div>
-            
             <div class="footer-signature">
                 <p>&copy; 2025 Prismas 33 – Transformando ideias em código.</p>
+                <p class="legal-notice">
+                    <small>
+                        Este website cumpre o RGPD (Regulamento Geral sobre a Proteção de Dados). 
+                        <a href="#privacy" onclick="openPrivacyModal()">Política de Privacidade</a> | 
+                        <a href="#cookies" onclick="openCookieSettingsModal()">Configurar Cookies</a>
+                    </small>
+                </p>
             </div>
         </div>
     </footer>
