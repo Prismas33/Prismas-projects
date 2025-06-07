@@ -15,45 +15,121 @@
     <!-- CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <!-- Header/Hero Section -->
+<body>    <!-- Header/Hero Section -->
     <header class="hero">
-        <div class="container">            <div class="logo-container">
-                <div class="logo">                    <div class="logo-wrapper">
-                        <!-- Logo Real da Prismas 33 -->
-                        <div class="real-logo">
-                            <img src="assets/logos/logo.jpg" alt="Prismas 33 Logo" class="logo-image" 
-                                 onerror="this.src='assets/logos/prismas33-logo.svg'; this.onerror=function(){this.parentElement.classList.add('hidden'); document.querySelector('.geometric-logo').classList.remove('hidden');}">
-                        </div>
-                        
-                        <!-- Logo Geométrico (Fallback) -->
-                        <div class="geometric-logo hidden">
-                            <div class="prism">
-                                <div class="prism-face face-1"></div>
-                                <div class="prism-face face-2"></div>
-                                <div class="prism-face face-3"></div>
-                                <div class="shine"></div>
+        <!-- Animated Grid Background -->
+        <div class="grid-background">
+            <div class="grid-lines"></div>
+            <div class="grid-dots"></div>
+        </div>
+        
+        <!-- Floating Geometric Elements -->
+        <div class="floating-elements">
+            <div class="float-element element-1"></div>
+            <div class="float-element element-2"></div>
+            <div class="float-element element-3"></div>
+            <div class="float-element element-4"></div>
+            <div class="float-element element-5"></div>
+        </div>
+        
+        <!-- Particles -->
+        <div class="particles-container">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        
+        <div class="container">
+            <div class="hero-content">
+                <!-- Logo Section -->
+                <div class="logo-section">
+                    <div class="logo-container">
+                        <div class="logo-wrapper">
+                            <!-- Logo Real da Prismas 33 -->
+                            <div class="real-logo">
+                                <img src="assets/logos/logo.png" alt="Prismas 33 Logo" class="logo-image" 
+                                     onerror="this.src='assets/logos/prismas33-logo.svg'; this.onerror=function(){this.parentElement.classList.add('hidden'); document.querySelector('.geometric-logo').classList.remove('hidden');}">
+                            </div>
+                            
+                            <!-- Logo Geométrico (Fallback) -->
+                            <div class="geometric-logo hidden">
+                                <div class="prism">
+                                    <div class="prism-face face-1"></div>
+                                    <div class="prism-face face-2"></div>
+                                    <div class="prism-face face-3"></div>
+                                    <div class="shine"></div>
+                                </div>
                             </div>
                         </div>
+                        
+                        <!-- Tech Rings around logo -->
+                        <div class="tech-rings">
+                            <div class="ring ring-1"></div>
+                            <div class="ring ring-2"></div>
+                            <div class="ring ring-3"></div>
+                        </div>
                     </div>
-                    <h1 class="logo-text">Prismas 33</h1>
                 </div>
-            </div>
-            
-            <div class="hero-content">
-                <h2 class="hero-title">Tecnologia que Refrata Soluções</h2>
-                <p class="hero-subtitle">Ferramentas inteligentes para desenvolvedores, empresas e mentes criativas</p>
-                <button class="cta-button" onclick="scrollToMarketplace()">
-                    <span>Explore os Apps</span>
-                    <i class="fas fa-arrow-down"></i>
-                </button>
+                
+                <!-- Main Content -->
+                <div class="main-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">
+                            <span class="title-line">Tecnologia que</span>
+                            <span class="title-line highlight">Refrata Soluções</span>
+                        </h1>
+                        <p class="hero-subtitle">
+                            Ferramentas inteligentes para desenvolvedores,<br>
+                            empresas e mentes criativas
+                        </p>
+                    </div>
+                    
+                    <div class="hero-actions">
+                        <button class="cta-button primary" onclick="scrollToMarketplace()">
+                            <span class="button-text">Explore os Apps</span>
+                            <div class="button-icon">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="button-bg"></div>
+                        </button>
+                        
+                        <button class="cta-button secondary" onclick="showComingSoon()">
+                            <span class="button-text">Documentação</span>
+                            <div class="button-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="button-bg"></div>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Tech Stats -->
+                <div class="tech-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">5+</div>
+                        <div class="stat-label">Apps em Desenvolvimento</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">33</div>
+                        <div class="stat-label">Tecnologias Integradas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">∞</div>
+                        <div class="stat-label">Possibilidades</div>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div class="hero-background">
-            <div class="gradient-orb orb-1"></div>
-            <div class="gradient-orb orb-2"></div>
-            <div class="gradient-orb orb-3"></div>
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+            <div class="scroll-line"></div>
+            <div class="scroll-text">Explore</div>
         </div>
     </header>
 
