@@ -1,5 +1,5 @@
-// Menu Fix JS - Consolidado
-// Combinação de mobile-menu-fix.js, menu-icon-fix.js e force-hamburger-icon.js
+// Menu JS - Consolidado
+// Combinação de mobile-menu.js, menu-icon.js e force-hamburger-icon.js
 
 document.addEventListener('DOMContentLoaded', function() {
     // Força a exibição do botão do menu mobile

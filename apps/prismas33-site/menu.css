@@ -1,4 +1,6 @@
-﻿/* Esconder completamente o botão do menu mobile em telas grandes (desktop) */
+﻿/* Menu CSS - Consolidado (antes menu-fix) */
+/* Renomeado para menu.css */
+/* Esconder completamente o botão do menu mobile em telas grandes (desktop) */
 @media (min-width: 993px) {
     .mobile-menu-toggle {
         display: none !important;
