@@ -1,8 +1,43 @@
-# Prismas 33 - Site Oficial
+# Prismas 33 - Site Oficial e SafeCallKids
 
+Este repositório contém dois projetos principais:
+
+## 1. 🏢 Site Oficial Prismas 33
 Um site minimalista e high-tech para a marca Prismas 33, focado em apresentar um marketplace de aplicativos em desenvolvimento.
 
-## 🎯 Características
+## 2. 📱 SafeCallKids Landing Page
+Uma landing page profissional para o aplicativo SafeCallKids, que protege crianças bloqueando chamadas de números desconhecidos.
+
+---
+
+## 🎯 SafeCallKids - Características
+
+### Design
+- **Profissional e moderno**: Interface limpa focada na proteção infantil
+- **Cores**: Azul (#3498DB) transmitindo confiança e segurança
+- **Responsivo**: Adaptável para todos os dispositivos
+- **Multilíngue**: Suporte para Português e Inglês
+
+### Funcionalidades
+- **Duas versões disponíveis**:
+  - **Versão Completa** (`safecallkids.html`): Com upload de APK via Firebase
+  - **Versão Limpa** (`safecallkids-clean.html`): Download direto sem Firebase
+- **Hero Section**: Apresentação do app com botões de download
+- **Seção de Funcionalidades**: 6 principais recursos do app  
+- **Como Funciona**: 3 passos simples de uso
+- **Estatísticas**: Números de segurança e proteção
+- **Seção de Download**: Botões para Google Play e APK direto
+
+### Recursos Técnicos
+- **Firebase Integration**: Upload e storage de arquivos APK (versão completa)
+- **Direct Download**: Link direto para APK hospedada (versão limpa)
+- **Language Detection**: Detecção automática do idioma do navegador
+- **Smooth Animations**: Transições e efeitos visuais profissionais
+- **SEO Optimized**: Meta tags e estrutura semântica adequada
+
+---
+
+## 🏢 Prismas 33 Site - Características
 
 ### Design
 - **Minimalista e High-tech**: Design limpo com foco na experiência do usuário
@@ -25,7 +60,19 @@ Um site minimalista e high-tech para a marca Prismas 33, focado em apresentar um
 
 ## 🚀 Como usar
 
-### Executar localmente
+### SafeCallKids - Versão Limpa (Recomendada)
+1. Abra o arquivo `safecallkids-clean.html` no navegador
+2. Ambos os botões fazem download direto da APK
+3. Não requer configuração do Firebase
+4. Pronto para uso em produção!
+
+### SafeCallKids - Versão Completa (Para desenvolvimento)
+1. Configure o Firebase seguindo `FIREBASE_SETUP.md`
+2. Abra o arquivo `safecallkids.html` no navegador
+3. Use o botão Google Play para upload de APKs
+4. Consulte `TROUBLESHOOTING.md` se houver problemas
+
+### Prismas 33 Site - Executar localmente
 1. Clone ou baixe os arquivos do projeto
 2. Abra o arquivo `index.html` em um navegador moderno
 3. Ou use um servidor local:
@@ -43,11 +90,38 @@ Um site minimalista e high-tech para a marca Prismas 33, focado em apresentar um
 ### Estrutura de arquivos
 ```
 prismas33-site/
-├── index.html          # Página principal
-├── styles.css          # Estilos CSS
-├── script.js           # JavaScript
-└── README.md          # Este arquivo
+├── index.html                 # Prismas 33 - Página principal
+├── styles.css                 # Estilos do Prismas 33
+├── script.js                  # JavaScript do Prismas 33
+├── safecallkids.html          # SafeCallKids - Versão completa (com Firebase)
+├── safecallkids-clean.html    # SafeCallKids - Versão limpa (download direto)
+├── safecallkids.css           # Estilos do SafeCallKids
+├── safecallkids-v9.js         # JavaScript completo (Firebase v9+)
+├── safecallkids-clean.js      # JavaScript limpo (sem Firebase)
+├── FIREBASE_SETUP.md          # Guia de configuração do Firebase
+├── TROUBLESHOOTING.md         # Guia de solução de problemas
+├── VERSIONS.md                # Documentação das versões
+├── assets/logos/              # Logos e imagens
+└── README.md                  # Este arquivo
 ```
+
+## 📋 Documentação Adicional
+
+- **`FIREBASE_SETUP.md`**: Como configurar o Firebase Storage
+- **`TROUBLESHOOTING.md`**: Solução de problemas comuns  
+- **`VERSIONS.md`**: Diferenças entre as versões do SafeCallKids
+- **`QUICK_SETUP.md`**: Guia rápido de configuração
+
+## 🔗 Links Úteis
+
+### SafeCallKids APK Download Direto:
+```
+https://firebasestorage.googleapis.com/v0/b/prismas33-1914c.firebasestorage.app/o/apks%2Fsafecallkids_1749638790127.apk?alt=media&token=68ef2062-c4ea-4450-939b-be8605fbffab
+```
+
+### Firebase Project:
+- **Project ID**: `prismas33-1914c`
+- **Storage Bucket**: `prismas33-1914c.firebasestorage.app`
 
 ## 🎨 Paleta de Cores
 

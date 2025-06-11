@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeCallKids - Protegendo Crianças de Chamadas Indesejadas</title>
+    <meta name="description" content="SafeCallKids protege suas crianças bloqueando chamadas de números desconhecidos. Apenas contatos salvos podem ligar.">
+    <link rel="icon" href="assets/logos/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="safecallkids.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button onclick="switchLanguage('pt')" class="lang-btn active" data-lang="pt">PT</button>
+        <button onclick="switchLanguage('en')" class="lang-btn" data-lang="en">EN</button>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <img src="assets/logos/safecallkids.jpg" alt="SafeCallKids" class="logo">
+                    <span class="logo-text">SafeCallKids</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#features" data-pt="Funcionalidades" data-en="Features">Funcionalidades</a>
+                    <a href="#how-it-works" data-pt="Como Funciona" data-en="How It Works">Como Funciona</a>
+                    <a href="#download" data-pt="Download" data-en="Download">Download</a>
+                </div>
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span data-pt="Proteja suas crianças de" data-en="Protect your children from">Proteja suas crianças de</span>
+                    <span class="highlight" data-pt="chamadas indesejadas" data-en="unwanted calls">chamadas indesejadas</span>
+                </h1>
+                <p class="hero-description" data-pt="SafeCallKids bloqueia automaticamente todas as chamadas de números que não estão na lista de contatos, garantindo que apenas pessoas conhecidas possam ligar para seus filhos." data-en="SafeCallKids automatically blocks all calls from numbers not in the contact list, ensuring only known people can call your children.">
+                    SafeCallKids bloqueia automaticamente todas as chamadas de números que não estão na lista de contatos, garantindo que apenas pessoas conhecidas possam ligar para seus filhos.
+                </p>                <div class="hero-buttons">
+                    <button class="btn btn-primary" id="playstore-btn">
+                        <i class="fab fa-google-play"></i>
+                        <span data-pt="Em breve no Google Play" data-en="Coming soon to Google Play">Em breve no Google Play</span>
+                    </button>                    <button class="btn btn-secondary" id="apk-download-btn">
+                        <i class="fas fa-download"></i>
+                        <span data-pt="Download APK" data-en="APK Download">Download APK</span>
+                    </button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <img src="assets/logos/sfc r.jpg" alt="SafeCallKids App Interface" class="app-screenshot">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-pt="Funcionalidades Principais" data-en="Key Features">Funcionalidades Principais</h2>
+                <p data-pt="Proteção completa e fácil de usar para manter suas crianças seguras" data-en="Complete and easy-to-use protection to keep your children safe">Proteção completa e fácil de usar para manter suas crianças seguras</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 data-pt="Bloqueio Automático" data-en="Automatic Blocking">Bloqueio Automático</h3>
+                    <p data-pt="Bloqueia automaticamente todas as chamadas de números desconhecidos, permitindo apenas contatos salvos." data-en="Automatically blocks all calls from unknown numbers, allowing only saved contacts.">Bloqueia automaticamente todas as chamadas de números desconhecidos, permitindo apenas contatos salvos.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 data-pt="Lista de Contatos Segura" data-en="Safe Contact List">Lista de Contatos Segura</h3>
+                    <p data-pt="Gerencie facilmente quem pode ligar para seus filhos através de uma interface simples e intuitiva." data-en="Easily manage who can call your children through a simple and intuitive interface.">Gerencie facilmente quem pode ligar para seus filhos através de uma interface simples e intuitiva.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 data-pt="Relatórios em Tempo Real" data-en="Real-time Reports">Relatórios em Tempo Real</h3>
+                    <p data-pt="Veja quantas chamadas foram bloqueadas e de quais números, mantendo você sempre informado." data-en="See how many calls were blocked and from which numbers, keeping you always informed.">Veja quantas chamadas foram bloqueadas e de quais números, mantendo você sempre informado.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 data-pt="Fácil de Usar" data-en="Easy to Use">Fácil de Usar</h3>
+                    <p data-pt="Interface simples e amigável, perfeita para pais que querem proteção sem complicações." data-en="Simple and friendly interface, perfect for parents who want protection without complications.">Interface simples e amigável, perfeita para pais que querem proteção sem complicações.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell-slash"></i>
+                    </div>
+                    <h3 data-pt="Bloqueio Silencioso" data-en="Silent Blocking">Bloqueio Silencioso</h3>
+                    <p data-pt="As chamadas são bloqueadas silenciosamente, sem incomodar a criança ou interromper suas atividades." data-en="Calls are blocked silently, without bothering the child or interrupting their activities.">As chamadas são bloqueadas silenciosamente, sem incomodar a criança ou interromper suas atividades.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 data-pt="Tranquilidade para Pais" data-en="Peace of Mind for Parents">Tranquilidade para Pais</h3>
+                    <p data-pt="Tenha a certeza de que seus filhos estão protegidos de chamadas de estranhos e potenciais perigos." data-en="Rest assured that your children are protected from calls from strangers and potential dangers.">Tenha a certeza de que seus filhos estão protegidos de chamadas de estranhos e potenciais perigos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-pt="Como Funciona" data-en="How It Works">Como Funciona</h2>
+                <p data-pt="Três passos simples para proteger seus filhos" data-en="Three simple steps to protect your children">Três passos simples para proteger seus filhos</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 data-pt="Instale o App" data-en="Install the App">Instale o App</h3>
+                        <p data-pt="Baixe e instale o SafeCallKids no dispositivo da criança em segundos." data-en="Download and install SafeCallKids on the child's device in seconds.">Baixe e instale o SafeCallKids no dispositivo da criança em segundos.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 data-pt="Configure os Contatos" data-en="Set Up Contacts">Configure os Contatos</h3>
+                        <p data-pt="Adicione os números de telefone das pessoas que podem ligar para a criança." data-en="Add the phone numbers of people who can call the child.">Adicione os números de telefone das pessoas que podem ligar para a criança.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 data-pt="Proteção Ativa" data-en="Active Protection">Proteção Ativa</h3>
+                        <p data-pt="O app bloqueia automaticamente todas as chamadas de números não guardados na lista de contatos." data-en="The app automatically blocks all calls from unauthorized numbers.">O app bloqueia automaticamente todas as chamadas de números não autorizados.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="statistics">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-label" data-pt="Crianças Protegidas" data-en="Children Protected">Crianças Protegidas</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">1M+</div>
+                    <div class="stat-label" data-pt="Chamadas Bloqueadas" data-en="Calls Blocked">Chamadas Bloqueadas</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label" data-pt="Taxa de Eficácia" data-en="Effectiveness Rate">Taxa de Eficácia</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">4.8★</div>
+                    <div class="stat-label" data-pt="Avaliação dos Pais" data-en="Parent Rating">Avaliação dos Pais</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="download" class="download">
+        <div class="container">
+            <div class="download-content">
+                <h2 data-pt="Proteja seus filhos hoje mesmo" data-en="Protect your children today">Proteja seus filhos hoje mesmo</h2>
+                <p data-pt="Baixe o SafeCallKids e tenha tranquilidade sabendo que seus filhos estão seguros." data-en="Download SafeCallKids and have peace of mind knowing your children are safe.">Baixe o SafeCallKids e tenha tranquilidade sabendo que seus filhos estão seguros.</p>                <div class="download-buttons">
+                    <button class="btn btn-primary" id="playstore-download">
+                        <i class="fab fa-google-play"></i>
+                        <div>
+                            <small data-pt="Em breve no" data-en="Coming soon to">Em breve no</small>
+                            <span>Google Play</span>
+                        </div>
+                    </button>
+                    <button class="btn btn-primary" id="apk-direct-download">
+                        <i class="fas fa-download"></i>                        <div>
+                            <small data-pt="Download" data-en="Download">Download</small>
+                            <span data-pt="APK" data-en="APK">APK</span>
+                        </div>
+                    </button>
+                </div>
+            </div>        </div>
+    </section>
+
+    <!-- Cookie Banner -->
+    <div id="cookieBanner" class="cookie-banner">
+        <div class="cookie-content">
+            <div class="cookie-icon">
+                <i class="fas fa-cookie-bite"></i>
+            </div>
+            <div class="cookie-text">
+                <h4>Este website utiliza cookies</h4>
+                <p>Utilizamos cookies para melhorar a sua experiência de navegação, analisar o tráfego do site e personalizar conteúdo. Pode gerir as suas preferências de cookies em qualquer momento.</p>
+            </div>
+            <div class="cookie-actions">
+                <button id="acceptAllCookies" class="cookie-btn accept">Aceitar Todos</button>
+                <button id="rejectCookies" class="cookie-btn reject">Rejeitar</button>
+                <button id="configureCookies" class="cookie-btn configure">Configurar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Settings Modal -->
+    <div id="cookieSettingsModal" class="modal cookie-settings-modal">
+        <div class="modal-content">
+            <span class="close" id="closeCookieSettings">&times;</span>
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <h3>Configurações de Cookies</h3>
+            </div>
+            <div class="cookie-categories">
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <div class="category-info">
+                            <h4>Cookies Essenciais</h4>
+                            <p>Necessários para o funcionamento básico do website</p>
+                        </div>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="essentialCookies" checked disabled aria-label="Cookies Essenciais">
+                            <label for="essentialCookies" class="switch">
+                                <span class="sr-only">Cookies Essenciais</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <div class="category-info">
+                            <h4>Cookies Analíticos</h4>
+                            <p>Ajudam-nos a compreender como os visitantes utilizam o website</p>
+                        </div>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="analyticalCookies" aria-label="Cookies Analíticos">
+                            <label for="analyticalCookies" class="switch">
+                                <span class="sr-only">Cookies Analíticos</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <div class="category-info">
+                            <h4>Cookies de Marketing</h4>
+                            <p>Utilizados para personalizar anúncios e conteúdo</p>
+                        </div>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="marketingCookies" aria-label="Cookies de Marketing">
+                            <label for="marketingCookies" class="switch">
+                                <span class="sr-only">Cookies de Marketing</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cookie-settings-actions">
+                <button id="saveCookieSettings" class="cookie-btn save">Guardar Preferências</button>
+                <button id="acceptAllFromSettings" class="cookie-btn accept">Aceitar Todos</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="modal contact-modal">
+        <div class="modal-content">
+            <span class="close" id="closeContact">&times;</span>
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3>Entre em Contacto</h3>
+            </div>
+            <div class="contact-content">
+                <p>Envie-nos uma mensagem e entraremos em contacto o mais breve possível.</p>
+                <form id="contactForm" onsubmit="handleContactSubmit(event)">
+                    <div class="form-group">
+                        <label for="contactName">Nome *</label>
+                        <input type="text" id="contactName" name="name" placeholder="O seu nome completo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmail">Email *</label>
+                        <input type="email" id="contactEmail" name="email" placeholder="o-seu@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactSubject">Assunto *</label>
+                        <input type="text" id="contactSubject" name="subject" placeholder="Assunto da mensagem" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactMessage">Mensagem *</label>
+                        <textarea id="contactMessage" name="message" placeholder="Escreva a sua mensagem aqui..." rows="4" required></textarea>
+                    </div>
+                    <button type="submit" id="contactSubmitBtn" class="submit-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        Enviar Mensagem
+                    </button>
+                </form>
+                <div id="contactSuccessMessage" class="success-message hidden">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Mensagem enviada com sucesso!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="modal privacy-modal">
+        <div class="modal-content">
+            <span class="close" id="closePrivacy">&times;</span>
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Política de Privacidade</h3>
+            </div>
+            <div class="privacy-content">
+                <h4>1. Responsável pelo Tratamento de Dados</h4>
+                <p>Prismas33, com sede em Portugal, é responsável pelo tratamento dos seus dados pessoais.</p>
+                
+                <h4>2. Dados Recolhidos</h4>
+                <p>Recolhemos apenas os dados necessários para fornecer os nossos serviços, incluindo:</p>
+                <ul>
+                    <li>Dados de contacto (email)</li>
+                    <li>Dados de navegação (cookies)</li>
+                    <li>Informações técnicas (endereço IP, browser)</li>
+                </ul>
+                
+                <h4>3. Finalidades do Tratamento</h4>
+                <p>Os seus dados são utilizados para:</p>
+                <ul>
+                    <li>Fornecer os nossos serviços</li>
+                    <li>Comunicar sobre produtos e atualizações</li>
+                    <li>Melhorar a experiência do utilizador</li>
+                    <li>Cumprir obrigações legais</li>
+                </ul>
+                
+                <h4>4. Base Legal</h4>
+                <p>O tratamento baseia-se no consentimento, interesse legítimo e cumprimento de obrigações legais.</p>
+                
+                <h4>5. Partilha de Dados</h4>
+                <p>Não partilhamos os seus dados com terceiros, exceto quando legalmente obrigatório.</p>
+                
+                <h4>6. Direitos do Titular</h4>
+                <p>Tem direito a:</p>
+                <ul>
+                    <li>Aceder aos seus dados</li>
+                    <li>Retificar dados incorretos</li>
+                    <li>Apagar dados (direito ao esquecimento)</li>
+                    <li>Portabilidade dos dados</li>
+                    <li>Opor-se ao tratamento</li>
+                    <li>Limitação do tratamento</li>
+                </ul>
+                
+                <h4>7. Retenção de Dados</h4>
+                <p>Os dados são conservados pelo tempo necessário para as finalidades estabelecidas.</p>
+                
+                <h4>8. Contacto</h4>
+                <p>Para exercer os seus direitos ou esclarecimentos, contacte-nos através do email: privacy@prismas33.com</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div id="termsModal" class="modal terms-modal">
+        <div class="modal-content">
+            <span class="close" id="closeTerms">&times;</span>
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <h3>Termos e Condições</h3>
+            </div>
+            <div class="terms-content">
+                <h4>1. Aceitação dos Termos</h4>
+                <p>Ao utilizar este website, aceita estar vinculado a estes termos e condições.</p>
+                
+                <h4>2. Uso do Website</h4>
+                <p>Este website destina-se a fins informativos sobre os produtos e serviços da Prismas 33.</p>
+                
+                <h4>3. Propriedade Intelectual</h4>
+                <p>Todo o conteúdo deste website é propriedade da Prismas 33 e está protegido por direitos de autor.</p>
+                
+                <h4>4. Disponibilidade do Serviço</h4>
+                <p>Esforçamo-nos para manter o website disponível 24/7, mas não garantimos disponibilidade contínua.</p>
+                
+                <h4>5. Limitação de Responsabilidade</h4>
+                <p>A Prismas 33 não se responsabiliza por danos diretos, indiretos, incidentais ou consequenciais.</p>
+                
+                <h4>6. Modificações</h4>
+                <p>Reservamo-nos o direito de modificar estes termos a qualquer momento.</p>
+                
+                <h4>7. Lei Aplicável</h4>
+                <p>Estes termos são regidos pela lei portuguesa.</p>
+                
+                <h4>8. Contacto</h4>
+                <p>Para questões relacionadas com estes termos, contacte-nos através do email: legal@prismas33.com</p>
+            </div>
+        </div>
+    </div>    <!-- Contact Modal -->
+    <div id="contactModal" class="modal contact-modal">
+        <div class="modal-content">
+            <span class="close" id="closeContact">&times;</span>
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3>Entre em Contacto</h3>
+            </div>
+            <div class="contact-content">
+                <p>Envie-nos uma mensagem e entraremos em contacto o mais breve possível.</p>
+                <form id="contactForm" onsubmit="handleContactSubmit(event)">
+                    <div class="form-group">
+                        <label for="contactName">Nome *</label>
+                        <input type="text" id="contactName" name="name" placeholder="O seu nome completo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmail">Email *</label>
+                        <input type="email" id="contactEmail" name="email" placeholder="o-seu@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactSubject">Assunto *</label>
+                        <input type="text" id="contactSubject" name="subject" placeholder="Assunto da mensagem" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactMessage">Mensagem *</label>
+                        <textarea id="contactMessage" name="message" placeholder="Escreva a sua mensagem aqui..." rows="4" required></textarea>
+                    </div>
+                    <button type="submit" id="contactSubmitBtn" class="submit-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        Enviar Mensagem
+                    </button>
+                </form>
+                <div id="contactSuccessMessage" class="success-message hidden">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Mensagem enviada com sucesso!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">            <div class="footer-signature">
+                <div class="footer-brand">
+                    <h4 class="company-name">SafeCallKids</h4>
+                    <p class="company-tagline">Um produto da Prismas 33</p>
+                </div>
+                
+                <div class="footer-divider"></div>
+                <div class="footer-details">
+                    <div class="ownership-info">
+                        <p>owned by <strong>Prismas e Quadriláteros Unip. Lda.</strong></p>
+                        <p class="established">Estabelecida em 2020 • Portugal</p>
+                    </div>
+                    
+                    <div class="copyright-info">
+                        <p>&copy; 2025 Todos os direitos reservados.</p>
+                        <div class="legal-links">
+                            <a href="#contact" onclick="openContactModal()">Contato</a>
+                            <span class="divider">|</span>
+                            <a href="#privacy" onclick="openPrivacyModal()">Política de Privacidade</a>
+                            <span class="divider">|</span>
+                            <a href="#terms" onclick="openTermsModal()">Termos e Condições</a>
+                            <span class="divider">|</span>
+                            <a href="#cookies" onclick="openCookieSettingsModal()">Cookies</a>
+                        </div>
+                        <div class="social-links">
+                            <a href="#" onclick="showComingSoon()" aria-label="LinkedIn">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="#" onclick="showComingSoon()" aria-label="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" onclick="showComingSoon()" aria-label="GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cookie Banner -->
+    <div id="cookieBanner" class="cookie-banner">
+        <div class="cookie-content">
+            <div class="cookie-icon">
+                <i class="fas fa-cookie-bite"></i>
+            </div>
+            <div class="cookie-text">
+                <p>Utilizamos cookies para melhorar a sua experiência. Ao continuar, aceita a nossa política de cookies.</p>
+            </div>
+            <div class="cookie-actions">
+                <button class="cookie-btn secondary" onclick="openCookieSettingsModal()">Configurar</button>
+                <button class="cookie-btn primary" onclick="acceptAllCookies()">Aceitar Todos</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Settings Modal -->
+    <div id="cookieSettingsModal" class="modal cookie-modal">
+        <div class="modal-content">
+            <span class="close" id="closeCookieSettings">&times;</span>
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-cookie-bite"></i>
+                </div>
+                <h3>Configurações de Cookies</h3>
+            </div>
+            <div class="cookie-settings">
+                <p>Personalize as suas preferências de cookies:</p>
+                
+                <div class="cookie-category">
+                    <div class="cookie-toggle">
+                        <label class="switch">
+                            <input type="checkbox" id="essentialCookies" checked disabled>
+                            <span class="slider"></span>
+                        </label>
+                        <div class="cookie-info">
+                            <h4>Cookies Essenciais</h4>
+                            <p>Necessários para o funcionamento básico do site.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cookie-category">
+                    <div class="cookie-toggle">
+                        <label class="switch">
+                            <input type="checkbox" id="analyticalCookies">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="cookie-info">
+                            <h4>Cookies Analíticos</h4>
+                            <p>Ajudam-nos a entender como utiliza o nosso site.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cookie-category">
+                    <div class="cookie-toggle">
+                        <label class="switch">
+                            <input type="checkbox" id="marketingCookies">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="cookie-info">
+                            <h4>Cookies de Marketing</h4>
+                            <p>Utilizados para personalizar anúncios e conteúdo.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cookie-actions">
+                    <button class="cookie-btn secondary" onclick="rejectAllCookies()">Rejeitar Opcionais</button>
+                    <button class="cookie-btn primary" onclick="saveCookiePreferences()">Guardar Preferências</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="safecallkids-clean.js"></script>
+</body>
+</html>
