@@ -39,6 +39,41 @@ document.addEventListener('DOMContentLoaded', function() {
                     iconClose.style.display = 'none';
                 }
             }
+            
+            // Sincronizar botões de idioma do menu mobile com os botões principais
+            const mobileLangBtns = document.querySelectorAll('.mobile-lang-btn');
+            const mainLangBtns = document.querySelectorAll('.lang-btn');
+            // Atualiza o estado ativo dos botões mobile ao abrir o menu
+            menuToggle.addEventListener('click', function() {
+                // Descobre qual está ativo no topo
+                const activeMain = document.querySelector('.lang-btn.active');
+                if (activeMain) {
+                    const lang = activeMain.getAttribute('data-lang');
+                    mobileLangBtns.forEach(btn => {
+                        if (btn.getAttribute('data-lang') === lang) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    });
+                }
+            });
+            // Clique nos botões mobile troca idioma no topo
+            mobileLangBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    mobileLangBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    // Sincroniza com o topo
+                    mainLangBtns.forEach(mainBtn => {
+                        if (mainBtn.getAttribute('data-lang') === lang) {
+                            mainBtn.classList.add('active');
+                        } else {
+                            mainBtn.classList.remove('active');
+                        }
+                    });
+                });
+            });
         });
         
         // Fechar o menu mobile ao clicar no botão de fechar
@@ -77,24 +112,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (iconBars && iconClose) {
                     iconBars.style.display = 'block';
                     iconClose.style.display = 'none';
-                }
-            });
-        });
-        
-        // Sincronizar botões de idioma do menu mobile com os botões principais
-        const mobileLangBtns = document.querySelectorAll('.mobile-lang-btn');
-        mobileLangBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const lang = this.getAttribute('data-lang');
-                
-                // Atualize a classe ativa nos botões de idioma do menu mobile
-                mobileLangBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Encontre o botão correspondente no language switcher principal e clique nele
-                const mainLangBtn = document.querySelector(`.lang-btn[data-lang="${lang}"]`);
-                if (mainLangBtn) {
-                    mainLangBtn.click();
                 }
             });
         });

@@ -97,6 +97,13 @@ body {
     background-color: var(--bg-white);
 }
 
+/* Garantir cor para todos os parágrafos */
+p {
+    color: var(--text-dark);
+    line-height: 1.6;
+    margin: 0 0 16px 0;
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;

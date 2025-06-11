@@ -222,15 +222,14 @@ function forceTranslate(lang) {
             if (sectionSubtitle) {
                 sectionSubtitle.textContent = 'Innovative applications in development';
                 console.log('🌍 Section subtitle traduzido (EN)');
-            }
-        } else {
+            }        } else {
             if (sectionTitle) {
-                sectionTitle.textContent = 'Em Breve';
+                sectionTitle.textContent = 'Próximos Lançamentos';
                 console.log('🌍 Section title traduzido (PT)');
             }
             
             if (sectionSubtitle) {
-                sectionSubtitle.textContent = 'Aplicações inovadoras em desenvolvimento';
+                sectionSubtitle.textContent = 'Inovações que estão chegando';
                 console.log('🌍 Section subtitle traduzido (PT)');
             }
         }

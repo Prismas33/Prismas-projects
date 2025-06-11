@@ -1,26 +1,132 @@
-﻿/* Menu CSS - Consolidado (antes menu-fix) */
-/* Renomeado para menu.css */
-/* Esconder completamente o botão do menu mobile em telas grandes (desktop) */
-@media (min-width: 993px) {
-    .mobile-menu-toggle {
-        display: none !important;
-        pointer-events: none;
-        visibility: hidden;
-    }
+/* ===============================
+   MENU CSS - VERSÃO LIMPA E ORGANIZADA
+   =============================== */
+
+/* ===== VARIÁVEIS CSS ===== */
+:root {
+    --primary-color: #5DADE2;
+    --primary-dark: #3498DB;
+    --text-dark: #2C3E50;
+    --text-light: #ECF0F1;
+    --bg-white: #FFFFFF;
+    --bg-light: #F8F9FA;
+    --border-color: #E5E8EB;
+    --shadow-light: 0 2px 10px rgba(0,0,0,0.1);
+    --shadow-medium: 0 4px 20px rgba(0,0,0,0.15);
+    --transition: all 0.3s ease;
+    --gradient-primary: linear-gradient(135deg, #5DADE2, #3498DB);
 }
-/* Mobile Menu Fix */
-/* Por padrão, esconda o botão do menu mobile */
+
+/* ===== RESET E BASE ===== */
+* {
+    box-sizing: border-box;
+}
+
+/* ===== HEADER E NAVEGAÇÃO DESKTOP ===== */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    z-index: 999;
+    transition: var(--transition);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+    position: relative;
+}
+
+/* Logo Section */
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    width: 200px; /* Largura fixa para balanceamento */
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Navigation Links - Desktop - CENTRALIZADO */
+.nav-links {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 24px;    border-radius: 25px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 500;
+    font-size: 15px;
+    transition: var(--transition);
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-links a:hover {
+    color: var(--primary-color);
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--gradient-primary);
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* ===== MOBILE MENU TOGGLE - ESCONDIDO NO DESKTOP ===== */
 .mobile-menu-toggle {
-    display: none;
+    display: none !important; /* Escondido por padrão no desktop */
     cursor: pointer;
     font-size: 24px;
     color: var(--text-dark);
     padding: 8px;
     background: transparent;
-    border: 1px solid #e5e8eb;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
-    transition: background-color 0.2s, color 0.2s;
-    z-index: 1100; /* Aumentado para ficar acima do language switcher */
+    transition: var(--transition);
+    z-index: 1100;
     position: relative;
     width: 40px;
     height: 40px;
@@ -39,37 +145,243 @@
     color: var(--primary-color);
 }
 
-/* Exibir o botão do menu mobile apenas em telas pequenas */
-@media (max-width: 992px) {
+/* ===== MOBILE MENU OVERLAY ===== */
+.mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.45);
+    z-index: 2000;
+    display: none;
+    align-items: flex-start;
+    justify-content: flex-end;
+    transition: background 0.3s;
+}
+
+.mobile-menu-overlay.active {
+    display: flex;
+}
+
+.mobile-menu-content {
+    background: var(--bg-white);
+    width: 85vw;
+    max-width: 340px;
+    height: 100vh;
+    box-shadow: -4px 0 32px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+    animation: slideInMenu 0.3s cubic-bezier(.4,1.3,.6,1) both;
+    position: relative;
+}
+
+@keyframes slideInMenu {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+/* ===== MOBILE MENU HEADER ===== */
+.mobile-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 22px 10px 22px;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+}
+
+.mobile-menu-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mobile-menu-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.mobile-lang-buttons-header {
+    display: flex;
+    gap: 4px;
+}
+
+.mobile-lang-buttons-header .mobile-lang-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    min-width: 40px;
+}
+
+.mobile-menu-close {
+    background: #f2f2f2;
+    border: 1.5px solid #d1d5db;
+    font-size: 1.3rem;
+    color: var(--text-dark) !important;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.mobile-menu-close:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+/* ===== MOBILE MENU LINKS ===== */
+.mobile-menu-links {
+    flex: 1;
+    margin: 30px 0 0 0;
+    padding: 0 22px;
+}
+
+.mobile-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    text-decoration: none;
+    padding: 12px 0;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.mobile-menu-link:focus,
+.mobile-menu-link:hover {
+    background: #f2f6fa;
+    color: var(--primary-color);
+}
+
+/* ===== MOBILE LANGUAGE BUTTONS ===== */
+.mobile-lang-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    justify-content: center;
+    padding: 10px 0;
+    border: none;
+    border-radius: 6px;
+    background: #f2f6fa;
+    color: var(--text-dark);
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.mobile-lang-btn.active,
+.mobile-lang-btn:focus {
+    background: var(--gradient-primary);
+    color: #fff;
+}
+
+.mobile-lang-btn:hover {
+    background: #e3f2fd;
+}
+
+.mobile-lang-btn.active:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Desktop - Garantir que hamburger NUNCA apareça */
+@media (min-width: 993px) {
+    .mobile-menu-toggle {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+    
+    .mobile-menu-overlay {
+        display: none !important;
+    }
+    
+    .nav-links {
+        display: flex !important;
+    }
+    
+    /* Ajustar padding para simetria */
+    .nav-container {
+        padding: 0 20px;
+    }
+}
+
+/* Tablet */
+@media (max-width: 992px) and (min-width: 769px) {
+    .mobile-menu-toggle {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+    
+    .nav-links {
+        display: flex !important;
+        gap: 20px;
+        padding: 6px 20px;
+    }
+    
+    .nav-container {
+        padding: 0 16px;
+    }
+}
+
+/* Tablet e Mobile - Mostrar hamburger e esconder nav desktop */
+@media (max-width: 768px) {
     .mobile-menu-toggle {
         display: flex !important;
         background-color: rgba(93, 173, 226, 0.1);
     }
-}
-
-/* Classe adicional para garantir visibilidade no mobile */
-@media (max-width: 992px) {
-    .menu-btn-visible {
-        display: flex !important;
-        background-color: rgba(93, 173, 226, 0.2);
-        border: 2px solid var(--primary-color) !important;
-    }
-}
-
-/* Ajustar a barra superior para posicionar corretamente o botÃ£o de menu */
-@media (max-width: 992px) {
-    .nav-container {
-        position: relative;
+    
+    .nav-links {
+        display: none !important;
     }
     
-    .mobile-menu-toggle {
-        position: absolute;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
+    .nav-container {
+        padding: 0 16px;
     }
 }
 
+/* Mobile pequeno */
+@media (max-width: 600px) {
+    .nav-container {
+        padding: 0 6px;
+    }
+    
+    .mobile-menu-content {
+        width: 90vw;
+    }
+}
+
+/* ===== LANGUAGE SELECTOR FIXES ===== */
+@media (max-width: 768px) {
+    /* Esconder switcher principal quando menu mobile está ativo */
+    body.mobile-menu-open .language-selector,
+    body.mobile-menu-open .language-switcher {
+        display: none !important;
+    }
+}
+
+/* ===== CORREÇÕES DE Z-INDEX ===== */
+.mobile-menu-toggle {
+    z-index: 1100 !important;
+}
+
+.mobile-menu-overlay {
+    z-index: 2000 !important;
+}
+
+/* ===== ACCESSIBILITY ===== */
 .sr-only {
     position: absolute;
     width: 1px;
@@ -82,196 +394,24 @@
     border: 0;
 }
 
-/* Mobile menu active styles */
-@media (max-width: 992px) {
-    .nav-links {
-        display: none;
-        flex-direction: column;
-        position: absolute;
-        top: 70px;
-        left: 0;
-        right: 0;
-        background: white;
-        padding: 20px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        z-index: 998;
-    }
-    
-    .nav-links.active {
-        display: flex;
-    }
-
-    /* Esconder o language switcher padrÃ£o em telas pequenas */
-    .language-switcher {
-        display: none !important;
-    }
+/* Focus states */
+.mobile-menu-toggle:focus,
+.mobile-menu-close:focus,
+.mobile-menu-link:focus,
+.mobile-lang-btn:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
 }
 
-/* Estilo para o overlay do menu mobile */
-.mobile-menu-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: white;
-    z-index: 1090; /* Menor que o botÃ£o de menu, maior que outros elementos */
-    overflow-y: auto;
-}
+/* ===== CORREÇÕES ESPECÍFICAS PARA SAFECALLKIDS ===== */
 
-.mobile-menu-overlay.active {
-    display: block;
-}
-
-/* Garantir que os botÃµes de idioma no menu mobile funcionem corretamente */
-.mobile-lang-buttons-header {
-    display: flex;
-    gap: 8px;
-}
-
-.mobile-lang-btn {
-    padding: 8px 12px;
-    background-color: #f8f9fa;
-    border: 1px solid #e5e8eb;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    transition: all 0.2s ease;
-}
-
-.mobile-lang-btn.active {
-    background-color: var(--primary-color);
-    color: white;
-    border-color: var(--primary-dark);
-}
-
-.mobile-lang-btn:hover {
-    background-color: #e9ecef;
-}
-
-.mobile-lang-btn.active:hover {
-    background-color: var(--primary-dark);
-}
-/* Estilos especÃ­ficos para corrigir o problema do Ã­cone de menu */
-.mobile-menu-toggle i.fas.fa-bars {
-    /* Garantir que o Ã­cone de hambÃºrguer seja sempre visÃ­vel quando deve ser */
-    display: block !important;
-}
-
-.mobile-menu-toggle i.fas.fa-times {
-    /* SÃ³ mostrar o X quando o menu estiver aberto */
-    display: none;
-}
-
-.mobile-menu-overlay.active + header .mobile-menu-toggle i.fas.fa-bars {
-    /* Esconder o hambÃºrguer quando o menu estÃ¡ aberto */
+/* Garantir que o botão hamburger seja visível apenas em mobile */
+.menu-btn-visible {
     display: none !important;
 }
 
-.mobile-menu-overlay.active + header .mobile-menu-toggle i.fas.fa-times {
-    /* Mostrar o X quando o menu estÃ¡ aberto */
-    display: block !important;
-}
-
-/* EstilizaÃ§Ã£o adicional para o Ã­cone do menu */
-.mobile-menu-toggle i {
-    font-size: 20px !important;
-}
-/* CorreÃ§Ãµes de espaÃ§amento para o menu mobile */
-
-/* Reduzir o espaÃ§amento entre os itens do menu */
-.mobile-menu-links {
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px; /* EspaÃ§amento reduzido entre itens */
-}
-
-.mobile-menu-link {
-    padding: 10px 12px !important; /* EspaÃ§amento vertical reduzido */
-    margin: 0;
-    border-radius: 4px;
-    font-size: 14px !important;
-    display: flex;
-    align-items: center;
-}
-
-/* Reduzir o tamanho do cabeÃ§alho do menu mobile */
-.mobile-menu-header {
-    padding: 8px !important;
-    margin-bottom: 2px;
-    border-bottom: 1px solid #eaeaea;
-}
-
-/* Ajustar tamanho da fonte e espaÃ§amento geral */
-.mobile-menu-content {
-    padding: 0 5px;
-}
-
-.mobile-menu-logo .logo {
-    width: 28px !important;
-    height: 28px !important;
-}
-
-.mobile-menu-logo .logo-text {
-    font-size: 14px !important;
-}
-
-/* Ajustar os botÃµes de idioma */
-.mobile-lang-buttons-header .mobile-lang-btn {
-    padding: 4px 8px !important;
-    font-size: 12px !important;
-}
-
-/* Garantir que o menu mobile use toda a altura disponÃ­vel de forma eficiente */
-.mobile-menu-overlay.active {
-    display: flex;
-    flex-direction: column;
-}
-
-.mobile-menu-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.mobile-menu-links {
-    flex: 1;
-    overflow-y: auto;
-}
-
-/* Ajuste fino para reduzir ainda mais o espaÃ§amento */
-.mobile-menu-link i {
-    margin-right: 8px;
-    font-size: 14px;
-    width: 20px;
-    text-align: center;
-}
-
-/* Remover espaÃ§o em branco desnecessÃ¡rio */
-body.mobile-menu-open {
-    overflow: hidden;
-}
-
-/* Garantir que o menu ocupe apenas o espaÃ§o necessÃ¡rio */
-.mobile-menu-overlay {
-    display: none;
-    padding: 0;
-}
-
-/* Ajustar layout para telas muito pequenas */
-@media (max-height: 500px) {
-    .mobile-menu-link {
-        padding: 6px 10px !important;
-        font-size: 12px !important;
-    }
-    
-    .mobile-menu-header {
-        padding: 5px !important;
+@media (max-width: 768px) {
+    .menu-btn-visible {
+        display: flex !important;
     }
 }

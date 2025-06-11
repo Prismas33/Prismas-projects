@@ -16,8 +16,10 @@
     
     <!-- CSS -->
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="language-switcher.css">
-    <link rel="stylesheet" href="contact.css">
+    <!-- CSS de correção para seletor de idioma -->
+    <link rel="stylesheet" href="language-switcher-fix.css">
+    <!-- CSS de correção para o modal de contato -->
+    <link rel="stylesheet" href="contact-fix.css">
 </head>
 <body>    <!-- Header/Hero Section -->
     <header class="hero">
@@ -28,12 +30,8 @@
         </div>
           <!-- Language Selector -->
         <div class="language-selector">
-            <a href="#pt" class="lang-btn active" data-lang="pt">
-                <span>PT</span>
-            </a>
-            <a href="#en" class="lang-btn" data-lang="en">
-                <span>EN</span>
-            </a>
+            <a href="index.html" class="lang-btn active">PT</a>
+            <a href="index-en.html" class="lang-btn">EN</a>
         </div>
         
         <!-- Floating Geometric Elements -->
@@ -319,18 +317,16 @@
             <i class="notification-icon"></i>
             <span class="notification-text"></span>
         </div>
-    </div>
-
-    <!-- Marketplace Section -->
-    <section id="marketplace" class="marketplace">
+    </div>    <!-- Available Apps Section -->
+    <section id="available-apps" class="marketplace available-section">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Coming Soon</h2>
-                <p class="section-subtitle">Aplicativos inovadores em desenvolvimento</p>
+                <h2 class="section-title">Apps Disponíveis</h2>
+                <p class="section-subtitle">Aplicações prontas para usar</p>
             </div>
-              <div class="apps-grid">
-                <!-- SafeCall Kids - PRIMEIRA APLICAÇÃO DISPONÍVEL -->
-                <div class="app-card" data-app="safecallkids">
+            <div class="apps-grid">
+                <!-- SafeCall Kids - APLICAÇÃO DISPONÍVEL -->
+                <div class="app-card available" data-app="safecallkids">
                     <div class="app-icon">
                         <i class="fas fa-shield-heart"></i>
                     </div>
@@ -341,9 +337,19 @@
                         Disponível Agora
                     </button>
                 </div>
-                
+            </div>
+        </div>
+    </section>
+
+    <!-- Coming Soon Section -->
+    <section id="coming-soon" class="marketplace coming-soon-section">
+        <div class="container">            <div class="section-header">
+                <h2 class="section-title">Próximos Lançamentos</h2>
+                <p class="section-subtitle">Inovações que estão chegando</p>
+            </div>
+            <div class="apps-grid">
                 <!-- Nexus 5 -->
-                <div class="app-card" data-app="nexus5">
+                <div class="app-card coming-soon" data-app="nexus5">
                     <div class="app-icon">
                         <i class="fas fa-exchange-alt"></i>
                     </div>
@@ -351,12 +357,12 @@
                     <p class="app-description">Conversor Node.js → Android/EXE. Liberte seu código de plataformas.</p>
                     <button class="notify-btn" onclick="openNotifyModal('nexus5')">
                         <i class="fas fa-bell"></i>
-                        Notify Me
+                        Avisar-me
                     </button>
                 </div>
                 
                 <!-- Cerebra 7 -->
-                <div class="app-card" data-app="cerebra7">
+                <div class="app-card coming-soon" data-app="cerebra7">
                     <div class="app-icon">
                         <i class="fas fa-brain"></i>
                     </div>
@@ -364,12 +370,12 @@
                     <p class="app-description">Organizador de informação com IA. Nunca perca uma ideia.</p>
                     <button class="notify-btn" onclick="openNotifyModal('cerebra7')">
                         <i class="fas fa-bell"></i>
-                        Notify Me
+                        Avisar-me
                     </button>
                 </div>
                 
                 <!-- Puzzle 33 -->
-                <div class="app-card" data-app="puzzle33">
+                <div class="app-card coming-soon" data-app="puzzle33">
                     <div class="app-icon">
                         <i class="fas fa-puzzle-piece"></i>
                     </div>
@@ -377,12 +383,12 @@
                     <p class="app-description">Jogos educativos para crianças. Aprender lógica nunca foi tão divertido.</p>
                     <button class="notify-btn" onclick="openNotifyModal('puzzle33')">
                         <i class="fas fa-bell"></i>
-                        Notify Me
+                        Avisar-me
                     </button>
                 </div>
                 
                 <!-- DocFlow 4 -->
-                <div class="app-card" data-app="docflow4">
+                <div class="app-card coming-soon" data-app="docflow4">
                     <div class="app-icon">
                         <i class="fas fa-file-alt"></i>
                     </div>
@@ -390,12 +396,12 @@
                     <p class="app-description">Conversor PDF → Word perfeito. Edite sem erros.</p>
                     <button class="notify-btn" onclick="openNotifyModal('docflow4')">
                         <i class="fas fa-bell"></i>
-                        Notify Me
+                        Avisar-me
                     </button>
                 </div>
                 
                 <!-- LinkMind -->
-                <div class="app-card" data-app="linkmind">
+                <div class="app-card coming-soon" data-app="linkmind">
                     <div class="app-icon">
                         <i class="fas fa-link"></i>
                     </div>
@@ -403,12 +409,12 @@
                     <p class="app-description">Assistente de gestão pessoal e profissional: tarefas, compromissos, metas, lembretes, organização de contatos, anotações inteligentes, integração com calendário, automação de rotinas e insights personalizados para produtividade máxima.</p>
                     <button class="notify-btn" onclick="openNotifyModal('linkmind')">
                         <i class="fas fa-bell"></i>
-                        Notify Me
+                        Avisar-me
                     </button>
                 </div>
             </div>
         </div>
-    </section>    <!-- Modal de Notificação -->
+    </section><!-- Modal de Notificação -->
     <div id="notifyModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeNotifyModal()">&times;</span>
@@ -540,6 +546,5 @@
     </script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="script.js"></script>
-    <script src="language-switcher.js"></script>
 </body>
 </html>
