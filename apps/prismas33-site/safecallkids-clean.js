@@ -111,15 +111,13 @@ class SafeCallKids {
     }
 
     setupMobileMenu() {
+        // Desktop nav (unchanged)
         const menuToggle = document.querySelector('.mobile-menu-toggle');
         const navLinks = document.querySelector('.nav-links');
-        
         if (menuToggle && navLinks) {
             menuToggle.addEventListener('click', () => {
                 navLinks.classList.toggle('active');
                 menuToggle.classList.toggle('active');
-                
-                // Toggle icon
                 const icon = menuToggle.querySelector('i');
                 if (menuToggle.classList.contains('active')) {
                     icon.className = 'fas fa-times';
@@ -127,8 +125,6 @@ class SafeCallKids {
                     icon.className = 'fas fa-bars';
                 }
             });
-
-            // Close menu when clicking on a link
             const links = navLinks.querySelectorAll('a');
             links.forEach(link => {
                 link.addEventListener('click', () => {
@@ -138,6 +134,103 @@ class SafeCallKids {
                 });
             });
         }
+
+        // Mobile overlay menu logic
+        const mobileOverlay = document.getElementById('mobileMenuOverlay');
+        const mobileMenuClose = document.getElementById('mobileMenuClose');
+        const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+        const mobileLangBtns = document.querySelectorAll('.mobile-lang-btn');
+
+        // Hamburger opens overlay
+        if (menuToggle && mobileOverlay) {
+            menuToggle.addEventListener('click', () => {
+                mobileOverlay.classList.add('active');
+                // Trap focus
+                setTimeout(() => {
+                    const firstBtn = mobileOverlay.querySelector('button, a');
+                    if (firstBtn) firstBtn.focus();
+                }, 100);
+                document.body.style.overflow = 'hidden';
+            });
+        }
+        // Close button
+        if (mobileMenuClose && mobileOverlay) {
+            mobileMenuClose.addEventListener('click', () => {
+                mobileOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+                menuToggle.classList.remove('active');
+                menuToggle.querySelector('i').className = 'fas fa-bars';
+            });
+        }
+        // Close on link click
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+                menuToggle.classList.remove('active');
+                menuToggle.querySelector('i').className = 'fas fa-bars';
+            });
+        });
+        // Close on overlay click (outside menu)
+        if (mobileOverlay) {
+            mobileOverlay.addEventListener('mousedown', (e) => {
+                if (e.target === mobileOverlay) {
+                    mobileOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                    menuToggle.classList.remove('active');
+                    menuToggle.querySelector('i').className = 'fas fa-bars';
+                }
+            });
+        }
+        // ESC closes menu
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && mobileOverlay && mobileOverlay.classList.contains('active')) {
+                mobileOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+                menuToggle.classList.remove('active');
+                menuToggle.querySelector('i').className = 'fas fa-bars';
+            }
+        });
+        // Trap focus inside overlay
+        if (mobileOverlay) {
+            mobileOverlay.addEventListener('keydown', (e) => {
+                if (!mobileOverlay.classList.contains('active')) return;
+                if (e.key !== 'Tab') return;
+                const focusable = mobileOverlay.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (e.shiftKey) {
+                    if (document.activeElement === first) {
+                        e.preventDefault();
+                        last.focus();
+                    }
+                } else {
+                    if (document.activeElement === last) {
+                        e.preventDefault();
+                        first.focus();
+                    }
+                }
+            });
+        }
+        // Mobile language switcher
+        mobileLangBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.getAttribute('data-lang');
+                // Update all language buttons (desktop + mobile)
+                document.querySelectorAll('.lang-btn, .mobile-lang-btn').forEach(b => {
+                    b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+                });
+                this.switchLanguage(lang);
+            });
+        });
+        // Keep mobile lang state in sync on switch
+        const origSwitchLanguage = this.switchLanguage.bind(this);
+        this.switchLanguage = (lang) => {
+            document.querySelectorAll('.lang-btn, .mobile-lang-btn').forEach(b => {
+                b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+            });
+            origSwitchLanguage(lang);
+        };
     }
 
     setupAnimations() {

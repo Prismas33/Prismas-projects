@@ -23,8 +23,11 @@
                 <div class="nav-logo">
                     <img src="assets/logos/safecallkids.jpg" alt="SafeCallKids" class="logo">
                     <span class="logo-text">SafeCallKids</span>
-                </div>
-                <div class="nav-links">
+                </div>                <div class="nav-links">
+                    <a href="index.html" class="home-link" data-pt="Início" data-en="Home">
+                        <i class="fas fa-home"></i>
+                        <span data-pt="Início" data-en="Home">Início</span>
+                    </a>
                     <a href="#features" data-pt="Funcionalidades" data-en="Features">Funcionalidades</a>
                     <a href="#how-it-works" data-pt="Como Funciona" data-en="How It Works">Como Funciona</a>
                     <a href="#download" data-pt="Download" data-en="Download">Download</a>
@@ -32,9 +35,56 @@
                 <div class="mobile-menu-toggle">
                     <i class="fas fa-bars"></i>
                 </div>
-            </div>
-        </nav>
+            </div>        </nav>
     </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay">
+        <div class="mobile-menu-content">
+            <div class="mobile-menu-header">
+                <div class="mobile-menu-logo">
+                    <img src="assets/logos/safecallkids.jpg" alt="SafeCallKids" class="logo">
+                    <span class="logo-text">SafeCallKids</span>
+                </div>
+                <button class="mobile-menu-close" id="mobileMenuClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mobile-menu-links">
+                <a href="index.html" class="mobile-menu-link" tabindex="0">
+                    <i class="fas fa-home"></i>
+                    <span data-pt="Início" data-en="Home">Início</span>
+                </a>
+                <a href="#features" class="mobile-menu-link" tabindex="0">
+                    <i class="fas fa-star"></i>
+                    <span data-pt="Funcionalidades" data-en="Features">Funcionalidades</span>
+                </a>
+                <a href="#how-it-works" class="mobile-menu-link" tabindex="0">
+                    <i class="fas fa-cogs"></i>
+                    <span data-pt="Como Funciona" data-en="How It Works">Como Funciona</span>
+                </a>
+                <a href="#download" class="mobile-menu-link" tabindex="0">
+                    <i class="fas fa-download"></i>
+                    <span data-pt="Download" data-en="Download">Download</span>
+                </a>
+            </div>
+            
+            <div class="mobile-language-switcher">
+                <h4 data-pt="Idioma" data-en="Language">Idioma</h4>
+                <div class="mobile-lang-buttons">
+                    <button class="mobile-lang-btn active" data-lang="pt" type="button">
+                        <i class="fas fa-flag"></i>
+                        Português
+                    </button>
+                    <button class="mobile-lang-btn" data-lang="en" type="button">
+                        <i class="fas fa-flag"></i>
+                        English
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <section class="hero">
