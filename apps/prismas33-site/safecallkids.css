@@ -636,19 +636,67 @@ body {
     
     .hero-title {
         font-size: 36px;
+        line-height: 1.2;
+    }
+    
+    .hero-description {
+        font-size: 17px;
+        margin: 20px 0;
     }
     
     .hero-buttons {
         justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .download-btn {
+        min-width: 280px;
+        padding: 16px 24px;
+        font-size: 16px;
     }
     
     .phone-mockup {
         width: 240px;
         height: 420px;
+        margin: 0 auto;
     }
     
     .features-grid {
         grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .feature-card {
+        padding: 30px 20px;
+        text-align: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        max-width: 500px;
+        margin: 5% auto;
+        padding: 20px;
+    }
+    
+    .cookie-banner {
+        padding: 15px;
+        border-radius: 12px 12px 0 0;
+    }
+    
+    .cookie-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .cookie-btn {
+        width: 100%;
+        justify-content: center;
     }
     
     .footer-content {
@@ -660,16 +708,19 @@ body {
     .footer-links {
         flex-wrap: wrap;
         justify-content: center;
+        gap: 15px;
     }
     
     .download-buttons {
         flex-direction: column;
         align-items: center;
+        gap: 15px;
     }
     
     .language-switcher {
         top: 10px;
         right: 10px;
+        padding: 8px 12px;
     }
 }
 
@@ -684,23 +735,129 @@ body {
     
     .hero-title {
         font-size: 28px;
+        line-height: 1.2;
     }
     
     .hero-description {
         font-size: 16px;
+        margin: 15px 0;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .download-btn {
+        min-width: 260px;
+        padding: 14px 20px;
+        font-size: 15px;
     }
     
     .section-header h2 {
-        font-size: 28px;
+        font-size: 26px;
+        line-height: 1.2;
+    }
+    
+    .section-header p {
+        font-size: 16px;
     }
     
     .features, .how-it-works, .statistics, .download {
-        padding: 60px 0;
+        padding: 50px 0;
     }
     
     .phone-mockup {
-        width: 200px;
-        height: 360px;
+        width: 180px;
+        height: 320px;
+    }
+    
+    .feature-card {
+        padding: 25px 15px;
+    }
+    
+    .feature-icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 15px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .stat-card {
+        padding: 25px 20px;
+    }
+    
+    .stat-number {
+        font-size: 32px;
+    }
+    
+    .modal-content {
+        width: 98%;
+        margin: 2% auto;
+        padding: 15px;
+        border-radius: 12px;
+    }
+    
+    .modal-header h3 {
+        font-size: 20px;
+    }
+    
+    .form-group label {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+    
+    .form-group input,
+    .form-group textarea {
+        padding: 12px;
+        font-size: 15px;
+    }
+    
+    .submit-btn {
+        padding: 12px 20px;
+        font-size: 15px;
+    }
+    
+    .cookie-banner {
+        padding: 12px;
+        margin: 10px;
+        border-radius: 8px;
+    }
+    
+    .cookie-banner h3 {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+    
+    .cookie-banner p {
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+    
+    .cookie-btn {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+    
+    .footer-signature {
+        padding: 20px 0;
+    }
+    
+    .company-name {
+        font-size: 18px;
+    }
+    
+    .company-tagline {
+        font-size: 14px;
+    }
+    
+    .footer-details {
+        font-size: 12px;
+        line-height: 1.4;
     }
 }
 
@@ -1385,5 +1542,127 @@ input:disabled + .slider {
     
     .social-links {
         justify-content: center;
+    }
+}
+
+/* Mobile Touch Optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .download-btn {
+        padding: 18px 24px;
+        font-size: 16px;
+        min-height: 48px;
+        touch-action: manipulation;
+    }
+    
+    .download-btn:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+    }
+    
+    .feature-card {
+        touch-action: manipulation;
+        transition: transform 0.2s ease;
+    }
+    
+    .feature-card:active {
+        transform: scale(0.98);
+    }
+    
+    .modal .close {
+        padding: 15px;
+        font-size: 24px;
+        min-height: 48px;
+        min-width: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .cookie-btn {
+        min-height: 48px;
+        touch-action: manipulation;
+    }
+    
+    .cookie-btn:active {
+        transform: scale(0.98);
+    }
+    
+    .submit-btn {
+        min-height: 48px;
+        touch-action: manipulation;
+    }
+    
+    .submit-btn:active {
+        transform: scale(0.98);
+    }
+    
+    .footer-links a {
+        padding: 12px 8px;
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        touch-action: manipulation;
+    }
+}
+
+/* Improved Mobile Navigation */
+@media (max-width: 768px) {
+    .language-switcher {
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        z-index: 1001;        background: rgba(255, 255, 255, 0.95);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-medium);
+    }
+    
+    .language-switcher:hover {
+        background: rgba(255, 255, 255, 0.98);
+    }
+}
+
+/* Enhanced Focus States for Accessibility */
+@media (max-width: 768px) {
+    .download-btn:focus-visible,
+    .cookie-btn:focus-visible,
+    .submit-btn:focus-visible {
+        outline: 3px solid var(--primary-color);
+        outline-offset: 2px;
+    }
+    
+    .modal .close:focus-visible {
+        outline: 3px solid var(--primary-color);
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
+}
+
+/* Better Modal Behavior on Mobile */
+@media (max-width: 480px) {
+    .modal {
+        padding: 10px;
+    }
+    
+    .modal-content {
+        max-height: 90vh;        overflow-y: auto;
+    }
+    
+    .modal-header {
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 10;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+    }
+    
+    .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 11;
     }
 }

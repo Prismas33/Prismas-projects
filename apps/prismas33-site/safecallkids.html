@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeCallKids - Protegendo Crianças de Chamadas Indesejadas</title>    <meta name="description" content="SafeCallKids protege suas crianças bloqueando chamadas de números desconhecidos. Apenas contatos salvos podem ligar.">
+    <link rel="icon" href="assets/Safecallkids/safecallkids-favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="assets/Safecallkids/safecallkids-favicon.png">
+    <link rel="stylesheet" href="safecallkids.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">    <!-- Firebase SDKs - v9+ Modular SDK -->
+    <script type="module">
+        // Import Firebase v9+ modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js';
+        import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+        
+        // Make Firebase available globally for the main script
+        window.firebase = {
+            initializeApp,
+            getStorage,
+            getAuth,
+            ref, 
+            uploadBytesResumable,
+            getDownloadURL,
+            signInAnonymously
+        };
+    </script>
+    
+    <!-- Fallback: Firebase v9+ Compat SDK for better compatibility -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button onclick="switchLanguage('pt')" class="lang-btn active" data-lang="pt">PT</button>
+        <button onclick="switchLanguage('en')" class="lang-btn" data-lang="en">EN</button>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <img src="assets/logos/safecallkids.jpg" alt="SafeCallKids" class="logo">
+                    <span class="logo-text">SafeCallKids</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#features" data-pt="Funcionalidades" data-en="Features">Funcionalidades</a>
+                    <a href="#how-it-works" data-pt="Como Funciona" data-en="How It Works">Como Funciona</a>
+                    <a href="#download" data-pt="Download" data-en="Download">Download</a>
+                </div>
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span data-pt="Proteja suas crianças de" data-en="Protect your children from">Proteja suas crianças de</span>
+                    <span class="highlight" data-pt="chamadas indesejadas" data-en="unwanted calls">chamadas indesejadas</span>
+                </h1>                <p class="hero-description" data-pt="SafeCallKids bloqueia automaticamente todas as chamadas de números que não estão na lista de contatos, garantindo que apenas pessoas conhecidas possam ligar para seus filhos." data-en="SafeCallKids automatically blocks all calls from numbers not in the contact list, ensuring only known people can call your children.">
+                    SafeCallKids bloqueia automaticamente todas as chamadas de números que não estão na lista de contatos, garantindo que apenas pessoas conhecidas possam ligar para seus filhos.
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" id="playstore-btn">
+                        <i class="fab fa-google-play"></i>
+                        <span data-pt="Em breve no Google Play" data-en="Coming soon to Google Play">Em breve no Google Play</span>
+                    </button>
+                    <button class="btn btn-secondary" id="apk-download-btn">
+                        <i class="fas fa-download"></i>
+                        <span data-pt="Download APK Direto" data-en="Direct APK Download">Download APK Direto</span>
+                    </button>
+                </div>
+            </div>            <div class="hero-image">
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <img src="assets/logos/sfc r.jpg" alt="SafeCallKids App Interface" class="app-screenshot">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-pt="Funcionalidades Principais" data-en="Key Features">Funcionalidades Principais</h2>
+                <p data-pt="Proteção completa e fácil de usar para manter suas crianças seguras" data-en="Complete and easy-to-use protection to keep your children safe">Proteção completa e fácil de usar para manter suas crianças seguras</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 data-pt="Bloqueio Automático" data-en="Automatic Blocking">Bloqueio Automático</h3>
+                    <p data-pt="Bloqueia automaticamente todas as chamadas de números desconhecidos, permitindo apenas contatos salvos." data-en="Automatically blocks all calls from unknown numbers, allowing only saved contacts.">Bloqueia automaticamente todas as chamadas de números desconhecidos, permitindo apenas contatos salvos.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>                    <h3 data-pt="Lista de Contatos Segura" data-en="Safe Contact List">Lista de Contatos Segura</h3>
+                    <p data-pt="Gerencie facilmente quem pode ligar para seus filhos através de uma interface simples e intuitiva." data-en="Easily manage who can call your children through a simple and intuitive interface.">Gerencie facilmente quem pode ligar para seus filhos através de uma interface simples e intuitiva.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 data-pt="Relatórios em Tempo Real" data-en="Real-time Reports">Relatórios em Tempo Real</h3>
+                    <p data-pt="Veja quantas chamadas foram bloqueadas e de quais números, mantendo você sempre informado." data-en="See how many calls were blocked and from which numbers, keeping you always informed.">Veja quantas chamadas foram bloqueadas e de quais números, mantendo você sempre informado.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 data-pt="Fácil de Usar" data-en="Easy to Use">Fácil de Usar</h3>
+                    <p data-pt="Interface simples e amigável, perfeita para pais que querem proteção sem complicações." data-en="Simple and friendly interface, perfect for parents who want protection without complications.">Interface simples e amigável, perfeita para pais que querem proteção sem complicações.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell-slash"></i>
+                    </div>
+                    <h3 data-pt="Bloqueio Silencioso" data-en="Silent Blocking">Bloqueio Silencioso</h3>
+                    <p data-pt="As chamadas são bloqueadas silenciosamente, sem incomodar a criança ou interromper suas atividades." data-en="Calls are blocked silently, without bothering the child or interrupting their activities.">As chamadas são bloqueadas silenciosamente, sem incomodar a criança ou interromper suas atividades.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 data-pt="Tranquilidade para Pais" data-en="Peace of Mind for Parents">Tranquilidade para Pais</h3>
+                    <p data-pt="Tenha a certeza de que seus filhos estão protegidos de chamadas de estranhos e potenciais perigos." data-en="Rest assured that your children are protected from calls from strangers and potential dangers.">Tenha a certeza de que seus filhos estão protegidos de chamadas de estranhos e potenciais perigos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-pt="Como Funciona" data-en="How It Works">Como Funciona</h2>
+                <p data-pt="Três passos simples para proteger seus filhos" data-en="Three simple steps to protect your children">Três passos simples para proteger seus filhos</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 data-pt="Instale o App" data-en="Install the App">Instale o App</h3>
+                        <p data-pt="Baixe e instale o SafeCallKids no dispositivo da criança em segundos." data-en="Download and install SafeCallKids on the child's device in seconds.">Baixe e instale o SafeCallKids no dispositivo da criança em segundos.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 data-pt="Configure os Contatos" data-en="Set Up Contacts">Configure os Contatos</h3>
+                        <p data-pt="Adicione os números de telefone das pessoas que podem ligar para a criança." data-en="Add the phone numbers of people who can call the child.">Adicione os números de telefone das pessoas que podem ligar para a criança.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 data-pt="Proteção Ativa" data-en="Active Protection">Proteção Ativa</h3>
+                        <p data-pt="O app bloqueia automaticamente todas as chamadas de números não guardados na lista de contatos." data-en="The app automatically blocks all calls from unauthorized numbers.">O app bloqueia automaticamente todas as chamadas de números não autorizados.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="statistics">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-label" data-pt="Crianças Protegidas" data-en="Children Protected">Crianças Protegidas</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">1M+</div>
+                    <div class="stat-label" data-pt="Chamadas Bloqueadas" data-en="Calls Blocked">Chamadas Bloqueadas</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label" data-pt="Taxa de Eficácia" data-en="Effectiveness Rate">Taxa de Eficácia</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">4.8★</div>
+                    <div class="stat-label" data-pt="Avaliação dos Pais" data-en="Parent Rating">Avaliação dos Pais</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="download" class="download">
+        <div class="container">
+            <div class="download-content">
+                <h2 data-pt="Proteja seus filhos hoje mesmo" data-en="Protect your children today">Proteja seus filhos hoje mesmo</h2>
+                <p data-pt="Baixe o SafeCallKids e tenha tranquilidade sabendo que seus filhos estão seguros." data-en="Download SafeCallKids and have peace of mind knowing your children are safe.">Baixe o SafeCallKids e tenha tranquilidade sabendo que seus filhos estão seguros.</p>                <div class="download-buttons">
+                    <button class="btn btn-primary" id="playstore-download">
+                        <i class="fab fa-google-play"></i>
+                        <div>
+                            <small data-pt="Em breve no" data-en="Coming soon to">Em breve no</small>
+                            <span>Google Play</span>
+                        </div>
+                    </button>
+                    <button class="btn btn-primary" id="apk-direct-download">
+                        <i class="fas fa-download"></i>
+                        <div>
+                            <small data-pt="Download" data-en="Download">Download</small>
+                            <span data-pt="APK Direto" data-en="Direct APK">APK Direto</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="assets/logos/safecallkids.jpg" alt="SafeCallKids" class="logo">
+                    <span class="logo-text">SafeCallKids</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#" data-pt="Privacidade" data-en="Privacy">Privacidade</a>
+                    <a href="#" data-pt="Termos" data-en="Terms">Termos</a>
+                    <a href="#" data-pt="Suporte" data-en="Support">Suporte</a>
+                    <a href="#" data-pt="Contato" data-en="Contact">Contato</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 SafeCallKids. <span data-pt="Todos os direitos reservados." data-en="All rights reserved.">Todos os direitos reservados.</span></p>            </div>
+        </div>
+    </footer>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-pt="Upload da APK para Firebase" data-en="Upload APK to Firebase">Upload da APK para Firebase</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <p data-pt="Arraste o arquivo APK aqui ou clique para selecionar" data-en="Drag APK file here or click to select">Arraste o arquivo APK aqui ou clique para selecionar</p>
+                    <label for="apkFile" class="sr-only" data-pt="Selecionar arquivo APK" data-en="Select APK file">Selecionar arquivo APK</label>
+                    <input type="file" id="apkFile" accept=".apk" class="hidden-input" title="Selecionar arquivo APK para upload" aria-label="Selecionar arquivo APK para upload">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('apkFile').click()" title="Abrir seletor de arquivos">
+                        <i class="fas fa-folder-open"></i>
+                        <span data-pt="Selecionar Arquivo" data-en="Select File">Selecionar Arquivo</span>
+                    </button>
+                </div>
+                <div class="upload-progress hidden" id="uploadProgress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">0%</p>
+                </div>
+                <div class="upload-success hidden" id="uploadSuccess">
+                    <i class="fas fa-check-circle"></i>
+                    <p data-pt="Upload realizado com sucesso!" data-en="Upload completed successfully!">Upload realizado com sucesso!</p>                    <div class="download-link">
+                        <label for="downloadUrl" data-pt="Link de download:" data-en="Download link:">Link de download:</label>
+                        <input type="text" id="downloadUrl" readonly title="Link de download da APK" aria-label="Link de download da APK gerado">
+                        <button type="button" class="btn btn-primary" onclick="copyDownloadLink()" title="Copiar link de download">
+                            <i class="fas fa-copy"></i>
+                            <span data-pt="Copiar Link" data-en="Copy Link">Copiar Link</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    <script src="safecallkids-v9.js"></script>
+</body>
+</html>

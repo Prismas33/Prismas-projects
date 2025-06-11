@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SafeCallKids - Protegendo Crianças de Chamadas Indesejadas</title>
-    <meta name="description" content="SafeCallKids protege suas crianças bloqueando chamadas de números desconhecidos. Apenas contatos salvos podem ligar.">
-    <link rel="icon" href="assets/logos/favicon.svg" type="image/svg+xml">
+    <title>SafeCallKids - Protegendo Crianças de Chamadas Indesejadas</title>    <meta name="description" content="SafeCallKids protege suas crianças bloqueando chamadas de números desconhecidos. Apenas contatos salvos podem ligar.">
+    <link rel="icon" href="assets/Safecallkids/safecallkids-favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="assets/Safecallkids/safecallkids-favicon.png">
     <link rel="stylesheet" href="safecallkids.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <!-- Language Switcher -->
-    <div class="language-switcher">
-        <button onclick="switchLanguage('pt')" class="lang-btn active" data-lang="pt">PT</button>
-        <button onclick="switchLanguage('en')" class="lang-btn" data-lang="en">EN</button>
+    <div class="language-switcher">        <button class="lang-btn active" data-lang="pt">PT</button>
+        <button class="lang-btn" data-lang="en">EN</button>
     </div>
 
     <!-- Header -->
@@ -403,7 +402,7 @@
                 <p>Esforçamo-nos para manter o website disponível 24/7, mas não garantimos disponibilidade contínua.</p>
                 
                 <h4>5. Limitação de Responsabilidade</h4>
-                <p>A Prismas 33 não se responsabiliza por danos diretos, indiretos, incidentais ou consequenciais.</p>
+                <p>A Prismas33 não se responsabiliza por danos diretos, indiretos, incidentais ou consequenciais.</p>
                 
                 <h4>6. Modificações</h4>
                 <p>Reservamo-nos o direito de modificar estes termos a qualquer momento.</p>
@@ -414,48 +413,7 @@
                 <h4>8. Contacto</h4>
                 <p>Para questões relacionadas com estes termos, contacte-nos através do email: legal@prismas33.com</p>
             </div>
-        </div>
-    </div>    <!-- Contact Modal -->
-    <div id="contactModal" class="modal contact-modal">
-        <div class="modal-content">
-            <span class="close" id="closeContact">&times;</span>
-            <div class="modal-header">
-                <div class="modal-icon">
-                    <i class="fas fa-envelope"></i>
-                </div>
-                <h3>Entre em Contacto</h3>
-            </div>
-            <div class="contact-content">
-                <p>Envie-nos uma mensagem e entraremos em contacto o mais breve possível.</p>
-                <form id="contactForm" onsubmit="handleContactSubmit(event)">
-                    <div class="form-group">
-                        <label for="contactName">Nome *</label>
-                        <input type="text" id="contactName" name="name" placeholder="O seu nome completo" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="contactEmail">Email *</label>
-                        <input type="email" id="contactEmail" name="email" placeholder="o-seu@email.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="contactSubject">Assunto *</label>
-                        <input type="text" id="contactSubject" name="subject" placeholder="Assunto da mensagem" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="contactMessage">Mensagem *</label>
-                        <textarea id="contactMessage" name="message" placeholder="Escreva a sua mensagem aqui..." rows="4" required></textarea>
-                    </div>
-                    <button type="submit" id="contactSubmitBtn" class="submit-btn">
-                        <i class="fas fa-paper-plane"></i>
-                        Enviar Mensagem
-                    </button>
-                </form>
-                <div id="contactSuccessMessage" class="success-message hidden">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Mensagem enviada com sucesso!</span>
-                </div>
-            </div>
-        </div>
-    </div>
+        </div>    </div>
 
     <!-- Footer -->
     <footer class="footer">

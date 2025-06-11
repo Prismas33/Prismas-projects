@@ -330,8 +330,20 @@
                 <h2 class="section-title">Coming Soon</h2>
                 <p class="section-subtitle">Aplicativos inovadores em desenvolvimento</p>
             </div>
-            
-            <div class="apps-grid">
+              <div class="apps-grid">
+                <!-- SafeCall Kids - PRIMEIRA APLICAÇÃO DISPONÍVEL -->
+                <div class="app-card" data-app="safecallkids">
+                    <div class="app-icon">
+                        <i class="fas fa-shield-heart"></i>
+                    </div>
+                    <h3 class="app-title">SafeCall Kids</h3>
+                    <p class="app-description">App de segurança para crianças: Bloqueio de chamadas de números que não estão na lista de contactos.</p>
+                    <button class="available-btn" onclick="window.open('safecallkids-clean.html', '_blank')">
+                        <i class="fas fa-external-link-alt"></i>
+                        Disponível Agora
+                    </button>
+                </div>
+                
                 <!-- Nexus 5 -->
                 <div class="app-card" data-app="nexus5">
                     <div class="app-icon">
@@ -379,19 +391,6 @@
                     <h3 class="app-title">DocFlow 4</h3>
                     <p class="app-description">Conversor PDF → Word perfeito. Edite sem erros.</p>
                     <button class="notify-btn" onclick="openNotifyModal('docflow4')">
-                        <i class="fas fa-bell"></i>
-                        Notify Me
-                    </button>
-                </div>
-                
-                <!-- SafeCall Kids -->
-                <div class="app-card" data-app="safecallkids">
-                    <div class="app-icon">
-                        <i class="fas fa-shield-heart"></i>
-                    </div>
-                    <h3 class="app-title">SafeCall Kids</h3>
-                    <p class="app-description">App de segurança para crianças: Bloqueio de chamadas de números que não estão na lista de contactos.</p>
-                    <button class="notify-btn" onclick="openNotifyModal('safecallkids')">
                         <i class="fas fa-bell"></i>
                         Notify Me
                     </button>
@@ -511,7 +510,37 @@
                     </div>
                 </div>
             </div>
-        </div>    </footer>    <!-- JavaScript -->    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+        </div>    </footer>    <!-- JavaScript -->
+    <!-- Firebase SDK v9+ -->
+    <script type="module">
+        // Import Firebase v9+ modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+        import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAtFXpS-zN3tPuqNM6xGhtgMDy0FhUvlhI",
+            authDomain: "prismas33-1914c.firebaseapp.com", 
+            projectId: "prismas33-1914c",
+            storageBucket: "prismas33-1914c.firebasestorage.app",
+            messagingSenderId: "951007316625",
+            appId: "1:951007316625:web:f16a9e12e8df0c26b3ad15"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Make Firebase available globally
+        window.firebaseApp = app;
+        window.firestoreDb = db;
+        window.firestoreCollection = collection;
+        window.firestoreAddDoc = addDoc;
+        window.firestoreServerTimestamp = serverTimestamp;
+
+        console.log('🔥 Firebase inicializado com sucesso');
+    </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="script.js"></script>
     <script src="language-switcher.js"></script>
 </body>

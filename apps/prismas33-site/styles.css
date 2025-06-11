@@ -856,6 +856,28 @@ body {
     transform: translateY(-2px);
 }
 
+.available-btn {
+    background: linear-gradient(135deg, #27AE60, #2ECC71);
+    border: 2px solid #27AE60;
+    color: white;
+    padding: 12px 25px;
+    border-radius: var(--border-radius);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+}
+
+.available-btn:hover {
+    background: linear-gradient(135deg, #229954, #27AE60);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+}
+
 /* Modal */
 .modal {
     display: none;

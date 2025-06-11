@@ -1086,7 +1086,9 @@ function handleNotifySubmit(event) {
     
     const email = document.getElementById('emailInput').value;
     const appName = document.getElementById('appName').value;
-    const form = document.getElementById('notifyForm');    const successMessage = document.getElementById('successMessage');
+    const form = document.getElementById('notifyForm');
+    const successMessage = document.getElementById('successMessage');
+    const submitBtn = form.querySelector('button[type="submit"]');
     
     // Check if marketing cookies are accepted
     if (cookieManager && !cookieManager.cookieConsent.marketing) {
@@ -1096,26 +1098,103 @@ function handleNotifySubmit(event) {
         return;
     }
     
-    // Simulate API call
-    setTimeout(() => {
-        if (form) form.style.display = 'none';
-        if (successMessage) successMessage.classList.remove('hidden');
+    // Show loading state
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+    }
+    
+    // Try to save to Firebase Firestore
+    if (window.firestoreDb && window.firestoreCollection && window.firestoreAddDoc && window.firestoreServerTimestamp) {
+        const notificationsRef = window.firestoreCollection(window.firestoreDb, 'notifications');
         
-        // Store notification request
+        const notificationData = {
+            email: email,
+            appName: appName,
+            timestamp: window.firestoreServerTimestamp(),
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            referrer: document.referrer || 'direct',
+            status: 'pending'
+        };
+        
+        window.firestoreAddDoc(notificationsRef, notificationData)
+            .then((docRef) => {
+                console.log('✅ Notificação salva no Firestore com ID:', docRef.id);
+                
+                // Also store locally as backup
+                const notifications = JSON.parse(localStorage.getItem('prismas33_notifications') || '[]');
+                notifications.push({
+                    id: docRef.id,
+                    email: email,
+                    app: appName,
+                    timestamp: new Date().toISOString(),
+                    saved_to_firebase: true
+                });
+                localStorage.setItem('prismas33_notifications', JSON.stringify(notifications));
+                
+                // Show success
+                showSubmissionSuccess(form, successMessage, submitBtn);
+            })
+            .catch((error) => {
+                console.error('❌ Erro ao salvar no Firestore:', error);
+                
+                // Fallback to localStorage only
+                const notifications = JSON.parse(localStorage.getItem('prismas33_notifications') || '[]');
+                notifications.push({
+                    email: email,
+                    app: appName,
+                    timestamp: new Date().toISOString(),
+                    saved_to_firebase: false,
+                    error: error.message
+                });
+                localStorage.setItem('prismas33_notifications', JSON.stringify(notifications));
+                
+                // Show success anyway (user doesn't need to know about technical issues)
+                showSubmissionSuccess(form, successMessage, submitBtn);
+            });
+    } else {
+        console.warn('⚠️ Firebase não disponível, salvando apenas localmente');
+        
+        // Fallback to localStorage only
         const notifications = JSON.parse(localStorage.getItem('prismas33_notifications') || '[]');
         notifications.push({
             email: email,
             app: appName,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            saved_to_firebase: false,
+            error: 'Firebase not available'
         });
         localStorage.setItem('prismas33_notifications', JSON.stringify(notifications));
-          setTimeout(() => {
-            closeNotifyModal();
-            if (cookieManager) {
-                cookieManager.showNotification(i18n ? i18n.translate('notificationSuccess') : 'Notificação registada com sucesso!', 'success');
-            }
-        }, 2000);
-    }, 1000);
+        
+        // Show success
+        setTimeout(() => {
+            showSubmissionSuccess(form, successMessage, submitBtn);
+        }, 1000);
+    }
+}
+
+function showSubmissionSuccess(form, successMessage, submitBtn) {
+    if (form) form.style.display = 'none';
+    if (successMessage) successMessage.classList.remove('hidden');
+    
+    setTimeout(() => {
+        closeNotifyModal();
+        if (cookieManager) {
+            cookieManager.showNotification(i18n ? i18n.translate('notificationSuccess') : 'Notificação registada com sucesso!', 'success');
+        }
+        
+        // Reset form for next use
+        if (form) {
+            form.style.display = 'block';
+            form.reset();
+        }
+        if (successMessage) successMessage.classList.add('hidden');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Notificar-me';
+        }
+    }, 2000);
 }
 
 function showComingSoon() {

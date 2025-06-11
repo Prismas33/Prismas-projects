@@ -489,9 +489,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (marketingCookies) {
         marketingCookies.checked = localStorage.getItem('marketingCookies') === 'true';
     }
-    
-    // Show cookie banner if needed
+      // Show cookie banner if needed
     showCookieBanner();
+    
+    // Initialize SafeCallKids App
+    window.safeCallKidsApp = new SafeCallKids();
 });
 
 // Additional CSS for mobile menu and animations (injected via JavaScript)
