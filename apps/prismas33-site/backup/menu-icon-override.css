@@ -1,0 +1,25 @@
+/* Estilos específicos para corrigir o problema do ícone de menu */
+.mobile-menu-toggle i.fas.fa-bars {
+    /* Garantir que o ícone de hambúrguer seja sempre visível quando deve ser */
+    display: block !important;
+}
+
+.mobile-menu-toggle i.fas.fa-times {
+    /* Só mostrar o X quando o menu estiver aberto */
+    display: none;
+}
+
+.mobile-menu-overlay.active + header .mobile-menu-toggle i.fas.fa-bars {
+    /* Esconder o hambúrguer quando o menu está aberto */
+    display: none !important;
+}
+
+.mobile-menu-overlay.active + header .mobile-menu-toggle i.fas.fa-times {
+    /* Mostrar o X quando o menu está aberto */
+    display: block !important;
+}
+
+/* Estilização adicional para o ícone do menu */
+.mobile-menu-toggle i {
+    font-size: 20px !important;
+}
