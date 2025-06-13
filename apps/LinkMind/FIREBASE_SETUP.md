@@ -51,20 +51,26 @@ Edite o arquivo `.env` com as informações obtidas:
 
 ```env
 # Firebase Configuration (da etapa 5)
-FIREBASE_API_KEY=AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-FIREBASE_AUTH_DOMAIN=linkmind-xxxxx.firebaseapp.com
-FIREBASE_PROJECT_ID=linkmind-xxxxx
-FIREBASE_STORAGE_BUCKET=linkmind-xxxxx.appspot.com
-FIREBASE_MESSAGING_SENDER_ID=123456789012
-FIREBASE_APP_ID=1:123456789012:web:xxxxxxxxxxxxxxxxx
+FIREBASE_API_KEY=AIzaSyDw5Bb-NmvR18c-G-juXal0r1TPLpwgGGE
+FIREBASE_AUTH_DOMAIN=linkmind-94209.firebaseapp.com
+FIREBASE_PROJECT_ID=linkmind-94209
+FIREBASE_STORAGE_BUCKET=linkmind-94209.firebasestorage.app
+FIREBASE_MESSAGING_SENDER_ID=702458630922
+FIREBASE_APP_ID=1:702458630922:web:72f0750e78b33349ace0f3
+FIREBASE_MEASUREMENT_ID=G-0WE22YP9CV
 
 # Server Configuration
 PORT=3000
-SESSION_SECRET=uma_chave_muito_secreta_e_longa_aqui_123456
+SESSION_SECRET=your_secret_key_here
 
-# Firebase Admin SDK (da etapa 4 - deve coincidir com serviceAccountKey.json)
-FIREBASE_DATABASE_URL=https://linkmind-xxxxx-default-rtdb.firebaseio.com
+# Firebase Admin SDK (da etapa 4)
+FIREBASE_DATABASE_URL=https://linkmind-94209-default-rtdb.firebaseio.com
 ```
+
+⚠️ **IMPORTANTE**: 
+- As credenciais acima já estão configuradas para o projeto `linkmind-94209`
+- O arquivo `firebase-config.js` automaticamente carrega essas variáveis do servidor
+- Todas as páginas HTML já incluem os scripts Firebase necessários
 
 ### 7. Configurar Regras de Segurança do Firestore
 
@@ -100,7 +106,16 @@ Para notificações push:
 FIREBASE_SERVER_KEY=sua_server_key_aqui
 ```
 
-### 9. Testar a Configuração
+### 9. Arquivos de Configuração Criados
+
+Os seguintes arquivos foram configurados automaticamente:
+
+- **`public/js/firebase-config.js`**: Configuração principal do Firebase para o frontend
+- **`public/js/firebase-test.js`**: Script de teste para verificar a configuração
+- **`.env`**: Variáveis de ambiente com credenciais Firebase
+- **`server.js`**: Atualizado com middleware para servir configurações Firebase
+
+### 10. Testar a Configuração
 
 Execute os comandos:
 
@@ -115,7 +130,12 @@ Acesse `http://localhost:3000` e teste:
 3. Criar uma ideia
 4. Buscar ideias
 
-### 10. Verificar no Console Firebase
+**Para testar a configuração Firebase:**
+- Abra o Developer Tools (F12)
+- Vá para a aba Console  
+- Você deve ver mensagens de sucesso da inicialização do Firebase
+
+### 11. Verificar no Console Firebase
 
 No console Firebase, verifique se:
 - Usuários aparecem em "Authentication" > "Users"

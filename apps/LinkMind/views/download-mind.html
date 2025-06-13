@@ -2,10 +2,12 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LinkMind - Buscar Ideias</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>LinkMind - Buscar Ideias</title>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
     <meta name="theme-color" content="#4f46e5">
 </head>
 <body>
@@ -29,9 +31,9 @@
                         <input type="text" id="searchInput" placeholder="Digite para buscar suas ideias..." autocomplete="off">
                         <button id="searchBtn" class="search-btn">🔍</button>
                     </div>
-                    
-                    <div class="search-filters">
-                        <select id="sortBy">
+                      <div class="search-filters">
+                        <label for="sortBy" class="sr-only">Ordenar por</label>
+                        <select id="sortBy" title="Ordenar ideias por"  aria-label="Ordenar ideias por">
                             <option value="recent">Mais Recentes</option>
                             <option value="oldest">Mais Antigas</option>
                             <option value="title">Por Título</option>
@@ -55,6 +57,15 @@
     </div>
 
     <script src="/js/app.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="/js/firebase-config.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('searchInput');
