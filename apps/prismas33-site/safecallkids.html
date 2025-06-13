@@ -51,16 +51,6 @@
                     <span class="logo-text">SafeCallKids</span>
                 </div>
                 <div class="mobile-menu-actions">
-                    <div class="mobile-lang-buttons-header">
-                        <button class="mobile-lang-btn active" data-lang="pt" type="button">
-                            <i class="fas fa-flag"></i>
-                            Português
-                        </button>
-                        <button class="mobile-lang-btn" data-lang="en" type="button">
-                            <i class="fas fa-flag"></i>
-                            English
-                        </button>
-                    </div>
                     <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Fechar menu" title="Fechar menu">
                         <i class="fas fa-times" aria-hidden="true"></i>
                     </button>
@@ -84,8 +74,17 @@
                     <i class="fas fa-download"></i>
                     <span data-pt="Download" data-en="Download">Download</span>
                 </a>
+                <div class="mobile-lang-buttons-footer">
+                    <button class="mobile-lang-btn active" data-lang="pt" type="button">
+                        <i class="fas fa-flag"></i>
+                        Português
+                    </button>
+                    <button class="mobile-lang-btn" data-lang="en" type="button">
+                        <i class="fas fa-flag"></i>
+                        English
+                    </button>
+                </div>
             </div>
-            
             <!-- Idioma já está no topo do menu -->
         </div>
     </div>
@@ -576,15 +575,14 @@
                             <p>Utilizados para personalizar anúncios e conteúdo.</p>
                         </div>
                     </div>
-                </div>
-                
+                </div>                
                 <div class="cookie-actions">
                     <button class="cookie-btn secondary" onclick="rejectAllCookies()">Rejeitar Opcionais</button>
                     <button class="cookie-btn primary" onclick="saveCookiePreferences()">Guardar Preferências</button>
                 </div>
             </div>
-        </div>
-    </div>    <script src="safecallkids.js"></script>
+        </div>    </div>    
+    <script src="safecallkids.js"></script>
     <script src="menu.js"></script>
     <script src="language-switcher.js"></script>
     <script src="pt-pt-corrections.js"></script>

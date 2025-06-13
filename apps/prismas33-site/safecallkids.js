@@ -136,6 +136,7 @@ class SafeCallKids {
         }
 
         // Mobile overlay menu logic
+        /*
         const mobileOverlay = document.getElementById('mobileMenuOverlay');
         const mobileMenuClose = document.getElementById('mobileMenuClose');
         const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
@@ -158,8 +159,6 @@ class SafeCallKids {
             mobileMenuClose.addEventListener('click', () => {
                 mobileOverlay.classList.remove('active');
                 document.body.style.overflow = '';
-                menuToggle.classList.remove('active');
-                menuToggle.querySelector('i').className = 'fas fa-bars';
             });
         }
         // Close on link click
@@ -231,6 +230,7 @@ class SafeCallKids {
             });
             origSwitchLanguage(lang);
         };
+        */
     }
 
     setupAnimations() {
