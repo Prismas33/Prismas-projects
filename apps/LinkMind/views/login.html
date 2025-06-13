@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkMind - Login</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-card">
+            <div class="logo">
+                <h1>🧠 LinkMind</h1>
+                <p>Conecte suas ideias</p>
+            </div>
+
+            <form id="authForm" class="auth-form">
+                <div class="form-group">
+                    <input type="text" id="name" placeholder="Nome completo" style="display: none;">
+                </div>
+                
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="Email" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Senha" required>
+                </div>
+                
+                <button type="submit" id="submitBtn" class="btn btn-primary">
+                    Entrar
+                </button>
+            </form>
+
+            <div class="auth-switch">
+                <p>Não tem conta? <a href="#" id="switchMode">Registrar-se</a></p>
+            </div>
+
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        // Lógica específica da página de login
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('authForm');
+            const nameField = document.getElementById('name');
+            const emailField = document.getElementById('email');
+            const passwordField = document.getElementById('password');
+            const submitBtn = document.getElementById('submitBtn');
+            const switchModeLink = document.getElementById('switchMode');
+            const messageDiv = document.getElementById('message');
+            
+            let isLoginMode = true;
+
+            // Alternar entre login e registro
+            switchModeLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                isLoginMode = !isLoginMode;
+                
+                if (isLoginMode) {
+                    nameField.style.display = 'none';
+                    nameField.required = false;
+                    submitBtn.textContent = 'Entrar';
+                    switchModeLink.textContent = 'Registrar-se';
+                    document.querySelector('.auth-switch p').innerHTML = 'Não tem conta? <a href="#" id="switchMode">Registrar-se</a>';
+                } else {
+                    nameField.style.display = 'block';
+                    nameField.required = true;
+                    submitBtn.textContent = 'Registrar';
+                    document.querySelector('.auth-switch p').innerHTML = 'Já tem conta? <a href="#" id="switchMode">Entrar</a>';
+                }
+                
+                // Re-adicionar event listener após mudança de innerHTML
+                document.getElementById('switchMode').addEventListener('click', arguments.callee);
+                messageDiv.textContent = '';
+            });
+
+            // Submissão do formulário
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    email: emailField.value,
+                    password: passwordField.value
+                };
+
+                if (!isLoginMode) {
+                    formData.name = nameField.value;
+                }
+
+                const endpoint = isLoginMode ? '/api/login' : '/api/register';
+                
+                try {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Processando...';
+                    
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showMessage(data.message, 'success');
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 1000);
+                    } else {
+                        showMessage(data.error, 'error');
+                    }
+                } catch (error) {
+                    showMessage('Erro de conexão. Tente novamente.', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = isLoginMode ? 'Entrar' : 'Registrar';
+                }
+            });
+
+            function showMessage(text, type) {
+                messageDiv.textContent = text;
+                messageDiv.className = `message ${type}`;
+            }
+        });
+    </script>
+</body>
+</html>

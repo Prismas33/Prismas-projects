@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkMind - Dashboard</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1>🧠 LinkMind</h1>
+                <div class="user-info">
+                    <span id="userName">Carregando...</span>
+                    <button id="logoutBtn" class="btn btn-secondary">Sair</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <div class="welcome-section">
+                <h2>Bem-vindo de volta!</h2>
+                <p>Organize suas ideias e mantenha sua mente conectada.</p>
+            </div>
+
+            <div class="actions-grid">
+                <div class="action-card">
+                    <div class="action-icon">💡</div>
+                    <h3>Adicionar Ideia</h3>
+                    <p>Capture uma nova inspiração ou projeto</p>
+                    <a href="/upload-mind" class="btn btn-primary">Nova Ideia</a>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon">🔍</div>
+                    <h3>Buscar Ideias</h3>
+                    <p>Encontre suas anotações e projetos salvos</p>
+                    <a href="/download-mind" class="btn btn-primary">Buscar</a>
+                </div>
+            </div>
+
+            <div class="recent-section">
+                <h3>Ideias Recentes</h3>
+                <div id="recentIdeas" class="ideas-list">
+                    <div class="loading">Carregando ideias...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const userNameElement = document.getElementById('userName');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const recentIdeasContainer = document.getElementById('recentIdeas');
+
+            // Carregar dados do usuário
+            try {
+                const userResponse = await fetch('/api/user');
+                if (userResponse.ok) {
+                    const userData = await userResponse.json();
+                    userNameElement.textContent = userData.name;
+                } else {
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados do usuário:', error);
+                window.location.href = '/';
+            }
+
+            // Carregar ideias recentes
+            try {
+                const ideasResponse = await fetch('/api/ideas?limit=5');
+                if (ideasResponse.ok) {
+                    const data = await ideasResponse.json();
+                    displayRecentIdeas(data.ideas);
+                } else {
+                    recentIdeasContainer.innerHTML = '<p>Erro ao carregar ideias recentes</p>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar ideias:', error);
+                recentIdeasContainer.innerHTML = '<p>Erro ao carregar ideias recentes</p>';
+            }
+
+            // Logout
+            logoutBtn.addEventListener('click', async function() {
+                try {
+                    const response = await fetch('/api/logout', { method: 'POST' });
+                    if (response.ok) {
+                        window.location.href = '/';
+                    }
+                } catch (error) {
+                    console.error('Erro ao fazer logout:', error);
+                }
+            });
+
+            function displayRecentIdeas(ideas) {
+                if (ideas.length === 0) {
+                    recentIdeasContainer.innerHTML = '<p class="no-ideas">Nenhuma ideia encontrada. Que tal criar a primeira?</p>';
+                    return;
+                }
+
+                const ideasHTML = ideas.slice(0, 3).map(idea => `
+                    <div class="idea-item">
+                        <h4>${escapeHtml(idea.title)}</h4>
+                        <p>${escapeHtml(idea.description.substring(0, 100))}${idea.description.length > 100 ? '...' : ''}</p>
+                        <small>Criado em: ${new Date(idea.createdAt).toLocaleDateString('pt-BR')}</small>
+                    </div>
+                `).join('');
+
+                recentIdeasContainer.innerHTML = ideasHTML;
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        });
+    </script>
+</body>
+</html>

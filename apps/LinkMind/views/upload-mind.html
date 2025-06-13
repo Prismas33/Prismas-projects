@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkMind - Nova Ideia</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1><a href="/dashboard">🧠 LinkMind</a></h1>
+                <nav>
+                    <a href="/dashboard" class="btn btn-secondary">← Voltar</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="upload-mind">
+            <div class="form-container">
+                <h2>💡 Nova Ideia</h2>
+                <p>Capture sua inspiração e organize seus pensamentos</p>
+
+                <form id="ideaForm" class="idea-form">
+                    <div class="form-group">
+                        <label for="title">Quem/O quê</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="title" name="title" placeholder="Digite o título da sua ideia..." required>
+                            <div id="suggestions" class="suggestions-list"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="startDate">Data de Início (opcional)</label>
+                            <input type="date" id="startDate" name="startDate">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="endDate">Data de Fim (opcional)</label>
+                            <input type="date" id="endDate" name="endDate">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Descrição</label>
+                        <textarea id="description" name="description" placeholder="Descreva sua ideia em detalhes..." rows="6" required></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            💾 Salvar Ideia
+                        </button>
+                        
+                        <button type="button" id="notificationBtn" class="btn btn-outline">
+                            🔔 Criar Notificação
+                        </button>
+                    </div>
+                </form>
+
+                <div id="message" class="message"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('ideaForm');
+            const titleInput = document.getElementById('title');
+            const suggestionsContainer = document.getElementById('suggestions');
+            const messageDiv = document.getElementById('message');
+            const notificationBtn = document.getElementById('notificationBtn');
+            
+            let suggestions = [];
+            let debounceTimer;
+
+            // Carregar sugestões para autocomplete
+            async function loadSuggestions() {
+                try {
+                    const response = await fetch('/api/suggestions');
+                    if (response.ok) {
+                        const data = await response.json();
+                        suggestions = data.suggestions;
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar sugestões:', error);
+                }
+            }
+
+            // Filtrar e exibir sugestões
+            function showSuggestions(query) {
+                if (!query || query.length < 2) {
+                    suggestionsContainer.innerHTML = '';
+                    return;
+                }
+
+                const filtered = suggestions.filter(suggestion => 
+                    suggestion.toLowerCase().includes(query.toLowerCase())
+                ).slice(0, 5);
+
+                if (filtered.length === 0) {
+                    suggestionsContainer.innerHTML = '';
+                    return;
+                }
+
+                const suggestionsHTML = filtered.map(suggestion => 
+                    `<div class="suggestion-item" data-value="${escapeHtml(suggestion)}">${escapeHtml(suggestion)}</div>`
+                ).join('');
+
+                suggestionsContainer.innerHTML = suggestionsHTML;
+
+                // Adicionar event listeners para as sugestões
+                suggestionsContainer.querySelectorAll('.suggestion-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        titleInput.value = this.dataset.value;
+                        suggestionsContainer.innerHTML = '';
+                        titleInput.focus();
+                    });
+                });
+            }
+
+            // Autocomplete no campo título
+            titleInput.addEventListener('input', function() {
+                const query = this.value;
+                
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    showSuggestions(query);
+                }, 300);
+            });
+
+            // Ocultar sugestões quando clicar fora
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.autocomplete-container')) {
+                    suggestionsContainer.innerHTML = '';
+                }
+            });
+
+            // Submissão do formulário
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(form);
+                const ideaData = {
+                    title: formData.get('title'),
+                    description: formData.get('description'),
+                    startDate: formData.get('startDate') || null,
+                    endDate: formData.get('endDate') || null
+                };
+
+                try {
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Salvando...';
+
+                    const response = await fetch('/api/ideas', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(ideaData)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showMessage('Ideia salva com sucesso!', 'success');
+                        form.reset();
+                        // Recarregar sugestões
+                        await loadSuggestions();
+                    } else {
+                        showMessage(data.error, 'error');
+                    }
+                } catch (error) {
+                    showMessage('Erro ao salvar ideia. Tente novamente.', 'error');
+                } finally {
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '💾 Salvar Ideia';
+                }
+            });
+
+            // Botão de notificação
+            notificationBtn.addEventListener('click', function() {
+                if ('Notification' in window) {
+                    if (Notification.permission === 'granted') {
+                        createNotification();
+                    } else if (Notification.permission !== 'denied') {
+                        Notification.requestPermission().then(permission => {
+                            if (permission === 'granted') {
+                                createNotification();
+                            }
+                        });
+                    } else {
+                        showMessage('Notificações foram negadas. Habilite nas configurações do navegador.', 'error');
+                    }
+                } else {
+                    showMessage('Notificações não são suportadas neste navegador.', 'error');
+                }
+            });
+
+            function createNotification() {
+                const title = titleInput.value || 'Nova Ideia';
+                const description = document.getElementById('description').value || 'Sem descrição';
+                
+                new Notification(`LinkMind: ${title}`, {
+                    body: description.substring(0, 100) + (description.length > 100 ? '...' : ''),
+                    icon: '/images/icon-192.png',
+                    tag: 'linkmind-idea'
+                });
+                
+                showMessage('Notificação criada!', 'success');
+            }
+
+            function showMessage(text, type) {
+                messageDiv.textContent = text;
+                messageDiv.className = `message ${type}`;
+                
+                setTimeout(() => {
+                    messageDiv.textContent = '';
+                    messageDiv.className = 'message';
+                }, 5000);
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // Inicializar
+            loadSuggestions();
+        });
+    </script>
+</body>
+</html>
