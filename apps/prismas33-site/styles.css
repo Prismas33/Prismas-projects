@@ -1604,7 +1604,8 @@ input:disabled + .switch {
 }
 
 #available-apps {
-    margin-bottom: 0 !important;
+    margin-top: 0;
+    padding-top: 24px;
 }
 #coming-soon {
     padding-top: 0 !important;
@@ -2643,7 +2644,7 @@ input:disabled + .switch {
     }
     
     .grid-dots {
-        background-size: 80px 80px;
+               background-size: 80px 80px;
     }
     
     /* Simplify animations */

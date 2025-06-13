@@ -2332,6 +2332,7 @@ p, span, div, a, button,
         -webkit-text-size-adjust: 100%;
         -ms-text-size-adjust: 100%;
         text-size-adjust: 100%;
+        /* text-size-adjust is not supported in Firefox and Safari, use vendor prefixes */
     }
     
     /* Melhorar contraste em telas pequenas */
@@ -2523,4 +2524,9 @@ p, span, div, a, button,
 /* Remove qualquer fundo vermelho do overlay */
 .mobile-menu-overlay.active {
     background: rgba(0,0,0,0.45) !important;
+}
+
+/* Hide the close menu icon by default, show when needed via JS */
+#menuIconClose {
+    display: none;
 }
