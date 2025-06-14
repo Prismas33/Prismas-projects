@@ -1,12 +1,11 @@
-require('dotenv').config();
 const express = require('express');
 const serverless = require('serverless-http');
 const firebaseAdmin = require('firebase-admin');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+require('dotenv').config();
 
-// Lê o service account do JSON na variável de ambiente
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 if (!firebaseAdmin.apps.length) {
@@ -24,7 +23,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Cadastro
+// Rotas de autenticação
 app.post('/api/signup', async (req, res) => {
   const { email, password, displayName } = req.body;
   try {
@@ -37,7 +36,6 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
-// Login
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -45,15 +43,12 @@ app.post('/api/login', async (req, res) => {
     if (userSnap.empty) return res.status(400).json({ error: 'Usuário não encontrado.' });
     const userData = userSnap.docs[0].data();
     const userId = userSnap.docs[0].id;
-    // Simulação: senha não é salva, então login é sempre aceito
-    // Em produção, use Firebase Auth custom claims ou tokens
     res.status(200).json({ message: 'Login simulado', uid: userId });
   } catch (err) {
     res.status(400).json({ error: 'Usuário ou senha inválidos.' });
   }
 });
 
-// Dashboard (dados do usuário)
 app.get('/api/user/:uid', async (req, res) => {
   try {
     const userDoc = await db.collection('users').doc(req.params.uid).get();
@@ -64,7 +59,6 @@ app.get('/api/user/:uid', async (req, res) => {
   }
 });
 
-// Upload de ideia
 app.post('/api/ideas', async (req, res) => {
   const { quem, dataInicio, dataFim, descricao, uid } = req.body;
   try {
@@ -75,7 +69,6 @@ app.post('/api/ideas', async (req, res) => {
   }
 });
 
-// Busca de ideias
 app.get('/api/ideas', async (req, res) => {
   const { busca = '', filtro = '' } = req.query;
   try {
@@ -92,7 +85,6 @@ app.get('/api/ideas', async (req, res) => {
   }
 });
 
-// Autocomplete para "Quem/O quê"
 app.get('/api/autocomplete', async (req, res) => {
   const { query = '' } = req.query;
   try {

@@ -1,22 +1,20 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Dashboard from './components/Dashboard';
-import DownloadMind from './components/DownloadMind';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './components/Login';
-import Settings from './components/Settings';
+import Signup from './components/Signup';
+import Dashboard from './components/Dashboard';
 import UploadMind from './components/UploadMind';
+import DownloadMind from './components/DownloadMind';
 
 const App = () => {
   return (
-    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/download-mind" element={<DownloadMind />} />
         <Route path="/upload-mind" element={<UploadMind />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="*" element={<div>Página não encontrada</div>} />
+        <Route path="/download-mind" element={<DownloadMind />} />
       </Routes>
     </Router>
   );

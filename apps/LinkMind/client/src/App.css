@@ -1,0 +1,69 @@
+:root {
+  --azul-profundo: #2A3F9E;
+  --roxo-eletrico: #7B4BFF;
+  --prata: #C0C0C0;
+  --verde-floresta: #2E8B57;
+  --dourado: #FFD700;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f7f7fa;
+}
+
+.btn-primary {
+  background: var(--roxo-eletrico);
+  color: white;
+  border: none;
+  padding: 0.7em 1.5em;
+  border-radius: 5px;
+  margin: 0.5em 0.2em;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: var(--azul-profundo);
+  color: white;
+  border: none;
+  padding: 0.7em 1.5em;
+  border-radius: 5px;
+  margin: 0.5em 0.2em;
+  cursor: pointer;
+}
+
+.login-container, .signup-container, .dashboard-container, .upload-mind-container, .download-mind-container {
+  max-width: 350px;
+  margin: 2em auto;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #0001;
+  padding: 2em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 0.7em;
+  margin: 0.5em 0;
+  border: 1px solid var(--prata);
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+.profile-pic {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 1em;
+  border: 2px solid var(--dourado);
+}
+
+@media (max-width: 600px) {
+  .login-container, .signup-container, .dashboard-container, .upload-mind-container, .download-mind-container {
+    max-width: 98vw;
+    padding: 1em;
+  }
+}

@@ -1,93 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Dashboard.css'; // Crie este arquivo para os estilos ou importe o CSS global
+import { useNavigate, Link } from 'react-router-dom';
 
 const Dashboard = () => {
-  const [userName, setUserName] = useState('Carregando...');
-  const [recentIdeas, setRecentIdeas] = useState(null);
+  const [user, setUser] = useState(null);
+  const [profileUrl, setProfileUrl] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Carregar dados do usuário
-    fetch('/api/user', { credentials: 'include' })
-      .then(res => res.ok ? res.json() : Promise.reject())
-      .then(data => setUserName(data.name))
-      .catch(() => navigate('/login'));
-
-    // Carregar ideias recentes
-    fetch('/api/ideas?limit=5', { credentials: 'include' })
-      .then(res => res.ok ? res.json() : Promise.reject())
-      .then(data => setRecentIdeas(data.ideas))
-      .catch(() => setRecentIdeas([]));
+    // Simulação: buscar dados do usuário
+    const uid = localStorage.getItem('uid');
+    if (!uid) {
+      navigate('/');
+      return;
+    }
+    fetch(`http://localhost:3001/api/user/${uid}`)
+      .then(res => res.json())
+      .then(data => {
+        setUser(data);
+        setProfileUrl(data.profileUrl || 'https://www.gravatar.com/avatar?d=mp');
+      });
   }, [navigate]);
 
-  const handleLogout = async () => {
-    try {
-      const res = await fetch('/api/logout', { 
-        method: 'POST',
-        credentials: 'include'
-      });
-      if (res.ok) navigate('/login');
-    } catch (e) {
-      navigate('/login'); // Redirecionar mesmo em caso de erro
-    }
-  };
-
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
+  if (!user) return <div>Carregando...</div>;
 
   return (
-    <div className="container">
-      <header className="header">
-        <div className="header-content">
-          <h1>🧠 LinkMind</h1>
-          <div className="user-info">
-            <span>{userName}</span>
-            <button className="btn btn-secondary" onClick={handleLogout}>Sair</button>
-          </div>
-        </div>
-      </header>
-      <main className="dashboard">
-        <div className="welcome-section">
-          <h2>Bem-vindo de volta!</h2>
-          <p>Organize suas ideias e mantenha sua mente conectada.</p>
-        </div>
-        <div className="actions-grid">
-          <div className="action-card">
-            <div className="action-icon">💡</div>
-            <h3>Adicionar Ideia</h3>
-            <p>Capture uma nova inspiração ou projeto</p>
-            <a href="/upload-mind" className="btn btn-primary">Nova Ideia</a>
-          </div>
-          <div className="action-card">
-            <div className="action-icon">🔍</div>
-            <h3>Buscar Ideias</h3>
-            <p>Encontre suas anotações e projetos salvos</p>
-            <a href="/download-mind" className="btn btn-primary">Buscar</a>
-          </div>
-        </div>
-        <div className="recent-section">
-          <h3>Ideias Recentes</h3>
-          <div className="ideas-list">
-            {recentIdeas === null ? (
-              <div className="loading">Carregando ideias...</div>
-            ) : recentIdeas.length === 0 ? (
-              <p className="no-ideas">Nenhuma ideia encontrada. Que tal criar a primeira?</p>
-            ) : (
-              recentIdeas.slice(0, 3).map((idea, idx) => (
-                <div className="idea-item" key={idx}>
-                  <h4 dangerouslySetInnerHTML={{ __html: escapeHtml(idea.title) }} />
-                  <p dangerouslySetInnerHTML={{ __html: escapeHtml(idea.description.substring(0, 100)) + (idea.description.length > 100 ? '...' : '') }} />
-                  <small>Criado em: {new Date(idea.createdAt).toLocaleDateString('pt-BR')}</small>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </main>
+    <div className="dashboard-container">
+      <h2>Bem-vindo, {user.displayName || user.email}!</h2>
+      <img src={profileUrl} alt="Foto de perfil" style={{ width: 80, borderRadius: '50%' }} />
+      <div style={{ margin: '2em 0' }}>
+        <Link to="/upload-mind"><button className="btn-primary">Adicionar Ideia</button></Link>
+        <Link to="/download-mind"><button className="btn-secondary" style={{ marginLeft: 10 }}>Buscar Ideia</button></Link>
+      </div>
     </div>
   );
 };
