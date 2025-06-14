@@ -3,7 +3,7 @@ import { useAuth } from "../../lib/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { buscarIdeias } from "../../lib/firebase/ideias";
-import { logoutUtilizador } from "../../lib/firebase/auth";
+import { logoutUtilizador, obterDadosUtilizador } from "../../lib/firebase/auth";
 import Link from "next/link";
 
 export default function DashboardPage() {
@@ -11,6 +11,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [ideias, setIdeias] = useState([]);
   const [carregandoIdeias, setCarregandoIdeias] = useState(true);
+  const [primeiroNome, setPrimeiroNome] = useState("");
 
   useEffect(() => {
     if (!loading && !user) {
@@ -21,8 +22,24 @@ export default function DashboardPage() {
   useEffect(() => {
     if (user) {
       carregarIdeias();
+      carregarPrimeiroNome();
     }
   }, [user]);
+
+  async function carregarPrimeiroNome() {
+    try {
+      const dados = await obterDadosUtilizador(user.uid);
+      if (dados?.nome) {
+        setPrimeiroNome(dados.nome.split(" ")[0]);
+      } else if (user.displayName) {
+        setPrimeiroNome(user.displayName.split(" ")[0]);
+      } else {
+        setPrimeiroNome("");
+      }
+    } catch {
+      setPrimeiroNome(user.displayName ? user.displayName.split(" ")[0] : "");
+    }
+  }
 
   async function carregarIdeias() {
     try {
@@ -68,7 +85,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-800">
-                  Olá, {user.displayName || "Utilizador"}! 👋
+                  Olá, {primeiroNome || "Utilizador"}! 👋
                 </h1>
                 <p className="text-gray-600">Bem-vindo ao seu espaço de ideias</p>
               </div>

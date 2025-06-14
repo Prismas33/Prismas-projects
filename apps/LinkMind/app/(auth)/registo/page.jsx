@@ -56,7 +56,7 @@ export default function RegistoPage() {
               value={nome} 
               onChange={e => setNome(e.target.value)} 
               required 
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
             />
           </div>
           

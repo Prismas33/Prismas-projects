@@ -7,6 +7,10 @@ import {
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "./config";
 
+function nomeParaIdFirestore(nome) {
+  return nome.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
+}
+
 export async function registarUtilizador(email, password, nome) {
   try {
     // Criar usuário com Firebase Auth
@@ -18,8 +22,9 @@ export async function registarUtilizador(email, password, nome) {
       displayName: nome
     });
     
-    // Salvar dados adicionais no Firestore
-    await setDoc(doc(db, "utilizadores", user.uid), {
+    // Salvar dados adicionais no Firestore, usando o nome como ID do documento
+    const nomeId = nomeParaIdFirestore(nome);
+    await setDoc(doc(db, "users", nomeId), {
       nome: nome,
       email: email,
       criadoEm: new Date(),

@@ -1,6 +1,5 @@
 import "../styles/globals.css";
 import { AuthProvider } from "../lib/context/AuthContext";
-import Navbar from "../components/Navbar";
 import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 
 export default function RootLayout({ children }) {
@@ -14,7 +13,6 @@ export default function RootLayout({ children }) {
       </head>
       <body className="min-h-screen bg-gray-50">
         <AuthProvider>
-          <Navbar />
           <ServiceWorkerRegister />
           {children}
         </AuthProvider>

@@ -3,22 +3,45 @@ import Link from "next/link";
 import { useAuth } from "../lib/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { logoutUtilizador, obterDadosUtilizador } from "../lib/firebase/auth";
 
 export default function HomePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [nome, setNome] = useState("");
+  const [logoutLoading, setLogoutLoading] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (mounted && !loading && user) {
-      router.push("/dashboard");
+    async function fetchNome() {
+      if (user) {
+        try {
+          const dados = await obterDadosUtilizador(user.uid);
+          setNome(dados?.nome || user.displayName || "");
+        } catch {
+          setNome(user.displayName || "");
+        }
+      } else {
+        setNome("");
+      }
     }
-  }, [user, loading, router, mounted]);
-    return (
+    if (mounted && !loading) fetchNome();
+  }, [user, loading, mounted]);
+
+  async function handleLogout() {
+    setLogoutLoading(true);
+    try {
+      await logoutUtilizador();
+      router.push("/");
+    } catch {}
+    setLogoutLoading(false);
+  }
+
+  return (
     <main style={{
       minHeight: '100vh',
       display: 'flex',
@@ -79,20 +102,33 @@ export default function HomePage() {
             LinkMind
           </span>
         </div>
-        <nav className="flex gap-3">
-          <Link
-            href="/registo"
-            className="rounded-full px-4 py-2 text-sm font-medium text-white/90 hover:text-white bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-all border border-white/10 shadow-lg"
-          >
-            Registar
-          </Link>
-          <Link
-            href="/login"
-            className="rounded-full px-4 py-2 text-sm font-medium bg-gradient-to-r from-[#7B4BFF] to-[#6C2BFF] hover:from-[#8B5AFF] hover:to-[#7C3BFF] text-white shadow-lg transition-all"
-          >
-            Login
-          </Link>
-        </nav>
+        {user && nome ? (
+          <div className="flex items-center gap-4">
+            <span className="text-white/90 font-medium">Bem-vindo, {nome}!</span>
+            <button
+              onClick={handleLogout}
+              disabled={logoutLoading}
+              className="rounded-full px-4 py-2 text-sm font-medium bg-gradient-to-r from-[#7B4BFF] to-[#6C2BFF] text-white shadow-lg transition-all disabled:opacity-60"
+            >
+              {logoutLoading ? "A sair..." : "Logout"}
+            </button>
+          </div>
+        ) : (
+          <nav className="flex gap-3">
+            <Link
+              href="/registo"
+              className="rounded-full px-4 py-2 text-sm font-medium text-white/90 hover:text-white bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-all border border-white/10 shadow-lg"
+            >
+              Registar
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-full px-4 py-2 text-sm font-medium bg-gradient-to-r from-[#7B4BFF] to-[#6C2BFF] hover:from-[#8B5AFF] hover:to-[#7C3BFF] text-white shadow-lg transition-all"
+            >
+              Iniciar Sessão
+            </Link>
+          </nav>
+        )}
       </header>
 
       {/* Hero Section */}
@@ -100,11 +136,10 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto flex flex-col lg:flex-row items-center gap-12">
           <div className="lg:w-1/2 space-y-6 text-center lg:text-left animate-fade-in">
             <h1 className="text-4xl lg:text-6xl font-black leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#7B4BFF] to-[#FFD700]">
-              Suas ideias, conectadas ao futuro
+              As tuas ideias, conectadas ao futuro
             </h1>
             <p className="text-lg text-white/80 max-w-xl">
-              Organize, busque e evolua suas ideias de forma visual, intuitiva e
-              sempre acessível. Experimente a nova era da criatividade digital.
+              Organiza, pesquisa e evolui as tuas ideias de forma visual, intuitiva e sempre acessível. Experimenta a nova era da criatividade digital.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Link
@@ -117,7 +152,7 @@ export default function HomePage() {
                 href="/login"
                 className="rounded-full px-6 py-3 text-base font-semibold bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white/90 hover:text-white border border-white/10 shadow-lg hover:shadow-xl transition-all"
               >
-                Fazer Login
+                Iniciar Sessão
               </Link>
             </div>
           </div>
@@ -134,7 +169,7 @@ export default function HomePage() {
       {/* Features Section */}
       <section className="relative z-10 px-6 py-16 lg:px-16">
         <h2 className="text-2xl lg:text-3xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-white to-[#7B4BFF]">
-          Recursos Poderosos
+          Funcionalidades Poderosas
         </h2>
         <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           <div className="backdrop-blur-lg bg-white/5 rounded-2xl p-6 border border-white/10 shadow-xl hover:shadow-2xl hover:translate-y-[-4px] transition-all">
@@ -148,8 +183,7 @@ export default function HomePage() {
               Organização Visual
             </h3>
             <p className="text-white/70 text-center">
-              Arraste, categorize e conecte ideias com facilidade em um ambiente
-              visual e intuitivo.
+              Arrasta, categoriza e liga ideias com facilidade num ambiente visual e intuitivo.
             </p>
           </div>
           
@@ -166,8 +200,7 @@ export default function HomePage() {
               Acesso Universal
             </h3>
             <p className="text-white/70 text-center">
-              PWA: Use no desktop ou mobile, mesmo offline. Suas ideias sempre
-              disponíveis.
+              PWA: Usa no computador ou telemóvel, mesmo offline. As tuas ideias sempre disponíveis.
             </p>
           </div>
           
@@ -179,11 +212,10 @@ export default function HomePage() {
               </svg>
             </div>
             <h3 className="text-xl font-bold mb-3 text-center text-transparent bg-clip-text bg-gradient-to-r from-[#7B4BFF] to-[#FFD700]">
-              Busca Inteligente
+              Pesquisa Inteligente
             </h3>
             <p className="text-white/70 text-center">
-              Encontre rapidamente qualquer ideia usando filtros, tags e inteligência
-              contextual.
+              Encontra rapidamente qualquer ideia usando filtros, etiquetas e inteligência contextual.
             </p>
           </div>
         </div>
@@ -193,23 +225,23 @@ export default function HomePage() {
       <section className="relative z-10 px-6 py-12 lg:px-16 lg:py-20">
         <div className="max-w-4xl mx-auto backdrop-blur-lg bg-gradient-to-br from-[#7B4BFF]/20 to-[#FFD700]/10 rounded-3xl p-8 lg:p-12 border border-white/10 shadow-2xl">
           <h2 className="text-2xl lg:text-3xl font-bold text-center mb-6 text-white">
-            Comece a organizar suas ideias hoje
+            Começa a organizar as tuas ideias hoje
           </h2>
           <p className="text-white/70 text-center mb-8 max-w-xl mx-auto">
-            Junte-se a milhares de criativos que já transformaram suas ideias em projetos reais.
+            Junta-te a milhares de criativos que já transformaram as suas ideias em projectos reais.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link
               href="/registo"
               className="rounded-full px-8 py-4 text-base font-semibold bg-gradient-to-r from-[#7B4BFF] to-[#6C2BFF] hover:from-[#8B5AFF] hover:to-[#7C3BFF] text-white shadow-lg hover:shadow-xl transition-all text-center"
             >
-              Criar Conta Gratuita
+              Criar Conta Grátis
             </Link>
             <Link
               href="/login"
               className="rounded-full px-8 py-4 text-base font-semibold bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/10 shadow-lg hover:shadow-xl transition-all text-center"
             >
-              Fazer Login
+              Iniciar Sessão
             </Link>
           </div>
         </div>
