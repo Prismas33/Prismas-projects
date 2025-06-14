@@ -1,4 +1,6 @@
-/* @tailwind directives removed because Tailwind CSS is not being processed */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Base no estilo */
 :root {
