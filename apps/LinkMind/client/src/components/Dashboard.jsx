@@ -1,30 +1,35 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.css'; // Crie este arquivo para os estilos ou importe o CSS global
 
 const Dashboard = () => {
   const [userName, setUserName] = useState('Carregando...');
   const [recentIdeas, setRecentIdeas] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Carregar dados do usuário
-    fetch('/api/user')
+    fetch('/api/user', { credentials: 'include' })
       .then(res => res.ok ? res.json() : Promise.reject())
       .then(data => setUserName(data.name))
-      .catch(() => (window.location.href = '/'));
+      .catch(() => navigate('/login'));
 
     // Carregar ideias recentes
-    fetch('/api/ideas?limit=5')
+    fetch('/api/ideas?limit=5', { credentials: 'include' })
       .then(res => res.ok ? res.json() : Promise.reject())
       .then(data => setRecentIdeas(data.ideas))
       .catch(() => setRecentIdeas([]));
-  }, []);
+  }, [navigate]);
 
   const handleLogout = async () => {
     try {
-      const res = await fetch('/api/logout', { method: 'POST' });
-      if (res.ok) window.location.href = '/';
+      const res = await fetch('/api/logout', { 
+        method: 'POST',
+        credentials: 'include'
+      });
+      if (res.ok) navigate('/login');
     } catch (e) {
-      // erro ao fazer logout
+      navigate('/login'); // Redirecionar mesmo em caso de erro
     }
   };
 

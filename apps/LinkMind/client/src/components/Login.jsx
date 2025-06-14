@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Login.css'; // Crie este arquivo para os estilos ou importe o CSS global
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -13,14 +15,16 @@ const Login = () => {
       const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
+        credentials: 'include' // Importante para sessões
       });
       if (res.ok) {
-        window.location.href = '/dashboard';
+        navigate('/dashboard'); // Usar React Router em vez de window.location
       } else {
-        setError('E-mail ou senha inválidos.');
+        const data = await res.json();
+        setError(data.error || 'E-mail ou senha inválidos.');
       }
-    } catch {
+    } catch (err) {
       setError('Erro ao tentar fazer login.');
     }
   };

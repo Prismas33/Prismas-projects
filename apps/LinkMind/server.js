@@ -42,10 +42,14 @@ try {
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3001', 'http://localhost:3000'], // Permitir React dev server
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+// Remover serving de arquivos estáticos antigos
+// app.use(express.static('public')); // REMOVIDO - agora usa React
 app.use(session({
   secret: process.env.SESSION_SECRET || 'linkmind-secret-key',
   resave: false,
@@ -472,11 +476,20 @@ app.get('/api/firebase-config', (req, res) => {
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
     messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.FIREBASE_APP_ID,
-    measurementId: process.env.FIREBASE_MEASUREMENT_ID
-  });
+    measurementId: process.env.FIREBASE_MEASUREMENT_ID  });
 });
 
-const PORT = process.env.PORT || 3000;
+// Em produção, servir arquivos estáticos do React build
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'client/build')));
+  
+  // Catch-all handler: enviar de volta o React's index.html para qualquer rota não-API
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  });
+}
+
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`LinkMind rodando na porta ${PORT}!`);
   console.log(`Acesse: http://localhost:${PORT}`);

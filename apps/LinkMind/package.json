@@ -9,6 +9,8 @@
     "backend": "nodemon server.js",
     "frontend": "cd client && npm start",
     "install-all": "npm install && cd client && npm install",
+    "build": "cd client && npm run build",
+    "build:prod": "npm run install-all && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "setup": "echo \"📋 Siga as instruções em FIREBASE_SETUP.md para configurar o Firebase\"",
     "check": "node -e \"console.log('✅ Node.js funcionando!'); process.exit(0);\""
