@@ -76,25 +76,33 @@ app.use((req, res, next) => {
   next();
 });
 
-// Rotas das páginas
+// Rota principal da API - Fornece informações sobre os endpoints disponíveis
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views/login.html'));
-});
-
-app.get('/dashboard', authenticateUser, (req, res) => {
-  res.sendFile(path.join(__dirname, 'views/dashboard.html'));
-});
-
-app.get('/upload-mind', authenticateUser, (req, res) => {
-  res.sendFile(path.join(__dirname, 'views/upload-mind.html'));
-});
-
-app.get('/download-mind', authenticateUser, (req, res) => {
-  res.sendFile(path.join(__dirname, 'views/download-mind.html'));
-});
-
-app.get('/settings', authenticateUser, (req, res) => {
-  res.sendFile(path.join(__dirname, 'views/settings.html'));
+  res.json({
+    name: "LinkMind API",
+    version: "1.0.0",
+    description: "API para gestão de ideias com Firebase Authentication",
+    endpoints: {
+      auth: {
+        "POST /api/sync-user": "Sincronizar utilizador do Firebase Auth",
+        "POST /api/logout": "Logout (client-side)"
+      },
+      ideas: {
+        "POST /api/ideas": "Criar nova ideia",
+        "GET /api/ideas": "Listar ideias do utilizador"
+      },
+      user: {
+        "GET /api/user": "Obter dados do utilizador",
+        "GET /api/user/profile": "Obter perfil do utilizador",
+        "GET /api/user/stats": "Obter estatísticas do utilizador"
+      },
+      config: {
+        "GET /api/firebase-config": "Obter configuração do Firebase"
+      }
+    },
+    frontend: "http://localhost:3001",
+    status: "OK"
+  });
 });
 
 // API Routes
