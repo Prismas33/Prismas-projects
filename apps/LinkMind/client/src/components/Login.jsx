@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.css'; // Crie este arquivo para os estilos ou importe o CSS global
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
+import './Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,20 +14,12 @@ const Login = () => {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include' // Importante para sessões
-      });
-      if (res.ok) {
-        navigate('/dashboard'); // Usar React Router em vez de window.location
-      } else {
-        const data = await res.json();
-        setError(data.error || 'E-mail ou senha inválidos.');
-      }
+      // Autentica com Firebase Auth
+      await signInWithEmailAndPassword(auth, email, password);
+      // Redireciona para dashboard
+      navigate('/dashboard');
     } catch (err) {
-      setError('Erro ao tentar fazer login.');
+      setError('E-mail ou senha inválidos.');
     }
   };
 

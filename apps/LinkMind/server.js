@@ -11,7 +11,8 @@ let db;
 let firebaseInitialized = false;
 
 try {
-  const serviceAccount = require('./serviceAccountKey.json');
+  // Carregar service account do .env
+  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
   firebase.initializeApp({
     credential: firebase.credential.cert(serviceAccount),
     databaseURL: process.env.FIREBASE_DATABASE_URL
