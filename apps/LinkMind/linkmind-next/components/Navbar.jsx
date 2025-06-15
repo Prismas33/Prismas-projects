@@ -6,7 +6,7 @@ export default function Navbar() {
       <Link href="/dashboard" className="font-bold text-lg">LinkMind</Link>
       <div className="flex gap-4">
         <Link href="/adicionar-ideia">Adicionar Ideia</Link>
-        <Link href="/buscar-ideia">Buscar Ideia</Link>
+        <Link href="/download-arquivo">Download Arquivo</Link>
       </div>
     </nav>
   );

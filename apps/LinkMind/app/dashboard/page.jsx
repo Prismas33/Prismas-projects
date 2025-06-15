@@ -15,6 +15,7 @@ export default function DashboardPage() {
   const [dadosUsuario, setDadosUsuario] = useState(null);
   const [mounted, setMounted] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
+  const [arquivosSemanaAtual, setArquivosSemanaAtual] = useState(0);
 
   useEffect(() => {
     setMounted(true);
@@ -47,11 +48,40 @@ export default function DashboardPage() {
     } catch {
       setPrimeiroNome(user.displayName ? user.displayName.split(" ")[0] : "");
     }
-  }
-  async function carregarArquivos() {
+  }  async function carregarArquivos() {
     try {
       const arquivosDoUtilizador = await downloadArquivos(user.displayName || "");
       setArquivos(arquivosDoUtilizador.slice(0, 3)); // Mostrar apenas os 3 mais recentes
+      
+      // Calcular arquivos da semana atual
+      const agora = new Date();
+      const inicioSemana = new Date(agora);
+      inicioSemana.setDate(agora.getDate() - agora.getDay()); // Domingo da semana atual
+      inicioSemana.setHours(0, 0, 0, 0);
+      
+      const fimSemana = new Date(inicioSemana);
+      fimSemana.setDate(inicioSemana.getDate() + 6); // Sábado da semana atual
+      fimSemana.setHours(23, 59, 59, 999);      const arquivosComDataFimEstaSemana = arquivosDoUtilizador.filter(arquivo => {
+        // Verificar se o arquivo tem dataFim definida
+        if (!arquivo.dataFim) return false;
+        
+        // Converter dataFim para Date (pode ser string ou Timestamp do Firebase)
+        let dataFim;
+        if (arquivo.dataFim.toDate) {
+          // É um Timestamp do Firebase
+          dataFim = arquivo.dataFim.toDate();
+        } else if (typeof arquivo.dataFim === 'string') {
+          // É uma string de data
+          dataFim = new Date(arquivo.dataFim);
+        } else {
+          // Já é um objeto Date
+          dataFim = new Date(arquivo.dataFim);
+        }
+        
+        // Verificar se a data de fim está na semana atual
+        return dataFim >= inicioSemana && dataFim <= fimSemana;
+      });      
+      setArquivosSemanaAtual(arquivosComDataFimEstaSemana.length);
     } catch (error) {
       console.error("Erro ao carregar arquivos:", error);
     } finally {
@@ -198,10 +228,9 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Total de ficheiros guardados hoje">            <div className="text-2xl font-bold text-[#7B4BFF]">{arquivos.length}</div>
             <div className="text-sm text-gray-600">Arquivos de hoje</div>
-          </div>
-          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Ligado à internet">
-            <div className="text-2xl font-bold text-green-500">✓</div>
-            <div className="text-sm text-gray-600">Online</div>
+          </div>          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Arquivos criados esta semana">
+            <div className="text-2xl font-bold text-green-500">{arquivosSemanaAtual}</div>
+            <div className="text-sm text-gray-600">Esta semana</div>
           </div>
           <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Sessão ativa no sistema">
             <div className="text-2xl font-bold text-orange-500">⚡</div>
