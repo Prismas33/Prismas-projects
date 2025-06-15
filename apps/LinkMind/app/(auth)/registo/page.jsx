@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { registarUtilizador } from "../../../lib/firebase/auth";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../../../lib/context/AuthContext";
 import Link from "next/link";
 
 export default function RegistoPage() {
@@ -12,6 +13,28 @@ export default function RegistoPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+
+  // Redirecionar se já estiver logado
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace("/dashboard");
+    }
+  }, [user, authLoading, router]);
+
+  // Mostrar loading enquanto verifica autenticação
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#2A3F9E] to-[#7B4BFF]">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+      </div>
+    );
+  }
+
+  // Se usuário já está logado, não mostrar a página de registo
+  if (user) {
+    return null;
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();

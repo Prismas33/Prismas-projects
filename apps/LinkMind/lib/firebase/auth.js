@@ -22,12 +22,11 @@ export async function registarUtilizador(email, password, nome) {
     });
     
     // Salvar dados adicionais no Firestore, usando o nome como ID do documento
-    const nomeId = nomeParaIdFirestore(nome);
-    await setDoc(doc(db, "users", nomeId), {
+    const nomeId = nomeParaIdFirestore(nome);    await setDoc(doc(db, "users", nomeId), {
       nome: nome,
       email: email,
       criadoEm: new Date(),
-      ideias: []
+      arquivos: []
     });
     
     return userCredential;

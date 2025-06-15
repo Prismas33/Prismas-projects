@@ -2,16 +2,15 @@
 import { useAuth } from "../../lib/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { buscarIdeias } from "../../lib/firebase/ideias";
+import { downloadArquivos } from "../../lib/firebase/arquivos";
 import { logoutUtilizador, obterDadosUtilizador } from "../../lib/firebase/auth";
 import { nomeParaIdFirestore } from "../../lib/firebase/utils";
 import Link from "next/link";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
-  const router = useRouter();
-  const [ideias, setIdeias] = useState([]);
-  const [carregandoIdeias, setCarregandoIdeias] = useState(true);
+  const router = useRouter();  const [arquivos, setArquivos] = useState([]);
+  const [carregandoArquivos, setCarregandoArquivos] = useState(true);
   const [primeiroNome, setPrimeiroNome] = useState("");
   const [dadosUsuario, setDadosUsuario] = useState(null);
   const [mounted, setMounted] = useState(false);
@@ -19,22 +18,17 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
-  useEffect(() => {
-    // Debug logs
-    console.log('Dashboard - mounted:', mounted, 'loading:', loading, 'user:', !!user, 'redirecting:', redirecting);
-    
+  }, []);  useEffect(() => {
     // Só redireciona se não houver usuário e o estado estiver resolvido
     if (mounted && !loading && !user && !redirecting) {
       console.log('Dashboard - Usuário não autenticado, redirecionando para login');
       setRedirecting(true);
-      router.replace("/login");
+      router.push("/login");
     }
-  }, [user, loading, router, mounted, redirecting]);
-
+  }, [user, loading, mounted, redirecting]); // Removido router das dependências
   useEffect(() => {
     if (user) {
-      carregarIdeias();
+      carregarArquivos();
       carregarPrimeiroNome();
     }
   }, [user]);
@@ -54,15 +48,14 @@ export default function DashboardPage() {
       setPrimeiroNome(user.displayName ? user.displayName.split(" ")[0] : "");
     }
   }
-
-  async function carregarIdeias() {
+  async function carregarArquivos() {
     try {
-      const ideiasDoUtilizador = await buscarIdeias(user.displayName || "");
-      setIdeias(ideiasDoUtilizador.slice(0, 3)); // Mostrar apenas as 3 mais recentes
+      const arquivosDoUtilizador = await downloadArquivos(user.displayName || "");
+      setArquivos(arquivosDoUtilizador.slice(0, 3)); // Mostrar apenas os 3 mais recentes
     } catch (error) {
-      console.error("Erro ao carregar ideias:", error);
+      console.error("Erro ao carregar arquivos:", error);
     } finally {
-      setCarregandoIdeias(false);
+      setCarregandoArquivos(false);
     }
   }
 
@@ -168,7 +161,7 @@ export default function DashboardPage() {
         </div>
         {/* Actions */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <Link href="/adicionar-ideia" className="w-full group">
+          <Link href="/upload-arquivo" className="w-full group">
             <div className="bg-gradient-to-br from-[#7B4BFF] to-[#FFD700] rounded-xl p-4 text-white hover:shadow-xl transform hover:scale-105 transition-all cursor-pointer w-full group-hover:from-[#6A3FEF] group-hover:to-[#FFC700]">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center group-hover:bg-white/30 transition-colors">
@@ -184,7 +177,7 @@ export default function DashboardPage() {
               </div>
             </div>
           </Link>
-          <Link href="/buscar-ideia" className="w-full group">
+          <Link href="/download-arquivo" className="w-full group">
             <div className="bg-gradient-to-br from-[#2A3F9E] to-[#7B4BFF] rounded-xl p-4 text-white hover:shadow-xl transform hover:scale-105 transition-all cursor-pointer w-full group-hover:from-[#1F2F7E] group-hover:to-[#6A3FEF]">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center group-hover:bg-white/30 transition-colors">
@@ -203,9 +196,8 @@ export default function DashboardPage() {
         </div>
         {/* Stats rápidas */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Total de ficheiros guardados hoje">
-            <div className="text-2xl font-bold text-[#7B4BFF]">{ideias.length}</div>
-            <div className="text-sm text-gray-600">Ficheiros de hoje</div>
+          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Total de ficheiros guardados hoje">            <div className="text-2xl font-bold text-[#7B4BFF]">{arquivos.length}</div>
+            <div className="text-sm text-gray-600">Arquivos de hoje</div>
           </div>
           <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Ligado à internet">
             <div className="text-2xl font-bold text-green-500">✓</div>
@@ -226,45 +218,43 @@ export default function DashboardPage() {
             <h3 className="text-xl font-bold text-gray-800 flex items-center space-x-2">
               <span>🧠</span>
               <span>O que vai na tua mente</span>
-            </h3>
-            {ideias.length > 3 && (
-              <Link href="/buscar-ideia" className="text-[#7B4BFF] hover:text-[#6A3FEF] text-sm font-medium transition-colors">
-                Ver todas →
+            </h3>            {arquivos.length > 3 && (
+              <Link href="/download-arquivo" className="text-[#7B4BFF] hover:text-[#6A3FEF] text-sm font-medium transition-colors">
+                Ver todos →
               </Link>
             )}
           </div>
-          {carregandoIdeias ? (
+          {carregandoArquivos ? (
             <div className="flex justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B4BFF]"></div>
             </div>
-          ) : ideias.length > 0 ? (
+          ) : arquivos.length > 0 ? (
             <div className="space-y-3">
-              {ideias.slice(0, 10).map((ideia, index) => (
+              {arquivos.slice(0, 10).map((arquivo, index) => (
                 <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-[#7B4BFF]/30 transition-all cursor-pointer group">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <h4 className="font-medium text-gray-800 group-hover:text-[#7B4BFF] transition-colors">
-                          {ideia.quem || ideia.titulo || "Ideia sem título"}
+                      <div className="flex items-center space-x-2 mb-1">                        <h4 className="font-medium text-gray-800 group-hover:text-[#7B4BFF] transition-colors">
+                          {arquivo.nome || arquivo.quem || arquivo.titulo || "Arquivo sem título"}
                         </h4>
-                        {ideia.fileUrl && (
+                        {arquivo.fileUrl && (
                           <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">📎</span>
                         )}
                       </div>
                       <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                        {ideia.oque?.substring(0, 100) || ideia.descricao?.substring(0, 100) || "Sem descrição"}
-                        {(ideia.oque?.length > 100 || ideia.descricao?.length > 100) && "..."}
+                        {arquivo.conteudo?.substring(0, 100) || arquivo.oque?.substring(0, 100) || arquivo.descricao?.substring(0, 100) || "Sem descrição"}
+                        {(arquivo.conteudo?.length > 100 || arquivo.oque?.length > 100 || arquivo.descricao?.length > 100) && "..."}
                       </p>
-                      {ideia.categoria && (
+                      {arquivo.categoria && (
                         <span className="inline-block bg-[#7B4BFF]/10 text-[#7B4BFF] text-xs px-2 py-1 rounded-full mt-2">
-                          {ideia.categoria}
+                          {arquivo.categoria}
                         </span>
                       )}
                     </div>
                     <div className="text-xs text-gray-400 ml-4 text-right">
-                      <div>{ideia.criadaEm?.toDate?.()?.toLocaleDateString('pt-PT') || "Hoje"}</div>
+                      <div>{(arquivo.criadoEm || arquivo.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT') || "Hoje"}</div>
                       <div className="mt-1 opacity-60">
-                        {ideia.criadaEm?.toDate?.()?.toLocaleTimeString('pt-PT', { 
+                        {(arquivo.criadoEm || arquivo.criadaEm)?.toDate?.()?.toLocaleTimeString('pt-PT', { 
                           hour: '2-digit', 
                           minute: '2-digit' 
                         }) || new Date().toLocaleTimeString('pt-PT', { 
@@ -283,12 +273,11 @@ export default function DashboardPage() {
                 <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
-              </div>
-              <h4 className="text-lg font-medium text-gray-600 mb-2">Pronto para a tua primeira ideia?</h4>
-              <p className="text-gray-500 mb-6">Capta os teus pensamentos e organiza-os de forma inteligente</p>
-              <Link href="/adicionar-ideia">
+              </div>              <h4 className="text-lg font-medium text-gray-600 mb-2">Pronto para o seu primeiro arquivo?</h4>
+              <p className="text-gray-500 mb-6">Envie os seus pensamentos e organize-os de forma inteligente</p>
+              <Link href="/upload-arquivo">
                 <button className="bg-[#7B4BFF] text-white px-6 py-3 rounded-lg hover:bg-[#6A3FEF] transition-colors font-medium">
-                  Adicionar primeira ideia 🚀
+                  📁 Enviar primeiro arquivo
                 </button>
               </Link>
             </div>

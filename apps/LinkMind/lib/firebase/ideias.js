@@ -53,6 +53,48 @@ export async function buscarIdeias(userNome, termoBusca = "") {
   }
 }
 
+export async function obterSugestoesPessoas(userNome, termoBusca) {
+  try {
+    const userNomeId = nomeParaIdFirestore(userNome);
+    const userRef = doc(db, "users", userNomeId);
+    const userSnap = await getDoc(userRef);
+    
+    if (!userSnap.exists()) return [];
+    
+    const ideias = userSnap.data().ideias || [];
+    const sugestoes = new Set();
+    
+    ideias.forEach((ideia) => {
+      if (ideia.quem && ideia.quem.toLowerCase().includes(termoBusca.toLowerCase())) {
+        sugestoes.add(ideia.quem);
+      }
+    });
+    
+    return Array.from(sugestoes).slice(0, 5);
+  } catch (error) {
+    console.error("Erro ao obter sugestões de pessoas:", error);
+    return [];
+  }
+}
+
+export async function obterHistoricoPessoa(userNome, pessoa) {
+  try {
+    const userNomeId = nomeParaIdFirestore(userNome);
+    const userRef = doc(db, "users", userNomeId);
+    const userSnap = await getDoc(userRef);
+    
+    if (!userSnap.exists()) return [];
+    
+    const ideias = userSnap.data().ideias || [];
+    return ideias.filter(ideia => 
+      ideia.quem && ideia.quem.toLowerCase() === pessoa.toLowerCase()
+    ).sort((a, b) => (b.criadaEm?.toDate?.() || new Date(b.criadaEm)) - (a.criadaEm?.toDate?.() || new Date(a.criadaEm)));
+  } catch (error) {
+    console.error("Erro ao obter histórico da pessoa:", error);
+    return [];
+  }
+}
+
 export async function obterSugestoes(termoBusca) {
   try {
     const q = query(

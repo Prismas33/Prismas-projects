@@ -32,17 +32,14 @@ export default function HomePage() {
     if (mounted && !loading) fetchNome();
   }, [user, loading, mounted]);  // Separate effect for navigation to avoid hydration issues
   useEffect(() => {
-    // Debug logs
-    console.log('Home - mounted:', mounted, 'loading:', loading, 'user:', !!user, 'redirecting:', redirecting);
-    
-    // Só redireciona se o usuário estiver autenticado e não estivermos já redirecionando
+    // Redirecionar usuário autenticado para dashboard
     if (mounted && !loading && user && !redirecting) {
       console.log('Home - Usuário autenticado, iniciando redirecionamento para dashboard');
       setRedirecting(true);
-      // Redirecionamento imediato sem delay
-      router.replace("/dashboard");
+      // Redirecionamento imediato sem replace para evitar loops
+      router.push("/dashboard");
     }
-  }, [user, loading, mounted, router, redirecting]);
+  }, [user, loading, mounted, redirecting]); // Removido router das dependências
   // Don't render interactive content until mounted
   if (!mounted || loading) {
     return (

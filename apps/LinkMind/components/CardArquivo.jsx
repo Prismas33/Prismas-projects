@@ -43,21 +43,18 @@ export default function CardArquivo({ arquivo }) {
       {/* Header with priority indicator */}
       <div className="p-4 pb-0">
         <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center space-x-2">
-            <span className="text-xl">{getCategoriaIcon(ideia.categoria)}</span>
-            <h3 className="font-bold text-gray-800 text-lg leading-tight">{ideia.titulo}</h3>
+          <div className="flex items-center space-x-2">            <span className="text-xl">{getCategoriaIcon(arquivo.categoria)}</span>
+            <h3 className="font-bold text-gray-800 text-lg leading-tight">{arquivo.nome || arquivo.titulo}</h3>
           </div>
-          {ideia.prioridade && (
-            <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${getPrioridadeColor(ideia.prioridade)} flex-shrink-0`}
-                 title={`Prioridade ${ideia.prioridade}`}>
+          {arquivo.prioridade && (
+            <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${getPrioridadeColor(arquivo.prioridade)} flex-shrink-0`}
+                 title={`Prioridade ${arquivo.prioridade}`}>
             </div>
           )}
-        </div>
-
-        {/* Category tag */}
-        {ideia.categoria && (
+        </div>        {/* Category tag */}
+        {arquivo.categoria && (
           <span className="inline-block bg-[#7B4BFF]/10 text-[#7B4BFF] text-xs px-2 py-1 rounded-full font-medium mb-3">
-            {ideia.categoria.charAt(0).toUpperCase() + ideia.categoria.slice(1)}
+            {arquivo.categoria.charAt(0).toUpperCase() + arquivo.categoria.slice(1)}
           </span>
         )}
       </div>
@@ -65,26 +62,24 @@ export default function CardArquivo({ arquivo }) {
       {/* Content */}
       <div className="px-4 pb-4">
         <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
-          {ideia.descricao}
-        </p>
-
-        {/* Dates */}
-        {(ideia.dataInicio || ideia.dataFim) && (
+          {arquivo.conteudo || arquivo.descricao}
+        </p>        {/* Dates */}
+        {(arquivo.dataInicio || arquivo.dataFim) && (
           <div className="flex items-center text-xs text-gray-500 mb-3 space-x-4">
-            {ideia.dataInicio && (
+            {arquivo.dataInicio && (
               <div className="flex items-center space-x-1">
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span>Início: {formatarData(ideia.dataInicio)}</span>
+                <span>Início: {formatarData(arquivo.dataInicio)}</span>
               </div>
             )}
-            {ideia.dataFim && (
+            {arquivo.dataFim && (
               <div className="flex items-center space-x-1">
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span>Fim: {formatarData(ideia.dataFim)}</span>
+                <span>Fim: {formatarData(arquivo.dataFim)}</span>
               </div>
             )}
           </div>
@@ -93,7 +88,7 @@ export default function CardArquivo({ arquivo }) {
         {/* Footer */}
         <div className="flex items-center justify-between">
           <div className="text-xs text-gray-400">
-            {formatarData(ideia.criadaEm) || 'Hoje'}
+            {formatarData(arquivo.criadoEm) || 'Hoje'}
           </div>
           
           <div className="flex space-x-2">

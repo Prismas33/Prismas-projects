@@ -14,7 +14,6 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     setMounted(true);
   }, []);
-
   useEffect(() => {
     if (!mounted) return;
     
@@ -34,16 +33,17 @@ export function AuthProvider({ children }) {
       
       if (!authResolved) {
         setAuthResolved(true);
-        setLoading(false);
         console.log('AuthProvider - Estado de autenticação resolvido');
       }
+      
+      setLoading(false);
     });
     
     return () => {
       console.log('AuthProvider - Removendo listener de autenticação');
       unsubscribe();
     };
-  }, [mounted, authResolved]);
+  }, [mounted]); // Removido authResolved das dependências para evitar loops
   // Sempre renderizar o provider para evitar hydration mismatch
   return (
     <AuthContext.Provider value={{ 

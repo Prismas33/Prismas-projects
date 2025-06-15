@@ -40,20 +40,18 @@ export default function Navbar() {
               Dashboard
             </Link>
             <Link 
-              href="/adicionar-ideia" 
-              className={`text-white hover:text-[#FFD700] transition-colors px-3 py-2 rounded-md text-sm font-medium ${
-                isActive("/adicionar-ideia") ? "bg-white/10" : ""
+              href="/upload-arquivo"              className={`text-white hover:text-[#FFD700] transition-colors px-3 py-2 rounded-md text-sm font-medium ${
+                isActive("/upload-arquivo") ? "bg-white/10" : ""
               }`}
             >
-              Adicionar Ideia
-            </Link>
-            <Link 
-              href="/buscar-ideia" 
+              📁 Upload
+            </Link>            <Link 
+              href="/download-arquivo" 
               className={`text-white hover:text-[#FFD700] transition-colors px-3 py-2 rounded-md text-sm font-medium ${
-                isActive("/buscar-ideia") ? "bg-white/10" : ""
+                isActive("/download-arquivo") ? "bg-white/10" : ""
               }`}
             >
-              Buscar Ideia
+              📥 Download
             </Link>
           </div>
 
@@ -81,20 +79,18 @@ export default function Navbar() {
             Dashboard
           </Link>
           <Link 
-            href="/adicionar-ideia" 
-            className={`block px-3 py-2 rounded-md text-base font-medium text-white hover:text-[#FFD700] hover:bg-white/10 transition-colors ${
-              isActive("/adicionar-ideia") ? "bg-white/20" : ""
+            href="/upload-arquivo"            className={`block px-3 py-2 rounded-md text-base font-medium text-white hover:text-[#FFD700] hover:bg-white/10 transition-colors ${
+              isActive("/upload-arquivo") ? "bg-white/20" : ""
             }`}
           >
-            Adicionar Ideia
-          </Link>
-          <Link 
-            href="/buscar-ideia" 
+            📁 Upload
+          </Link>          <Link 
+            href="/download-arquivo" 
             className={`block px-3 py-2 rounded-md text-base font-medium text-white hover:text-[#FFD700] hover:bg-white/10 transition-colors ${
-              isActive("/buscar-ideia") ? "bg-white/20" : ""
+              isActive("/download-arquivo") ? "bg-white/20" : ""
             }`}
           >
-            Buscar Ideia
+            📥 Download
           </Link>
         </div>
       </div>
