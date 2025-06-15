@@ -201,12 +201,11 @@ export default function HomePage() {
                 <path d="M11 5L8 8M8 8L11 11M8 8H15C16.1046 8 17 8.89543 17 10V16M17 19L14 16M14 16L17 13M14 16H19C20.1046 16 21 15.1046 21 14V5" 
                   stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </div>
-            <h3 className="text-xl font-bold mb-3 text-center text-transparent bg-clip-text bg-gradient-to-r from-white to-[#7B4BFF]">
-              Organização Visual
+            </div>            <h3 className="text-xl font-bold mb-3 text-center text-transparent bg-clip-text bg-gradient-to-r from-white to-[#7B4BFF]">
+              Interface Simples
             </h3>
             <p className="text-white/70 text-center">
-              Arrasta, categoriza e liga ideias com facilidade num ambiente visual e intuitivo.
+              Adiciona e procura os teus arquivos mentais de forma rápida e intuitiva com apenas um clique.
             </p>
           </div>
           
@@ -248,7 +247,7 @@ export default function HomePage() {
       <section className="relative z-10 px-2 py-4 sm:px-4 sm:py-8 lg:px-16 lg:py-20">
         <div className="max-w-4xl mx-auto backdrop-blur-lg bg-gradient-to-br from-[#7B4BFF]/20 to-[#FFD700]/10 rounded-3xl p-8 lg:p-12 border border-white/10 shadow-2xl">
           <h2 className="text-2xl lg:text-3xl font-bold text-center mb-6 text-white">
-            Começa a organizar a tua segunda mente hoje
+            Começa a organizar a tua mente digital hoje
           </h2>
           <p className="text-white/70 text-center mb-8 max-w-xl mx-auto">
             Junta-te a milhares de pessoas que já confiam na LinkMind como extensão da sua mente.
