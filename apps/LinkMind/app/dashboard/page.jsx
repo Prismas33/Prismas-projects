@@ -16,6 +16,7 @@ export default function DashboardPage() {
   const [mounted, setMounted] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
   const [arquivosSemanaAtual, setArquivosSemanaAtual] = useState(0);
+  const [arquivosHoje, setArquivosHoje] = useState(0);
 
   useEffect(() => {
     setMounted(true);
@@ -79,9 +80,37 @@ export default function DashboardPage() {
         }
         
         // Verificar se a data de fim está na semana atual
-        return dataFim >= inicioSemana && dataFim <= fimSemana;
-      });      
+        return dataFim >= inicioSemana && dataFim <= fimSemana;      });      
       setArquivosSemanaAtual(arquivosComDataFimEstaSemana.length);
+      
+      // Calcular arquivos com data de fim hoje
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      const fimHoje = new Date(hoje);
+      fimHoje.setHours(23, 59, 59, 999);
+      
+      const arquivosComDataFimHoje = arquivosDoUtilizador.filter(arquivo => {
+        // Verificar se o arquivo tem dataFim definida
+        if (!arquivo.dataFim) return false;
+        
+        // Converter dataFim para Date (pode ser string ou Timestamp do Firebase)
+        let dataFim;
+        if (arquivo.dataFim.toDate) {
+          // É um Timestamp do Firebase
+          dataFim = arquivo.dataFim.toDate();
+        } else if (typeof arquivo.dataFim === 'string') {
+          // É uma string de data
+          dataFim = new Date(arquivo.dataFim);
+        } else {
+          // Já é um objeto Date
+          dataFim = new Date(arquivo.dataFim);
+        }
+        
+        // Verificar se a data de fim é hoje
+        return dataFim >= hoje && dataFim <= fimHoje;
+      });
+      
+      setArquivosHoje(arquivosComDataFimHoje.length);
     } catch (error) {
       console.error("Erro ao carregar arquivos:", error);
     } finally {
@@ -231,10 +260,9 @@ export default function DashboardPage() {
           </div>          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Arquivos criados esta semana">
             <div className="text-2xl font-bold text-green-500">{arquivosSemanaAtual}</div>
             <div className="text-sm text-gray-600">Esta semana</div>
-          </div>
-          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Sessão ativa no sistema">
-            <div className="text-2xl font-bold text-orange-500">⚡</div>
-            <div className="text-sm text-gray-600">Ativo</div>
+          </div>          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Arquivos com data de fim hoje">
+            <div className="text-2xl font-bold text-orange-500">{arquivosHoje}</div>
+            <div className="text-sm text-gray-600">Hoje</div>
           </div>
           <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Dados sincronizados na nuvem">
             <div className="text-2xl font-bold text-blue-500">💾</div>
