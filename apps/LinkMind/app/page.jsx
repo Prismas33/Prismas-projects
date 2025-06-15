@@ -47,7 +47,7 @@ export default function HomePage() {
       <div className="min-h-screen flex items-center justify-center" style={{
         background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)'
       }}>
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#7B4BFF]"></div>
       </div>
     );
   }
@@ -58,7 +58,7 @@ export default function HomePage() {
       <div className="min-h-screen flex flex-col items-center justify-center" style={{
         background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)'
       }}>
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500 mb-4"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#7B4BFF] mb-4"></div>
         <p className="text-white text-lg">A redirecionar para o dashboard...</p>
       </div>
     );
@@ -149,14 +149,14 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative flex-1 flex flex-col items-center justify-center px-6 py-12 lg:px-16 lg:py-24 z-10">
+      <section className="relative flex-1 flex flex-col items-center justify-center px-2 py-4 sm:px-4 sm:py-8 lg:px-16 lg:py-24 z-10">
         <div className="max-w-5xl mx-auto flex flex-col lg:flex-row items-center gap-12">
           <div className="lg:w-1/2 space-y-6 text-center lg:text-left animate-fade-in">
             <h1 className="text-4xl lg:text-6xl font-black leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#7B4BFF] to-[#FFD700]">
-              As tuas ideias, conectadas ao futuro
+              Usa o teu arquivo mental, sempre acessível
             </h1>
             <p className="text-lg text-white/80 max-w-xl">
-              Organiza, pesquisa e evolui as tuas ideias de forma visual, intuitiva e sempre acessível. Experimenta a nova era da criatividade digital.
+              Guarda, conecta e explora tudo o que passa pela tua mente. A tua memória digital, sempre contigo.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Link
@@ -188,7 +188,7 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="relative z-10 px-6 py-16 lg:px-16">
+      <section className="relative z-10 px-2 py-4 sm:px-4 sm:py-8 lg:px-16">
         <h2 className="text-2xl lg:text-3xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-white to-[#7B4BFF]">
           Funcionalidades Poderosas
         </h2>
@@ -243,13 +243,13 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative z-10 px-6 py-12 lg:px-16 lg:py-20">
+      <section className="relative z-10 px-2 py-4 sm:px-4 sm:py-8 lg:px-16 lg:py-20">
         <div className="max-w-4xl mx-auto backdrop-blur-lg bg-gradient-to-br from-[#7B4BFF]/20 to-[#FFD700]/10 rounded-3xl p-8 lg:p-12 border border-white/10 shadow-2xl">
           <h2 className="text-2xl lg:text-3xl font-bold text-center mb-6 text-white">
-            Começa a organizar as tuas ideias hoje
+            Começa a organizar a tua segunda mente hoje
           </h2>
           <p className="text-white/70 text-center mb-8 max-w-xl mx-auto">
-            Junta-te a milhares de criativos que já transformaram as suas ideias em projectos reais.
+            Junta-te a milhares de pessoas que já confiam na LinkMind como extensão da sua mente.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link
@@ -269,7 +269,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 text-center py-8 text-white/60 text-sm backdrop-blur-sm bg-black/20">
+      <footer className="relative z-10 text-center py-2 sm:py-4 text-white/60 text-sm backdrop-blur-sm bg-black/20">
         <div className="max-w-6xl mx-auto px-6">          <span>
             © {new Date().getFullYear()} LinkMind. Todos os direitos reservados.
           </span>        </div>

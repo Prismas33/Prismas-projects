@@ -1,6 +1,6 @@
-# 🧠 LinkMind - Organize suas ideias com inteligência
+# 🧠 LinkMind - Usa o teu arquivo mental, sempre acessível
 
-Uma aplicação Next.js moderna para capturar, organizar e encontrar suas melhores ideias de forma inteligente.
+Uma aplicação Next.js moderna para guardar, conectar e explorar tudo o que passa pela tua mente. A tua segunda mente digital.
 
 ## ✨ Funcionalidades
 
@@ -206,4 +206,4 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ---
 
-💡 **LinkMind** - Organize suas ideias com inteligência!
+💡 **LinkMind** - Usa o teu arquivo mental, sempre acessível!

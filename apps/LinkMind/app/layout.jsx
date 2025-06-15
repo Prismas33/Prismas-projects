@@ -4,8 +4,8 @@ import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 import RouterErrorBoundary from "../components/RouterErrorBoundary";
 
 export const metadata = {
-  title: "LinkMind - Organize suas ideias",
-  description: "LinkMind - A plataforma inteligente para capturar, organizar e encontrar as suas melhores ideias",
+  title: "LinkMind - O teu arquivo mental",
+  description: "LinkMind - A tua segunda mente digital para guardar, conectar e explorar tudo o que passa pela tua mente.",
   icons: {
     icon: "/vector.png",
     apple: "/vector.png",
