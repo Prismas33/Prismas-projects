@@ -8,71 +8,45 @@ import {
   limit,
   doc,
   updateDoc,
-  arrayUnion
+  arrayUnion,
+  getDoc
 } from "firebase/firestore";
 import { db } from "./config";
+import { nomeParaIdFirestore } from "./utils";
 
-export async function adicionarIdeia(userId, ideia) {
+export async function adicionarIdeia(userNomeId, ideia) {
   try {
-    // Adicionar ideia na coleção "ideias"
-    const docRef = await addDoc(collection(db, "ideias"), {
-      ...ideia,
-      userId: userId,
-      criadaEm: new Date(),
-      ativa: true
-    });
-    
-    // Adicionar referência da ideia ao utilizador
-    const userRef = doc(db, "utilizadores", userId);
+    const userRef = doc(db, "users", userNomeId);
     await updateDoc(userRef, {
-      ideias: arrayUnion(docRef.id)
+      ideias: arrayUnion({
+        ...ideia,
+        criadaEm: new Date(),
+        ativa: true
+      })
     });
-    
-    return docRef.id;
+    return true;
   } catch (error) {
     throw new Error("Erro ao adicionar ideia: " + error.message);
   }
 }
 
-export async function buscarIdeias(userId, termoBusca = "") {
+export async function buscarIdeias(userNome, termoBusca = "") {
   try {
-    let q;
-    
+    const userNomeId = nomeParaIdFirestore(userNome);
+    const userRef = doc(db, "users", userNomeId);
+    const userSnap = await getDoc(userRef);
+    if (!userSnap.exists()) return [];
+    let ideias = userSnap.data().ideias || [];
     if (termoBusca) {
-      // Buscar por termo específico
-      q = query(
-        collection(db, "ideias"),
-        where("userId", "==", userId),
-        where("ativa", "==", true),
-        orderBy("criadaEm", "desc")
-      );
-    } else {
-      // Buscar todas as ideias do usuário
-      q = query(
-        collection(db, "ideias"),
-        where("userId", "==", userId),
-        where("ativa", "==", true),
-        orderBy("criadaEm", "desc")
+      ideias = ideias.filter(
+        (ideia) =>
+          ideia.quem?.toLowerCase().includes(termoBusca.toLowerCase()) ||
+          ideia.oque?.toLowerCase().includes(termoBusca.toLowerCase()) ||
+          ideia.categoria?.toLowerCase().includes(termoBusca.toLowerCase())
       );
     }
-    
-    const querySnapshot = await getDocs(q);
-    const ideias = [];
-    
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      // Filtrar por termo se fornecido
-      if (!termoBusca || 
-          data.titulo?.toLowerCase().includes(termoBusca.toLowerCase()) ||
-          data.descricao?.toLowerCase().includes(termoBusca.toLowerCase()) ||
-          data.categoria?.toLowerCase().includes(termoBusca.toLowerCase())) {
-        ideias.push({
-          id: doc.id,
-          ...data
-        });
-      }
-    });
-    
+    // Ordena por criadaEm desc
+    ideias.sort((a, b) => (b.criadaEm?.toDate?.() || new Date(b.criadaEm)) - (a.criadaEm?.toDate?.() || new Date(a.criadaEm)));
     return ideias;
   } catch (error) {
     throw new Error("Erro ao buscar ideias: " + error.message);
