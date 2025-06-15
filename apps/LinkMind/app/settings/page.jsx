@@ -89,12 +89,10 @@ export default function SettingsPage() {
     if (!file.type.startsWith('image/')) {
       setError('Por favor, selecione apenas arquivos de imagem.');
       return;
-    }
-    
-    setUploadingFoto(true);
+    }    setUploadingFoto(true);
     setError("");
     try {
-      const fotoUrl = await uploadArquivo(`perfil/${user.uid}`, file);
+      const fotoUrl = await uploadArquivo(user.uid, file);
       const nomeId = nomeParaIdFirestore(user.displayName || "");
       await atualizarFotoPerfil(nomeId, fotoUrl);
       setDadosUsuario(prev => ({ ...prev, fotoPerfil: fotoUrl }));

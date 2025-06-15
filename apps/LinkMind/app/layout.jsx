@@ -5,10 +5,16 @@ import RouterErrorBoundary from "../components/RouterErrorBoundary";
 
 export const metadata = {
   title: "LinkMind - O teu arquivo mental",
-  description: "LinkMind - A tua segunda mente digital para guardar, conectar e explorar tudo o que passa pela tua mente.",
-  icons: {
-    icon: "/vector.png",
-    apple: "/vector.png",
+  description: "LinkMind - A tua segunda mente digital para guardar, conectar e explorar tudo o que passa pela tua mente.",  icons: {
+    icon: [
+      { url: "/icon-48x48.png", sizes: "48x48", type: "image/png" },
+      { url: "/icon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" }
+    ],
+    apple: [
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" }
+    ],
+    shortcut: "/favicon.ico"
   },
 };
 

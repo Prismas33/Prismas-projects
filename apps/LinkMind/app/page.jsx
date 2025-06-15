@@ -32,17 +32,19 @@ export default function HomePage() {
     if (mounted && !loading) fetchNome();
   }, [user, loading, mounted]);  // Separate effect for navigation to avoid hydration issues
   useEffect(() => {
+    // Debug logs
+    console.log('Home - mounted:', mounted, 'loading:', loading, 'user:', !!user, 'redirecting:', redirecting);
+    
+    // Só redireciona se o usuário estiver autenticado e não estivermos já redirecionando
     if (mounted && !loading && user && !redirecting) {
+      console.log('Home - Usuário autenticado, iniciando redirecionamento para dashboard');
       setRedirecting(true);
-      // Use a shorter timeout 
-      const timer = setTimeout(() => {
-        router.replace("/dashboard");
-      }, 300);
-      return () => clearTimeout(timer);
+      // Redirecionamento imediato sem delay
+      router.replace("/dashboard");
     }
   }, [user, loading, mounted, router, redirecting]);
   // Don't render interactive content until mounted
-  if (!mounted || (loading && !user)) {
+  if (!mounted || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{
         background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)'
@@ -53,7 +55,7 @@ export default function HomePage() {
   }
 
   // Show loading if user is authenticated and redirecting
-  if (user && redirecting) {
+  if (!loading && user && redirecting) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center" style={{
         background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)'

@@ -9,6 +9,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const [authResolved, setAuthResolved] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -17,16 +18,38 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (!mounted) return;
     
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
+    console.log('AuthProvider - Iniciando listener de autenticação');
+    
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      console.log('AuthProvider - Estado de auth mudou:', !!currentUser, currentUser?.uid);
+      
+      // Só atualiza o estado se realmente mudou
+      setUser(prevUser => {
+        if (prevUser?.uid !== currentUser?.uid) {
+          console.log('AuthProvider - Usuário realmente mudou de', prevUser?.uid, 'para', currentUser?.uid);
+          return currentUser;
+        }
+        return prevUser;
+      });
+      
+      if (!authResolved) {
+        setAuthResolved(true);
+        setLoading(false);
+        console.log('AuthProvider - Estado de autenticação resolvido');
+      }
     });
-    return () => unsubscribe();
-  }, [mounted]);
-
+    
+    return () => {
+      console.log('AuthProvider - Removendo listener de autenticação');
+      unsubscribe();
+    };
+  }, [mounted, authResolved]);
   // Sempre renderizar o provider para evitar hydration mismatch
   return (
-    <AuthContext.Provider value={{ user: mounted ? user : null, loading: !mounted || loading }}>
+    <AuthContext.Provider value={{ 
+      user: mounted && authResolved ? user : null, 
+      loading: !mounted || !authResolved 
+    }}>
       {children}
     </AuthContext.Provider>
   );
