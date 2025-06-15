@@ -9,13 +9,13 @@ export default function HomePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const [nome, setNome] = useState("");
-  const [logoutLoading, setLogoutLoading] = useState(false);
+  const [nome, setNome] = useState("");  const [logoutLoading, setLogoutLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
+  
   useEffect(() => {
     async function fetchNome() {
       if (user) {
@@ -30,7 +30,39 @@ export default function HomePage() {
       }
     }
     if (mounted && !loading) fetchNome();
-  }, [user, loading, mounted]);
+  }, [user, loading, mounted]);  // Separate effect for navigation to avoid hydration issues
+  useEffect(() => {
+    if (mounted && !loading && user && !redirecting) {
+      setRedirecting(true);
+      // Use a shorter timeout 
+      const timer = setTimeout(() => {
+        router.replace("/dashboard");
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [user, loading, mounted, router, redirecting]);
+  // Don't render interactive content until mounted
+  if (!mounted || (loading && !user)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)'
+      }}>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+      </div>
+    );
+  }
+
+  // Show loading if user is authenticated and redirecting
+  if (user && redirecting) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center" style={{
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)'
+      }}>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500 mb-4"></div>
+        <p className="text-white text-lg">A redirecionar para o dashboard...</p>
+      </div>
+    );
+  }
 
   async function handleLogout() {
     setLogoutLoading(true);
@@ -39,9 +71,7 @@ export default function HomePage() {
       router.push("/");
     } catch {}
     setLogoutLoading(false);
-  }
-
-  return (
+  }  return (
     <main style={{
       minHeight: '100vh',
       display: 'flex',
@@ -249,11 +279,9 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="relative z-10 text-center py-8 text-white/60 text-sm backdrop-blur-sm bg-black/20">
-        <div className="max-w-6xl mx-auto px-6">
-          <span>
+        <div className="max-w-6xl mx-auto px-6">          <span>
             © {new Date().getFullYear()} LinkMind. Todos os direitos reservados.
-          </span>
-        </div>
+          </span>        </div>
       </footer>
     </main>
   );

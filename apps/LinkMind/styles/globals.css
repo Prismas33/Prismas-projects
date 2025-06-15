@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Estilos críticos inline para evitar FOUC */
+@layer base {
+  html {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+}
+
 /* Base no estilo */
 :root {
   --azul-profundo: #0f172a;

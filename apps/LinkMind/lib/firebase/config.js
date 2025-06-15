@@ -11,6 +11,11 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
+// Verificar se as variáveis de ambiente estão definidas
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+  console.warn('Firebase config incompleto. Verifique as variáveis de ambiente.');
+}
+
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);

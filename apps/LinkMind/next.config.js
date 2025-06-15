@@ -11,15 +11,33 @@ const nextConfig = {
     }
     return config;
   },
-  // Adiciona suporte para recursos estáticos
-  assetPrefix: process.env.NODE_ENV === 'production' ? undefined : '',
-  // Configuração do output
-  output: 'standalone',
-  // Desabilitar compressions para desenvolvimento
-  compress: process.env.NODE_ENV === 'production',
-  // Melhorar a detecção de pacotes de estilos
-  experimental: {
-    optimizeCss: true,
+  // Improve hydration stability
+  reactStrictMode: false, // Desativar para evitar double render
+  swcMinify: true,
+  // Headers para evitar cache em desenvolvimento
+  async headers() {
+    if (process.env.NODE_ENV === 'development') {
+      return [
+        {
+          source: '/:path*',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'no-cache, no-store, must-revalidate',
+            },
+            {
+              key: 'Pragma',
+              value: 'no-cache',
+            },
+            {
+              key: 'Expires',
+              value: '0',
+            },
+          ],
+        },
+      ];
+    }
+    return [];
   },
 };
 
