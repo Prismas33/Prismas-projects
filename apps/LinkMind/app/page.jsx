@@ -144,20 +144,7 @@ export default function HomePage() {
             </button>
           </div>
         ) : (
-          <nav className="flex gap-3">
-            <Link
-              href="/registo"
-              className="rounded-full px-4 py-2 text-sm font-medium text-white/90 hover:text-white bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-all border border-white/10 shadow-lg"
-            >
-              Registar
-            </Link>
-            <Link
-              href="/login"
-              className="rounded-full px-4 py-2 text-sm font-medium bg-gradient-to-r from-[#7B4BFF] to-[#6C2BFF] hover:from-[#8B5AFF] hover:to-[#7C3BFF] text-white shadow-lg transition-all"
-            >
-              Iniciar Sessão
-            </Link>
-          </nav>
+          <></>
         )}
       </header>
 
@@ -190,7 +177,11 @@ export default function HomePage() {
             <img
               src="/vector.png"
               alt="LinkMind Ilustração"
-              className="w-80 h-80 object-contain drop-shadow-2xl animate-float"
+              className="w-64 h-64 object-contain animate-float"
+              style={{
+                filter: 'drop-shadow(0 0 32px #bdbdbd88) drop-shadow(0 0 8px #fff4)',
+                background: 'none'
+              }}
             />
           </div>
         </div>
