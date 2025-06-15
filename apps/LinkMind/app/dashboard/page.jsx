@@ -254,15 +254,14 @@ export default function DashboardPage() {
           </Link>
         </div>
         {/* Stats rápidas */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Total de ficheiros guardados hoje">            <div className="text-2xl font-bold text-[#7B4BFF]">{arquivos.length}</div>
-            <div className="text-sm text-gray-600">Arquivos de hoje</div>
-          </div>          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Arquivos criados esta semana">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Total de ficheiros enviados hoje">            <div className="text-2xl font-bold text-[#7B4BFF]">{arquivos.length}</div>
+            <div className="text-sm text-gray-600">Uploads de hoje</div>
+          </div>          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Arquivos com data de fim esta semana">
             <div className="text-2xl font-bold text-green-500">{arquivosSemanaAtual}</div>
-            <div className="text-sm text-gray-600">Esta semana</div>
+            <div className="text-sm text-gray-600">A vencer esta semana</div>
           </div>          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Arquivos com data de fim hoje">
             <div className="text-2xl font-bold text-orange-500">{arquivosHoje}</div>
-            <div className="text-sm text-gray-600">Hoje</div>
+            <div className="text-sm text-gray-600">A vencer hoje</div>
           </div>
           <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Dados sincronizados na nuvem">
             <div className="text-2xl font-bold text-blue-500">💾</div>
