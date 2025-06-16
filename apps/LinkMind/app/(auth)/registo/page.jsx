@@ -84,38 +84,35 @@ export default function RegistoPage() {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input 
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>            <input 
               type="email" 
               placeholder="o.seu.email@exemplo.com" 
               value={email} 
               onChange={e => setEmail(e.target.value)} 
               required 
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input 
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>            <input 
               type="password" 
               placeholder="Mínimo 6 caracteres" 
               value={password} 
               onChange={e => setPassword(e.target.value)} 
               required 
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar Password</label>
-            <input 
+            <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar Password</label>            <input 
               type="password" 
               placeholder="Repita a sua password" 
               value={confirmPassword} 
               onChange={e => setConfirmPassword(e.target.value)} 
               required 
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
             />
           </div>
           
