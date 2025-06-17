@@ -10,6 +10,7 @@ export default function RegistoPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [accessPass, setAccessPass] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -35,10 +36,14 @@ export default function RegistoPage() {
   if (user) {
     return null;
   }
-
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+    
+    if (accessPass !== "Prismas2025?") {
+      setError("Senha de acesso incorreta");
+      return;
+    }
     
     if (password !== confirmPassword) {
       setError("As passwords não coincidem");
@@ -68,9 +73,19 @@ export default function RegistoPage() {
           <img src="/logo.png" alt="LinkMind Logo" className="w-16 h-16 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-[#2A3F9E] mb-2">Criar Conta</h1>
           <p className="text-gray-600">Junte-se ao LinkMind e organize as suas ideias</p>
-        </div>
+        </div>        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Senha de Acesso</label>
+            <input 
+              type="password" 
+              placeholder="Senha para aceder ao registo" 
+              value={accessPass} 
+              onChange={e => setAccessPass(e.target.value)} 
+              required 
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
+            />
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
             <input 
