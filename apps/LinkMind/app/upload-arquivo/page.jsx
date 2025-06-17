@@ -36,6 +36,8 @@ export default function UploadArquivoPage() {
   const [capturandoFoto, setCapturandoFoto] = useState(false);  const [fotoCapturada, setFotoCapturada] = useState(null);
   const [mostrarPreviaFoto, setMostrarPreviaFoto] = useState(false);
   const [fotoCapturadaDaCamera, setFotoCapturadaDaCamera] = useState(false);
+  const [fotosCapturadas, setFotosCapturadas] = useState({}); // Mapear arquivo -> foto
+  const [fotoAtualPrevia, setFotoAtualPrevia] = useState(null);
   const [facingMode, setFacingMode] = useState("environment"); // "user" para frontal, "environment" para traseira
   
   const nomeInputRef = useRef(null);
@@ -182,13 +184,12 @@ export default function UploadArquivoPage() {
       const dataUrl = canvas.toDataURL('image/jpeg', 0.7); // Reduzir qualidade para poupar espaço
       setFotoCapturada(dataUrl);
       setFotoCapturadaDaCamera(true);
-      
-      // Converter canvas para blob
+        // Converter canvas para blob
       canvas.toBlob(async (blob) => {
         if (blob) {
           console.log("Convertendo foto para PDF..."); // Debug
-          // Converter foto para PDF
-          await converterFotoParaPDF(blob);
+          // Converter foto para PDF e salvar foto associada
+          const pdfFile = await converterFotoParaPDF(blob, dataUrl);
         }
       }, 'image/jpeg', 0.7); // Qualidade reduzida para poupar espaço
       
@@ -199,9 +200,8 @@ export default function UploadArquivoPage() {
       setCapturandoFoto(false);
     }
   }
-
   // Função para converter foto em PDF
-  async function converterFotoParaPDF(fotoBlob) {
+  async function converterFotoParaPDF(fotoBlob, fotoDataUrl) {
     try {
       // Criar PDF
       const pdf = new jsPDF();
@@ -235,12 +235,19 @@ export default function UploadArquivoPage() {
         const pdfBlob = pdf.output('blob');
         
         // Criar arquivo File
-        const pdfFile = new File([pdfBlob], `foto-${Date.now()}.pdf`, { type: 'application/pdf' });          // Definir como arquivo selecionado e adicionar ao array
+        const pdfFile = new File([pdfBlob], `foto-${Date.now()}.pdf`, { type: 'application/pdf' });        // Definir como arquivo selecionado e adicionar ao array
         const novosArquivos = [...files, pdfFile].slice(0, 3); // Limitar a 3
         setFiles(novosArquivos);
         setFile(pdfFile); // Manter o último para compatibilidade
         setFilePreview(null); // PDFs não têm preview de imagem
-          console.log("PDF criado com sucesso!");
+        
+        // Salvar a foto associada ao arquivo PDF
+        setFotosCapturadas(prev => ({
+          ...prev,
+          [pdfFile.name]: fotoDataUrl
+        }));
+        
+        console.log("PDF criado com sucesso!");
         
         // Fechar câmera
         fecharCamera();
@@ -308,11 +315,20 @@ export default function UploadArquivoPage() {
       setSalvando(false);
     }
   }
-
   // Função para remover arquivo individual
   function removerArquivo(index) {
+    const arquivoRemovido = files[index];
     const novosArquivos = files.filter((_, i) => i !== index);
     setFiles(novosArquivos);
+    
+    // Remover foto associada se for da câmera
+    if (arquivoRemovido && arquivoRemovido.name.includes("foto-")) {
+      setFotosCapturadas(prev => {
+        const novasFotos = { ...prev };
+        delete novasFotos[arquivoRemovido.name];
+        return novasFotos;
+      });
+    }
     
     // Atualizar arquivo principal
     if (novosArquivos.length > 0) {
@@ -483,8 +499,10 @@ export default function UploadArquivoPage() {
                       </button>
                       <button
                         type="button"                        onClick={() => {
-                          setFile(null);
-                          setFiles([]);
+                          // Remover apenas o arquivo atual da câmera
+                          const novosArquivos = files.filter(f => f !== file);
+                          setFiles(novosArquivos);
+                          setFile(novosArquivos.length > 0 ? novosArquivos[0] : null);
                           setFotoCapturada(null);
                           setFilePreview(null);
                           setFotoCapturadaDaCamera(false);
@@ -502,16 +520,23 @@ export default function UploadArquivoPage() {
               )}
               {fileUrl && (
                 <div className="mt-2 text-green-700 text-sm">Arquivo enviado! <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="underline">Ver arquivo</a></div>
-              )}            </div>
-              <div>
+              )}            </div>            <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Câmera</label>
               <button
                 type="button"
                 onClick={abrirCamera}
-                className="px-4 py-2 bg-[#7B4BFF] text-white rounded-lg hover:bg-[#6B46C1] transition-colors"
+                disabled={files.length >= 3}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  files.length >= 3 
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                    : 'bg-[#7B4BFF] text-white hover:bg-[#6B46C1]'
+                }`}
               >
                 📷 Tirar foto e guardar em PDF
               </button>
+              {files.length >= 3 && (
+                <p className="mt-1 text-xs text-gray-500">Máximo de 3 arquivos atingido</p>
+              )}
             </div>
 
             {error && (
@@ -626,33 +651,22 @@ export default function UploadArquivoPage() {
               </div>
               
               {/* Imagem */}
-              <div className="p-4">
-                <img 
-                  src={fotoCapturada} 
+              <div className="p-4">                <img 
+                  src={fotoAtualPrevia || fotoCapturada} 
                   alt="Foto capturada" 
                   className="max-w-full max-h-[70vh] object-contain rounded-lg mx-auto"
                 />
               </div>
                 {/* Footer do modal */}
-              <div className="flex items-center justify-between p-4 bg-gray-50 border-t">
-                <p className="text-sm text-gray-600">
-                  Esta foto foi convertida para PDF e está pronta para upload
+              <div className="flex items-center justify-between p-4 bg-gray-50 border-t">                <p className="text-sm text-gray-600">
+                  Esta foto foi convertida para PDF (P&B) e está pronta para upload
                 </p>
                 <div className="flex gap-2">
-                  <button                    onClick={() => {
-                      setFile(null);
-                      setFiles([]);
-                      setFotoCapturada(null);
-                      setFilePreview(null);
-                      setFotoCapturadaDaCamera(false);
-                      setMostrarPreviaFoto(false);
-                    }}
-                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                  >
-                    🗑️ Eliminar
-                  </button>
                   <button
-                    onClick={() => setMostrarPreviaFoto(false)}
+                    onClick={() => {
+                      setMostrarPreviaFoto(false);
+                      setFotoAtualPrevia(null);
+                    }}
                     className="px-4 py-2 bg-[#7B4BFF] text-white rounded-lg hover:bg-[#6B46C1] transition-colors"
                   >
                     Fechar
