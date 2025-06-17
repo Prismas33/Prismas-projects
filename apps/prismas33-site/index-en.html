@@ -16,6 +16,10 @@
     
     <!-- CSS -->
     <link rel="stylesheet" href="styles.css">
+    <!-- CSS de correção para seletor de idioma -->
+    <link rel="stylesheet" href="language-switcher-fix.css">
+    <!-- CSS de correção para o modal de contato -->
+    <link rel="stylesheet" href="contact-fix.css">
 </head>
 <body>    <!-- Header/Hero Section -->
     <header class="hero">
@@ -316,13 +320,12 @@
     </div>
 
     <!-- Available Apps Section -->
-    <section id="available-apps" class="marketplace available-section">
+    <section id="available-apps" class="marketplace available-section" style="margin-top: 0; padding-top: 24px;">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Available Apps</h2>
                 <p class="section-subtitle">Ready to use applications</p>
-            </div>
-            <div class="apps-grid">
+            </div>            <div class="apps-grid">
                 <!-- SafeCall Kids - APLICAÇÃO DISPONÍVEL -->
                 <div class="app-card available" data-app="safecallkids">
                     <div class="app-icon">
@@ -331,6 +334,19 @@
                     <h3 class="app-title">SafeCall Kids</h3>
                     <p class="app-description">Security app for children: Blocks calls from numbers not in the contact list.</p>
                     <button class="available-btn" onclick="window.open('safecallkids.html', '_blank')">
+                        <i class="fas fa-external-link-alt"></i>
+                        Available Now
+                    </button>
+                </div>
+                
+                <!-- LinkMind - APLICAÇÃO DISPONÍVEL -->
+                <div class="app-card available" data-app="linkmind">
+                    <div class="app-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h3 class="app-title">LinkMind</h3>
+                    <p class="app-description">Personal and professional assistant: tasks, appointments, goals, reminders, contact organization, smart notes, calendar integration, routine automation, and personalized insights for maximum productivity.</p>
+                    <button class="available-btn" onclick="window.open('https://linkmind.space/', '_blank')">
                         <i class="fas fa-external-link-alt"></i>
                         Available Now
                     </button>
@@ -385,8 +401,7 @@
                         Notify Me
                     </button>
                 </div>
-                
-                <!-- DocFlow 4 -->
+                  <!-- DocFlow 4 -->
                 <div class="app-card coming-soon" data-app="docflow4">
                     <div class="app-icon">
                         <i class="fas fa-file-alt"></i>
@@ -394,19 +409,6 @@
                     <h3 class="app-title">DocFlow 4</h3>
                     <p class="app-description">Perfect PDF → Word converter. Edit without errors.</p>
                     <button class="notify-btn" onclick="openNotifyModal('docflow4')">
-                        <i class="fas fa-bell"></i>
-                        Notify Me
-                    </button>
-                </div>
-                
-                <!-- LinkMind -->
-                <div class="app-card coming-soon" data-app="linkmind">
-                    <div class="app-icon">
-                        <i class="fas fa-link"></i>
-                    </div>
-                    <h3 class="app-title">LinkMind</h3>
-                    <p class="app-description">Personal and professional assistant: tasks, appointments, goals, reminders, contact organization, smart notes, calendar integration, routine automation, and personalized insights for maximum productivity.</p>
-                    <button class="notify-btn" onclick="openNotifyModal('linkmind')">
                         <i class="fas fa-bell"></i>
                         Notify Me
                     </button>
@@ -544,7 +546,6 @@
 
         console.log('🔥 Firebase initialized successfully');
     </script>
-    <script src="i18n.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="script.js"></script>
 </body>
