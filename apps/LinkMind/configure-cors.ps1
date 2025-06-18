@@ -3,7 +3,7 @@
 
 # Definição dos valores específicos do projeto
 $PROJECT_ID = "linkmind-94209"  # Extraído da URL do erro
-$STORAGE_BUCKET = "linkmind-94209.firebasestorage.app"  # Bucket atualizado para firebasestorage.app
+$STORAGE_BUCKET = "linkmind-94209.appspot.com"  # Bucket atualizado para appspot.com
 
 Write-Host "=== Configuração de CORS para Firebase Storage ===" -ForegroundColor Green
 Write-Host ""
