@@ -572,11 +572,11 @@ export default function UploadArquivoPage() {
 
         {/* Modal da Câmera */}
         {mostrarCamera && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
-            <div className="relative w-full h-full max-w-md max-h-screen bg-black flex flex-col">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 overflow-hidden">
+            <div className="relative w-full h-full sm:max-w-md md:max-h-[90vh] bg-black flex flex-col">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 bg-black/50 text-white">
-                <h3 className="text-lg font-medium">📷 Capturar Foto</h3>
+              <div className="flex items-center justify-between p-2 sm:p-4 bg-black/50 text-white">
+                <h3 className="text-base sm:text-lg font-medium">📷 Capturar Foto</h3>
                 <div className="flex space-x-2">
                   <button
                     onClick={alternarCamera}
@@ -596,7 +596,7 @@ export default function UploadArquivoPage() {
               </div>
 
               {/* Área do vídeo */}
-              <div className="flex-1 relative">
+              <div className="flex-1 relative overflow-hidden">
                 <video
                   ref={videoRef}
                   autoPlay
@@ -611,34 +611,35 @@ export default function UploadArquivoPage() {
               </div>
 
               {/* Controles */}
-              <div className="p-6 bg-black/50">
+              <div className="p-3 sm:p-6 bg-black/50 sticky bottom-0">
                 <div className="flex justify-center">
                   <button
                     onClick={capturarFoto}
                     disabled={capturandoFoto}
-                    className="w-16 h-16 bg-white rounded-full border-4 border-gray-300 hover:border-[#7B4BFF] transition-colors disabled:opacity-50 flex items-center justify-center"
+                    className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-full border-4 border-gray-300 hover:border-[#7B4BFF] transition-colors disabled:opacity-50 flex items-center justify-center"
                   >
                     {capturandoFoto ? (
                       <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#7B4BFF] border-t-transparent"></div>
                     ) : (
-                      <div className="w-12 h-12 bg-[#7B4BFF] rounded-full"></div>
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#7B4BFF] rounded-full"></div>
                     )}
                   </button>
                 </div>
-                <p className="text-center text-white text-sm mt-2">
+                <p className="text-center text-white text-xs sm:text-sm mt-2">
                   Toque para capturar e converter para PDF
                 </p>
               </div>
             </div>
-          </div>        )}
+          </div>
+        )}
 
         {/* Modal de Prévia da Foto */}
         {mostrarPreviaFoto && fotoCapturada && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
-            <div className="relative max-w-4xl max-h-[90vh] bg-white rounded-lg overflow-hidden">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 overflow-hidden">
+            <div className="relative w-full h-full sm:max-w-4xl sm:max-h-[90vh] sm:h-auto bg-white sm:rounded-lg overflow-hidden">
               {/* Header do modal */}
-              <div className="flex items-center justify-between p-4 bg-gray-50 border-b">
-                <h3 className="text-lg font-medium text-gray-900">📷 Foto Capturada</h3>
+              <div className="flex items-center justify-between p-2 sm:p-4 bg-gray-50 border-b">
+                <h3 className="text-base sm:text-lg font-medium text-gray-900">📷 Foto Capturada</h3>
                 <button
                   onClick={() => setMostrarPreviaFoto(false)}
                   className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
@@ -650,24 +651,27 @@ export default function UploadArquivoPage() {
                 </button>
               </div>
               
-              {/* Imagem */}
-              <div className="p-4">                <img 
+              {/* Imagem - conteúdo principal com scroll se necessário */}
+              <div className="p-2 sm:p-4 overflow-auto" style={{ maxHeight: 'calc(100vh - 140px)' }}>
+                <img 
                   src={fotoAtualPrevia || fotoCapturada} 
                   alt="Foto capturada" 
-                  className="max-w-full max-h-[70vh] object-contain rounded-lg mx-auto"
+                  className="max-w-full max-h-[60vh] sm:max-h-[70vh] object-contain rounded-lg mx-auto"
                 />
               </div>
-                {/* Footer do modal */}
-              <div className="flex items-center justify-between p-4 bg-gray-50 border-t">                <p className="text-sm text-gray-600">
+              
+              {/* Footer do modal - sticky para garantir que seja sempre visível */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-2 sm:p-4 bg-gray-50 border-t sticky bottom-0">
+                <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-0">
                   Esta foto foi convertida para PDF (P&B) e está pronta para upload
                 </p>
-                <div className="flex gap-2">
+                <div className="flex gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => {
                       setMostrarPreviaFoto(false);
                       setFotoAtualPrevia(null);
                     }}
-                    className="px-4 py-2 bg-[#7B4BFF] text-white rounded-lg hover:bg-[#6B46C1] transition-colors"
+                    className="w-full sm:w-auto px-4 py-2 bg-[#7B4BFF] text-white rounded-lg hover:bg-[#6B46C1] transition-colors text-sm sm:text-base"
                   >
                     Fechar
                   </button>
