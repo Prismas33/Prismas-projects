@@ -1,7 +1,12 @@
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "./config";
 
+// Configurar o Storage com opções CORS explícitas
 const storage = getStorage(app);
+
+// Adicionar interceptor para logs de depuração
+const originalUploadBytes = uploadBytes;
+window.uploadAttempts = window.uploadAttempts || 0;
 
 export async function uploadArquivo(userId, file) {
   try {

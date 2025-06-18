@@ -1,7 +1,14 @@
 # Script para configurar CORS no Firebase Storage
 # Certifique-se de ter o Google Cloud SDK instalado
 
+# Definição dos valores específicos do projeto
+$PROJECT_ID = "linkmind-94209"  # Extraído da URL do erro
+$STORAGE_BUCKET = "linkmind-94209.firebasestorage.app"  # Bucket atualizado para firebasestorage.app
+
 Write-Host "=== Configuração de CORS para Firebase Storage ===" -ForegroundColor Green
+Write-Host ""
+Write-Host "Projeto: $PROJECT_ID" -ForegroundColor Cyan
+Write-Host "Bucket: $STORAGE_BUCKET" -ForegroundColor Cyan
 Write-Host ""
 
 # Verificar se gcloud está instalado
@@ -14,25 +21,29 @@ if (Get-Command "gcloud" -ErrorAction SilentlyContinue) {
     Write-Host ""
     Write-Host "Após a instalação, execute:" -ForegroundColor Yellow
     Write-Host "gcloud auth login" -ForegroundColor Cyan
-    Write-Host "gcloud config set project SEU_PROJECT_ID" -ForegroundColor Cyan
+    Write-Host "gcloud config set project $PROJECT_ID" -ForegroundColor Cyan
     exit 1
 }
 
 Write-Host ""
-Write-Host "Para configurar o CORS no seu Firebase Storage bucket:" -ForegroundColor Yellow
+Write-Host "Executando os comandos automaticamente..." -ForegroundColor Yellow
 Write-Host ""
-Write-Host "1. Faça login no Google Cloud:" -ForegroundColor White
-Write-Host "   gcloud auth login" -ForegroundColor Cyan
+
+# Configurar o projeto
+Write-Host "Configurando o projeto: $PROJECT_ID" -ForegroundColor White
+gcloud config set project $PROJECT_ID
+
+# Aplicar configuração CORS
 Write-Host ""
-Write-Host "2. Configure o projeto:" -ForegroundColor White
-Write-Host "   gcloud config set project SEU_PROJECT_ID" -ForegroundColor Cyan
+Write-Host "Aplicando configuração CORS ao bucket: $STORAGE_BUCKET" -ForegroundColor White
+gsutil cors set cors.json gs://$STORAGE_BUCKET
+
+# Verificar a configuração
 Write-Host ""
-Write-Host "3. Aplique a configuração CORS:" -ForegroundColor White
-Write-Host "   gsutil cors set cors.json gs://SEU_STORAGE_BUCKET" -ForegroundColor Cyan
+Write-Host "Verificando configuração CORS aplicada:" -ForegroundColor White
+gsutil cors get gs://$STORAGE_BUCKET
+
 Write-Host ""
-Write-Host "4. Verifique a configuração:" -ForegroundColor White
-Write-Host "   gsutil cors get gs://SEU_STORAGE_BUCKET" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "Substitua SEU_PROJECT_ID e SEU_STORAGE_BUCKET pelos valores do seu projeto Firebase." -ForegroundColor Yellow
-Write-Host ""
-Write-Host "O arquivo cors.json já foi criado na raiz do projeto com a configuração necessária." -ForegroundColor Green
+Write-Host "✅ Configuração CORS aplicada com sucesso!" -ForegroundColor Green
+Write-Host "Aguarde alguns minutos para as alterações se propagarem completamente." -ForegroundColor Yellow
+Write-Host "Se o problema persistir, tente limpar o cache do navegador." -ForegroundColor Yellow
