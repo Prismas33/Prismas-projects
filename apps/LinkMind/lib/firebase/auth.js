@@ -4,7 +4,9 @@ import {
   signOut,
   updateProfile,
   updatePassword,
-  deleteUser
+  deleteUser,
+  EmailAuthProvider,
+  reauthenticateWithCredential
 } from "firebase/auth";
 import { doc, setDoc, getDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "./config";
@@ -55,19 +57,31 @@ export async function obterDadosUtilizador(nomeId) {
   try {
     const docRef = doc(db, "users", nomeId);
     const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data() : null;
-  } catch (error) {
+    return docSnap.exists() ? docSnap.data() : null;  } catch (error) {
     throw new Error("Erro ao obter dados: " + error.message);
   }
 }
 
-export async function trocarSenha(novaSenha) {
+export async function trocarSenha(novaSenha, senhaAtual = null) {
   try {
     if (!auth.currentUser) throw new Error("Usuário não autenticado");
+    
+    // Se for usuário com email/senha, precisa reautenticar com a senha atual
+    if (auth.currentUser.providerData?.[0]?.providerId !== 'google.com' && senhaAtual) {
+      const credential = EmailAuthProvider.credential(auth.currentUser.email, senhaAtual);
+      await reauthenticateWithCredential(auth.currentUser, credential);
+    }
+    
     await updatePassword(auth.currentUser, novaSenha);
     return true;
   } catch (error) {
-    throw new Error("Erro ao trocar senha: " + error.message);
+    if (error.code === 'auth/requires-recent-login') {
+      throw new Error("Sessão expirada. Faça login novamente para trocar a senha.");
+    } else if (error.code === 'auth/wrong-password') {
+      throw new Error("Senha atual incorreta. Tente novamente.");
+    } else {
+      throw new Error("Erro ao trocar senha: " + error.message);
+    }
   }
 }
 
@@ -79,6 +93,10 @@ export async function excluirConta() {
     const displayName = auth.currentUser.displayName;
     if (displayName) {
       const nomeId = nomeParaIdFirestore(displayName);
+      
+      // Antes de deletar, você poderia implementar aqui a lógica para exportar os dados
+      // Por exemplo, gerar um PDF com os dados do usuário
+      
       // Deletar documento do usuário no Firestore
       await deleteDoc(doc(db, "users", nomeId));
     }
@@ -87,7 +105,11 @@ export async function excluirConta() {
     await deleteUser(auth.currentUser);
     return true;
   } catch (error) {
-    throw new Error("Erro ao excluir conta: " + error.message);
+    if (error.code === 'auth/requires-recent-login') {
+      throw new Error("Para excluir sua conta, faça login novamente.");
+    } else {
+      throw new Error("Erro ao excluir conta: " + error.message);
+    }
   }
 }
 

@@ -37,13 +37,18 @@ export default function CardArquivo({ arquivo }) {
     
     return '';
   };
+  
+  // Verificar se existem múltiplos arquivos
+  const hasMultipleFiles = arquivo.fileUrls && Array.isArray(arquivo.fileUrls) && arquivo.fileUrls.length > 1;
+  const fileCount = hasMultipleFiles ? arquivo.fileUrls.length : (arquivo.fileUrl ? 1 : 0);
 
   return (
     <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
       {/* Header with priority indicator */}
       <div className="p-4 pb-0">
         <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center space-x-2">            <span className="text-xl">{getCategoriaIcon(arquivo.categoria)}</span>
+          <div className="flex items-center space-x-2">
+            <span className="text-xl">{getCategoriaIcon(arquivo.categoria)}</span>
             <h3 className="font-bold text-gray-800 text-lg leading-tight">{arquivo.nome || arquivo.titulo}</h3>
           </div>
           {arquivo.prioridade && (
@@ -51,7 +56,8 @@ export default function CardArquivo({ arquivo }) {
                  title={`Prioridade ${arquivo.prioridade}`}>
             </div>
           )}
-        </div>        {/* Category tag */}
+        </div>
+        {/* Category tag */}
         {arquivo.categoria && (
           <span className="inline-block bg-[#7B4BFF]/10 text-[#7B4BFF] text-xs px-2 py-1 rounded-full font-medium mb-3">
             {arquivo.categoria.charAt(0).toUpperCase() + arquivo.categoria.slice(1)}
@@ -63,7 +69,42 @@ export default function CardArquivo({ arquivo }) {
       <div className="px-4 pb-4">
         <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
           {arquivo.conteudo || arquivo.descricao}
-        </p>        {/* Dates */}
+        </p>
+        
+        {/* Mostrar contador de arquivos anexados */}
+        {fileCount > 0 && (
+          <div className="flex items-center space-x-2 mb-3">
+            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+            </svg>
+            <span className="text-xs text-gray-600">
+              {fileCount === 1 ? '1 documento anexado' : `${fileCount} documentos anexados`}
+            </span>
+          </div>
+        )}
+
+        {/* Lista de arquivos (quando há múltiplos) */}
+        {hasMultipleFiles && (
+          <div className="mb-3 space-y-1 bg-gray-50 p-2 rounded-md">
+            {arquivo.fileUrls.map((url, index) => (
+              <div key={index} className="flex items-center text-xs">
+                <svg className="w-3.5 h-3.5 mr-1 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <a 
+                  href={url} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-[#7B4BFF] hover:text-[#6B46C1] truncate"
+                >
+                  {arquivo.fileNames && arquivo.fileNames[index] ? arquivo.fileNames[index] : `Documento ${index+1}`}
+                </a>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {/* Dates */}
         {(arquivo.dataInicio || arquivo.dataFim) && (
           <div className="flex items-center text-xs text-gray-500 mb-3 space-x-4">
             {arquivo.dataInicio && (

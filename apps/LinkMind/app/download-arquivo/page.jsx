@@ -355,12 +355,46 @@ export default function DownloadArquivoPage() {
                   )}
                   <div className="mt-4 text-gray-700 whitespace-pre-line">
                     {arquivoSelecionado.conteudo || arquivoSelecionado.oque || arquivoSelecionado.descricao || "Sem descrição"}
-                  </div>
-                  {arquivoSelecionado.fileUrl && (
+                  </div>                  {/* Múltiplos anexos */}
+                  {arquivoSelecionado.fileUrls && Array.isArray(arquivoSelecionado.fileUrls) && arquivoSelecionado.fileUrls.length > 0 ? (
                     <div className="mt-4">
-                      <a href={arquivoSelecionado.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Abrir anexo</a>
+                      <h3 className="text-sm font-medium text-gray-700 mb-2">
+                        {arquivoSelecionado.fileUrls.length > 1 ? 'Anexos' : 'Anexo'}:
+                      </h3>
+                      <div className="space-y-2 bg-gray-50 p-3 rounded-md">
+                        {arquivoSelecionado.fileUrls.map((url, index) => (
+                          <div key={index} className="flex items-center">
+                            <svg className="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <a 
+                              href={url} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="text-blue-600 hover:text-blue-800 underline text-sm"
+                            >
+                              {arquivoSelecionado.fileNames && arquivoSelecionado.fileNames[index] 
+                                ? arquivoSelecionado.fileNames[index]
+                                : `Anexo ${index + 1}`
+                              }
+                            </a>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  )}
+                  ) : arquivoSelecionado.fileUrl ? (
+                    <div className="mt-4">
+                      <h3 className="text-sm font-medium text-gray-700 mb-2">Anexo:</h3>
+                      <div className="flex items-center bg-gray-50 p-3 rounded-md">
+                        <svg className="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <a href={arquivoSelecionado.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline text-sm">
+                          {arquivoSelecionado.fileName || "Abrir anexo"}
+                        </a>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             )}

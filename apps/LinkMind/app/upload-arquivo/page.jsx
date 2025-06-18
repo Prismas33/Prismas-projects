@@ -90,7 +90,7 @@ export default function UploadArquivoPage() {
   };  async function handleFileChange(e) {
     const selectedFiles = Array.from(e.target.files);
     
-    // Limitar a 3 arquivos
+    // Limitar a 3 arquivos no total
     const newFiles = [...files, ...selectedFiles].slice(0, 3);
     setFiles(newFiles);
     
@@ -108,6 +108,9 @@ export default function UploadArquivoPage() {
     // Limpar estados da câmera quando arquivo é selecionado manualmente
     setFotoCapturada(null);
     setFotoCapturadaDaCamera(false);
+    
+    // Limpar o campo de input para permitir selecionar os mesmos arquivos novamente se necessário
+    e.target.value = '';
   }
 
   // Função para abrir a câmera
@@ -274,11 +277,19 @@ export default function UploadArquivoPage() {
     setSuccess("");
     setSalvando(true);
     try {
-      let uploadedUrl = "";
-      if (file) {
-        uploadedUrl = await uploadFileStorage(user.uid, file);
-        setFileUrl(uploadedUrl);
+      // Array para armazenar URLs de todos os arquivos
+      let uploadedUrls = [];
+      let fileNames = [];
+      
+      // Fazer upload de todos os arquivos (até 3)
+      if (files.length > 0) {
+        for (const fileItem of files) {
+          const uploadedUrl = await uploadFileStorage(user.uid, fileItem);
+          uploadedUrls.push(uploadedUrl);
+          fileNames.push(fileItem.name);
+        }
       }
+      
       const novoArquivo = {
         nome: nomeArquivo,
         conteudo: conteudoArquivo,
@@ -286,19 +297,25 @@ export default function UploadArquivoPage() {
         prioridade,
         dataInicio: dataInicio || null,
         dataFim: dataFim || null,
-        fileUrl: uploadedUrl || null,
-        fileName: file ? file.name : null
+        fileUrls: uploadedUrls.length > 0 ? uploadedUrls : null, // Array de URLs
+        fileNames: fileNames.length > 0 ? fileNames : null, // Array de nomes
+        // Manter compatibilidade com código anterior
+        fileUrl: uploadedUrls.length > 0 ? uploadedUrls[0] : null,
+        fileName: fileNames.length > 0 ? fileNames[0] : null
       };
+      
       // Corrigir: usar nome formatado como ID do documento do usuário
       const userNomeId = nomeParaIdFirestore(user.displayName || "");
       await uploadArquivo(userNomeId, novoArquivo);
+      
       setSuccess("Arquivo enviado com sucesso!");
       setNomeArquivo("");
       setConteudoArquivo("");
       setCategoria("");
       setDataInicio("");
       setDataFim("");
-      setPrioridade("media");      setFile(null);
+      setPrioridade("media");
+      setFile(null);
       setFiles([]);
       setFilePreview(null);
       setFileUrl("");
@@ -478,49 +495,71 @@ export default function UploadArquivoPage() {
                 aria-label="Escolher documentos PDF ou imagens (máximo 3)"
                 disabled={files.length >= 3}
               />
-              {file && file.type.startsWith("image/") && filePreview && (
-                <img src={filePreview} alt="Pré-visualização" className="mt-2 max-h-40 rounded" />
-              )}              {file && file.type === "application/pdf" && (
-                <div className="flex items-center justify-between mt-2 p-2 bg-gray-50 rounded-lg border">
-                  <div className="flex items-center gap-2">
-                    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    <span className="text-gray-700">{file.name} (P&B)</span>
-                  </div>                  {fotoCapturadaDaCamera && fotoCapturada ? (
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setMostrarPreviaFoto(true)}
-                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
-                        title="Ver foto original"
-                      >
-                        👁️
-                      </button>
-                      <button
-                        type="button"                        onClick={() => {
-                          // Remover apenas o arquivo atual da câmera
-                          const novosArquivos = files.filter(f => f !== file);
-                          setFiles(novosArquivos);
-                          setFile(novosArquivos.length > 0 ? novosArquivos[0] : null);
-                          setFotoCapturada(null);
-                          setFilePreview(null);
-                          setFotoCapturadaDaCamera(false);
-                        }}
-                        className="p-2 text-red-600 hover:bg-red-100 rounded-full transition-colors"
-                        title="Eliminar e tirar nova foto"
-                      >
-                        🗑️
-                      </button>
+              
+              {/* Lista de arquivos selecionados */}
+              {files.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  <div className="text-sm text-gray-700 font-medium mb-1">
+                    {files.length} {files.length === 1 ? 'arquivo selecionado' : 'arquivos selecionados'}:
+                  </div>
+                  
+                  {files.map((arquivo, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border">
+                      <div className="flex items-center gap-2 overflow-hidden">
+                        {arquivo.type.startsWith("image/") ? (
+                          <svg className="w-6 h-6 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        ) : (
+                          <svg className="w-6 h-6 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                        )}
+                        <span className="text-gray-700 truncate">{arquivo.name}</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        {/* Prévia para imagens da câmera */}
+                        {fotosCapturadas[arquivo.name] && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFotoAtualPrevia(fotosCapturadas[arquivo.name]);
+                              setMostrarPreviaFoto(true);
+                            }}
+                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
+                            title="Ver foto original"
+                          >
+                            👁️
+                          </button>
+                        )}
+                        
+                        {/* Botão para remover arquivo */}
+                        <button
+                          type="button"
+                          onClick={() => removerArquivo(index)}
+                          className="p-2 text-red-600 hover:bg-red-100 rounded-full transition-colors"
+                          title="Remover arquivo"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </div>
-                  ) : (
-                    <div className="text-xs text-gray-500">Sem prévia disponível</div>
-                  )}
+                  ))}
                 </div>
               )}
+              
+              {/* Preview primeiro arquivo imagem */}
+              {file && file.type.startsWith("image/") && filePreview && (
+                <div className="mt-2">
+                  <p className="text-xs text-gray-500 mb-1">Prévia da primeira imagem:</p>
+                  <img src={filePreview} alt="Pré-visualização" className="max-h-40 rounded border" />
+                </div>
+              )}
+              
               {fileUrl && (
                 <div className="mt-2 text-green-700 text-sm">Arquivo enviado! <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="underline">Ver arquivo</a></div>
-              )}            </div>            <div>
+              )}            </div><div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Câmera</label>
               <button
                 type="button"

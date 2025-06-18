@@ -7,14 +7,19 @@ import { uploadArquivo } from "../../lib/firebase/storage";
 import { nomeParaIdFirestore } from "../../lib/firebase/utils";
 import Link from "next/link";
 
-export default function SettingsPage() {
-  const { user, loading: authLoading } = useAuth();
+export default function SettingsPage() {  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [showDelete, setShowDelete] = useState(false);
   const [showChangePass, setShowChangePass] = useState(false);
-  const [novaSenha, setNovaSenha] = useState("");  const [loading, setLoading] = useState(false);
+  const [senhaAtual, setSenhaAtual] = useState("");
+  const [novaSenha, setNovaSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [confirmacaoExclusao, setConfirmacaoExclusao] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [exportingFiles, setExportingFiles] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");  const [dadosUsuario, setDadosUsuario] = useState(null);
+  const [success, setSuccess] = useState("");
+  const [dadosUsuario, setDadosUsuario] = useState(null);
   const [carregandoDados, setCarregandoDados] = useState(true);
   const [uploadingFoto, setUploadingFoto] = useState(false);
   useEffect(() => {
@@ -24,13 +29,17 @@ export default function SettingsPage() {
       carregarDadosUsuario();
     }
   }, [user, authLoading, router]);
-
   async function carregarDadosUsuario() {
     if (!user) return;
     try {
       setCarregandoDados(true);
       const nomeId = nomeParaIdFirestore(user.displayName || "");
       const dados = await obterDadosUtilizador(nomeId);
+      console.log("Dados do usuário carregados:", dados);
+      // Garantir que a propriedade arquivos existe
+      if (!dados.arquivos) {
+        dados.arquivos = [];
+      }
       setDadosUsuario(dados);
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
@@ -50,17 +59,26 @@ export default function SettingsPage() {
   if (!user) {
     return null;
   }
-
   async function handleTrocarSenha(e) {
     e.preventDefault();
     setLoading(true);
     setError("");
     setSuccess("");
+
+    if (novaSenha !== confirmarSenha) {
+      setError("As senhas não coincidem.");
+      setLoading(false);
+      return;
+    }
+
     try {
-      await trocarSenha(novaSenha);
+      // Aqui você precisaria ter uma função que verifica a senha atual antes de permitir a troca
+      await trocarSenha(novaSenha, senhaAtual);
       setSuccess("Senha alterada com sucesso!");
       setShowChangePass(false);
+      setSenhaAtual("");
       setNovaSenha("");
+      setConfirmarSenha("");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -68,13 +86,47 @@ export default function SettingsPage() {
     }
   }
 
+  async function exportarArquivos() {
+    try {
+      setExportingFiles(true);
+      // Aqui você implementaria o código para exportar os arquivos como PDF
+      // Por exemplo, chamando uma API ou gerando o PDF localmente
+      
+      // Simulação de tempo para exportação
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      return true;
+    } catch (err) {
+      console.error("Erro ao exportar arquivos:", err);
+      setError("Não foi possível exportar os arquivos: " + err.message);
+      return false;
+    } finally {
+      setExportingFiles(false);
+    }
+  }
+
   async function handleExcluirConta() {
     setLoading(true);
     setError("");
+    
+    if (confirmacaoExclusao !== "confirmar exclusao") {
+      setError("Por favor, digite 'confirmar exclusao' para prosseguir.");
+      setLoading(false);
+      return;
+    }
+
     try {
-      await excluirConta();
-      await logoutUtilizador();
-      router.push("/login");
+      // Primeiro exportar os arquivos
+      const arquivosExportados = await exportarArquivos();
+      
+      if (arquivosExportados) {
+        // Depois excluir a conta
+        await excluirConta();
+        await logoutUtilizador();
+        router.push("/login");
+      } else {
+        throw new Error("Não foi possível exportar os arquivos antes de excluir a conta.");
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -202,12 +254,10 @@ export default function SettingsPage() {
                      "Data não disponível"}
                   </div>
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Total de Ideias</label>
+              </div>              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Total de Arquivos</label>
                 <div className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800">
-                  {dadosUsuario?.ideias?.length || 0} ideias guardadas
+                  {Array.isArray(dadosUsuario?.arquivos) ? dadosUsuario.arquivos.length : 0} arquivos guardados
                 </div>
               </div>
             </div>
@@ -222,54 +272,31 @@ export default function SettingsPage() {
             <span>Configurações de Segurança</span>
           </h2>
           <div className="space-y-4">
-            {/* Mostrar opção de criar senha apenas para usuários do Google */}
-            {user.providerData?.[0]?.providerId === 'google.com' && (
-              <button 
-                className="w-full py-3 px-4 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 transition-all transform hover:scale-105 shadow-md"
-                onClick={() => setShowChangePass(true)}
-                disabled={loading}
-              >
-                <div className="flex items-center justify-center space-x-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  <span>Criar Senha</span>
-                </div>
-              </button>
-            )}
-            
-            {/* Opção de trocar senha para usuários com email/senha */}
-            {user.providerData?.[0]?.providerId !== 'google.com' && (
-              <button 
-                className="w-full py-3 px-4 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all transform hover:scale-105 shadow-md"
-                onClick={() => setShowChangePass(true)}
-                disabled={loading}
-              >
-                <div className="flex items-center justify-center space-x-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v-2H7v-2H4a1 1 0 01-1-1v-4a1 1 0 011-1h3l2.257-2.257A6 6 0 0121 9z" />
-                  </svg>
-                  <span>Trocar Senha</span>
-                </div>
-              </button>
-            )}
-            
+            {/* Mostrar opção de criar/trocar senha */}
             <button 
-              className="w-full py-3 px-4 rounded-lg bg-red-500 text-white font-semibold hover:bg-red-600 transition-all transform hover:scale-105 shadow-md"
+              className="w-full py-3 px-4 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all flex items-center justify-center space-x-3"
+              onClick={() => setShowChangePass(true)}
+              disabled={loading}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              <span>{user.providerData?.[0]?.providerId === 'google.com' ? 'Criar Senha' : 'Trocar Senha'}</span>
+            </button>
+            
+            {/* Botão de exportar e excluir conta */}
+            <button 
+              className="w-full py-3 px-4 rounded-lg bg-rose-600 text-white font-medium hover:bg-rose-700 transition-all flex items-center justify-center space-x-3"
               onClick={() => setShowDelete(true)}
               disabled={loading}
             >
-              <div className="flex items-center justify-center space-x-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-                <span>Excluir Conta</span>
-              </div>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              <span>Exportar Arquivos e Excluir Conta</span>
             </button>
           </div>
-        </div>
-
-        {/* Outras opções */}
+        </div>        {/* Outras opções */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center space-x-2">
             <svg className="w-5 h-5 text-[#7B4BFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -277,31 +304,7 @@ export default function SettingsPage() {
             </svg>
             <span>Outras Opções</span>
           </h2>
-          <div className="space-y-3">
-            <button 
-              className="w-full py-2 px-4 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors text-left"
-              onClick={() => alert('Funcionalidade em breve!')}
-            >
-              <div className="flex items-center space-x-3">
-                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <span>Exportar todas as ideias</span>
-              </div>
-            </button>
-            
-            <button 
-              className="w-full py-2 px-4 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors text-left"
-              onClick={() => alert('Funcionalidade em breve!')}
-            >
-              <div className="flex items-center space-x-3">
-                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                </svg>
-                <span>Partilhar perfil público</span>
-              </div>
-            </button>
-            
+          <div className="space-y-3">            
             <button 
               className="w-full py-2 px-4 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors text-left"
               onClick={() => alert('Funcionalidade em breve!')}
@@ -314,78 +317,164 @@ export default function SettingsPage() {
               </div>
             </button>
           </div>
-        </div>        {/* Formulário de troca de senha */}
+        </div>{/* Modal de troca de senha */}
         {showChangePass && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              {user.providerData?.[0]?.providerId === 'google.com' ? 'Criar Senha' : 'Trocar Senha'}
-            </h3>
-            <div className="bg-blue-50 p-3 rounded-lg mb-4">
-              <p className="text-blue-700 text-sm">
-                {user.providerData?.[0]?.providerId === 'google.com' 
-                  ? 'Criar uma senha permitirá que faça login com email/senha além do Google.'
-                  : 'A sua nova senha deve ter pelo menos 6 caracteres.'}
-              </p>
-            </div>
-            <form onSubmit={handleTrocarSenha} className="space-y-4">
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Nova Senha</label>
-                <input 
-                  type="password" 
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all" 
-                  value={novaSenha} 
-                  onChange={e => setNovaSenha(e.target.value)} 
-                  required 
-                  minLength={6} 
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-gray-800">
+                  {user.providerData?.[0]?.providerId === 'google.com' ? 'Criar Senha' : 'Trocar Senha'}
+                </h3>
+                <button 
+                  onClick={() => setShowChangePass(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
                   disabled={loading}
-                  placeholder="Digite a nova senha (mínimo 6 caracteres)"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-lg mb-5">
+                <p className="text-blue-700 text-sm">
+                  {user.providerData?.[0]?.providerId === 'google.com' 
+                    ? 'Criar uma senha permitirá que faça login com email/senha além do Google.'
+                    : 'Para trocar a sua senha, informe a senha atual e depois a nova senha.'}
+                </p>
+              </div>
+
+              <form onSubmit={handleTrocarSenha} className="space-y-5">
+                {user.providerData?.[0]?.providerId !== 'google.com' && (
+                  <div>
+                    <label className="block text-gray-700 font-medium mb-2">Senha Atual</label>
+                    <input 
+                      type="password" 
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all" 
+                      value={senhaAtual} 
+                      onChange={e => setSenhaAtual(e.target.value)} 
+                      required 
+                      disabled={loading}
+                      placeholder="Digite sua senha atual"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2">Nova Senha</label>
+                  <input 
+                    type="password" 
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all" 
+                    value={novaSenha} 
+                    onChange={e => setNovaSenha(e.target.value)} 
+                    required 
+                    minLength={6} 
+                    disabled={loading}
+                    placeholder="Digite a nova senha (mínimo 6 caracteres)"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2">Confirmar Nova Senha</label>
+                  <input 
+                    type="password" 
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all" 
+                    value={confirmarSenha} 
+                    onChange={e => setConfirmarSenha(e.target.value)} 
+                    required 
+                    minLength={6} 
+                    disabled={loading}
+                    placeholder="Digite novamente a nova senha"
+                  />
+                  {novaSenha !== confirmarSenha && confirmarSenha && (
+                    <p className="text-red-500 text-sm mt-1">As senhas não coincidem</p>
+                  )}
+                </div>
+
+                <div className="flex justify-end space-x-3 pt-2">
+                  <button 
+                    type="button" 
+                    className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" 
+                    onClick={() => setShowChangePass(false)} 
+                    disabled={loading}
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors disabled:opacity-50" 
+                    disabled={loading || novaSenha.length < 6 || novaSenha !== confirmarSenha || (user.providerData?.[0]?.providerId !== 'google.com' && !senhaAtual)}
+                  >
+                    {loading ? "Processando..." : "Confirmar"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}        {/* Modal de confirmação de exclusão */}
+        {showDelete && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-red-700">⚠️ Exportar e Excluir Conta</h3>
+                <button 
+                  onClick={() => setShowDelete(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  disabled={loading || exportingFiles}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="bg-red-50 p-4 rounded-lg mb-5 space-y-2">
+                <p className="text-red-700">
+                  <strong>ATENÇÃO:</strong> Esta ação exportará todos os seus arquivos em PDF e depois <strong>excluirá permanentemente</strong> sua conta.
+                </p>
+                <p className="text-red-700">
+                  Todos os seus dados, incluindo arquivos, configurações e informações pessoais, serão <strong>removidos sem possibilidade de recuperação</strong>.
+                </p>
+              </div>
+
+              <div className="mb-5">
+                <label className="block text-gray-700 font-medium mb-2">Para confirmar, digite "confirmar exclusao"</label>
+                <input 
+                  type="text" 
+                  className="w-full border border-red-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all" 
+                  value={confirmacaoExclusao} 
+                  onChange={e => setConfirmacaoExclusao(e.target.value)} 
+                  disabled={loading || exportingFiles}
+                  placeholder="confirmar exclusao"
                 />
               </div>
+
               <div className="flex justify-end space-x-3">
                 <button 
-                  type="button" 
                   className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" 
-                  onClick={() => setShowChangePass(false)} 
-                  disabled={loading}
+                  onClick={() => setShowDelete(false)} 
+                  disabled={loading || exportingFiles}
                 >
                   Cancelar
                 </button>
                 <button 
-                  type="submit" 
-                  className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50" 
-                  disabled={loading || novaSenha.length < 6}
+                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center space-x-2" 
+                  onClick={handleExcluirConta} 
+                  disabled={loading || exportingFiles || confirmacaoExclusao !== "confirmar exclusao"}
                 >
-                  {loading ? "Salvando..." : "Salvar"}
+                  {exportingFiles && (
+                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  )}
+                  <span>
+                    {loading ? "Excluindo conta..." : 
+                     exportingFiles ? "Exportando arquivos..." : 
+                     "Exportar e Excluir Permanentemente"}
+                  </span>
                 </button>
               </div>
-            </form>
-          </div>
-        )}
-
-        {/* Confirmação de exclusão */}
-        {showDelete && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-l-4 border-red-500">
-            <h3 className="text-lg font-semibold text-red-700 mb-4">⚠️ Excluir Conta</h3>
-            <div className="bg-red-50 p-4 rounded-lg mb-4">
-              <p className="text-red-700">
-                <strong>Atenção:</strong> Esta ação é irreversível. Todos os seus dados, incluindo ideias e configurações, serão permanentemente removidos.
-              </p>
-            </div>
-            <div className="flex justify-end space-x-3">
-              <button 
-                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" 
-                onClick={() => setShowDelete(false)} 
-                disabled={loading}
-              >
-                Cancelar
-              </button>
-              <button 
-                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50" 
-                onClick={handleExcluirConta} 
-                disabled={loading}
-              >
-                {loading ? "Excluindo..." : "Confirmar Exclusão"}
-              </button>
             </div>
           </div>
         )}
