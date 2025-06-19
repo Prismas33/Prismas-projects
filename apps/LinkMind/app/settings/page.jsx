@@ -2,13 +2,16 @@
 import { useAuth } from "../../lib/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { trocarSenha, excluirConta, logoutUtilizador, obterDadosUtilizador, atualizarFotoPerfil } from "../../lib/firebase/auth";
+import { trocarSenha, excluirConta, logoutUtilizador, obterDadosUtilizador, atualizarFotoPerfil, atualizarIdiomaUsuario } from "../../lib/firebase/auth";
 import { uploadArquivo } from "../../lib/firebase/storage";
 import { nomeParaIdFirestore } from "../../lib/firebase/utils";
 import Link from "next/link";
+import { useI18n } from "../../lib/context/I18nContext";
 
-export default function SettingsPage() {  const { user, loading: authLoading } = useAuth();
+export default function SettingsPage() {
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const { lang, setLang, t } = useI18n();
   const [showDelete, setShowDelete] = useState(false);
   const [showChangePass, setShowChangePass] = useState(false);
   const [senhaAtual, setSenhaAtual] = useState("");
@@ -22,6 +25,7 @@ export default function SettingsPage() {  const { user, loading: authLoading } =
   const [dadosUsuario, setDadosUsuario] = useState(null);
   const [carregandoDados, setCarregandoDados] = useState(true);
   const [uploadingFoto, setUploadingFoto] = useState(false);
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login");
@@ -29,6 +33,16 @@ export default function SettingsPage() {  const { user, loading: authLoading } =
       carregarDadosUsuario();
     }
   }, [user, authLoading, router]);
+
+  // Sincronizar idioma do Firestore ao carregar dados do usuário
+  useEffect(() => {
+    if (dadosUsuario?.idioma && dadosUsuario.idioma !== lang) {
+      setLang(dadosUsuario.idioma);
+      localStorage.setItem('lang', dadosUsuario.idioma);
+    }
+    // eslint-disable-next-line
+  }, [dadosUsuario]);
+
   async function carregarDadosUsuario() {
     if (!user) return;
     try {
@@ -305,6 +319,31 @@ export default function SettingsPage() {  const { user, loading: authLoading } =
             <span>Outras Opções</span>
           </h2>
           <div className="space-y-3">            
+            {/* Seletor de idioma */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('language')}</label>
+              <select
+                value={lang}
+                onChange={async e => {
+                  const newLang = e.target.value;
+                  setLang(newLang);
+                  localStorage.setItem('lang', newLang);
+                  if (user) {
+                    const nomeId = nomeParaIdFirestore(user.displayName || "");
+                    try {
+                      await atualizarIdiomaUsuario(nomeId, newLang);
+                    } catch (err) {
+                      setError('Erro ao salvar idioma: ' + err.message);
+                    }
+                  }
+                }}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all text-gray-900"
+              >
+                <option value="pt">Português</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+            
             <button 
               className="w-full py-2 px-4 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors text-left"
               onClick={() => alert('Funcionalidade em breve!')}

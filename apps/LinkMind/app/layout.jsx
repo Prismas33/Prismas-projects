@@ -1,5 +1,6 @@
 import "../styles/globals.css";
 import { AuthProvider } from "../lib/context/AuthContext";
+import { I18nProvider } from "../lib/context/I18nContext";
 import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 import RouterErrorBoundary from "../components/RouterErrorBoundary";
 
@@ -32,8 +33,10 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen bg-gray-50" suppressHydrationWarning>
         <RouterErrorBoundary>
           <AuthProvider>
-            <ServiceWorkerRegister />
-            {children}
+            <I18nProvider>
+              <ServiceWorkerRegister />
+              {children}
+            </I18nProvider>
           </AuthProvider>
         </RouterErrorBoundary>
       </body>

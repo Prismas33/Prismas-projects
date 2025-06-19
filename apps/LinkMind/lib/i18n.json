@@ -1,0 +1,20 @@
+{
+  "pt": {
+    "welcome": "Bem-vindo ao LinkMind!",
+    "register": "Registar",
+    "login": "Entrar",
+    "language": "Idioma",
+    "choose_language": "Escolha o seu idioma",
+    "settings": "Definições",
+    "save": "Guardar"
+  },
+  "en": {
+    "welcome": "Welcome to LinkMind!",
+    "register": "Register",
+    "login": "Login",
+    "language": "Language",
+    "choose_language": "Choose your language",
+    "settings": "Settings",
+    "save": "Save"
+  }
+}

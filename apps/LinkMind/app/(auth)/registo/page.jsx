@@ -4,6 +4,7 @@ import { registarUtilizador } from "../../../lib/firebase/auth";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../lib/context/AuthContext";
 import Link from "next/link";
+import { useI18n } from "../../../lib/context/I18nContext";
 
 export default function RegistoPage() {
   const [nome, setNome] = useState("");
@@ -13,8 +14,10 @@ export default function RegistoPage() {
   const [accessPass, setAccessPass] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [lang, setLang] = useState(() => localStorage.getItem('lang') || 'pt');
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { t, setLang: setGlobalLang } = useI18n();
 
   // Redirecionar se já estiver logado
   useEffect(() => {
@@ -64,6 +67,9 @@ export default function RegistoPage() {
     } finally {
       setLoading(false);
     }
+
+    localStorage.setItem('lang', lang);
+    setGlobalLang(lang);
   }
 
   return (
@@ -71,9 +77,22 @@ export default function RegistoPage() {
       <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
           <img src="/logo.png" alt="LinkMind Logo" className="w-16 h-16 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-[#2A3F9E] mb-2">Criar Conta</h1>
+          <h1 className="text-2xl font-bold text-[#2A3F9E] mb-2">{t('register')}</h1>
           <p className="text-gray-600">Junte-se ao LinkMind e organize as suas ideias</p>
-        </div>        <form onSubmit={handleSubmit} className="space-y-4">
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('language')}</label>
+            <select
+              value={lang}
+              onChange={e => setLang(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all text-gray-900"
+              required
+            >
+              <option value="pt">Português</option>
+              <option value="en">English</option>
+            </select>
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Senha de Acesso</label>
             <input 

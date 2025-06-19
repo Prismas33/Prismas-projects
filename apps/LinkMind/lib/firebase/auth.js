@@ -124,3 +124,13 @@ export async function atualizarFotoPerfil(nomeId, fotoUrl) {
     throw new Error("Erro ao atualizar foto de perfil: " + error.message);
   }
 }
+
+export async function atualizarIdiomaUsuario(nomeId, idioma) {
+  try {
+    const userRef = doc(db, "users", nomeId);
+    await updateDoc(userRef, { idioma });
+    return true;
+  } catch (error) {
+    throw new Error("Erro ao atualizar idioma: " + error.message);
+  }
+}
