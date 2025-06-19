@@ -86,6 +86,22 @@ export default function RegistoPage() {
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
         <h1 className="text-2xl font-bold text-center mb-6 text-[#2A3F9E]">{t('register')}</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Seletor de idioma */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('language') || 'Idioma'}</label>
+            <select
+              value={lang}
+              onChange={e => {
+                setLang(e.target.value);
+                localStorage.setItem('lang', e.target.value);
+                setGlobalLang(e.target.value);
+              }}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all text-gray-900"
+            >
+              <option value="pt">Português</option>
+              <option value="en">English</option>
+            </select>
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{t('name') || 'Nome'}</label>
             <input
