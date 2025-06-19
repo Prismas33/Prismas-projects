@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Nexus5 Converter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="language-selector">
+    <label for="language-select">🌐</label>
+    <select id="language-select">
+      <option value="pt">Português</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+  
+  <div class="container">
+    <div class="header">
+      <h1>Nexus5 Converter</h1>
+      <p class="project-description">Selecione a pasta do projeto Next.js para converter em APK Android:</p>
+    </div>
+      <div class="main-actions">
+      <button id="select-folder">Selecionar Pasta</button>
+      <div id="folder-path" class="folder-path"></div>
+      <button id="start-convert" disabled>Converter para APK</button>
+      <div id="status-container">
+        <div id="status"></div>
+        <div id="progress-bar" class="progress-bar" style="display:none;">
+          <div id="progress-bar-fill" class="progress-bar-fill"></div>
+        </div>
+      </div>
+      <button id="show-requirements">Requisitos e Passo a Passo</button>
+    </div>
+    
+    <div id="sign-apk-section" class="sign-apk-section">
+      <h3>Assinar APK para Distribuição</h3>
+      <p class="sign-apk-help">Para publicar na Play Store, o APK precisa ser assinado. Se não possui um keystore, <a href="#" id="show-keystore-help" class="help-link">clique aqui para instruções</a>.</p>
+      <label for="keystore-file">Arquivo Keystore (.jks ou .keystore):</label>
+      <input type="file" id="keystore-file" accept=".jks,.keystore" class="sign-input" title="Selecione o arquivo keystore" />
+      <label for="keystore-password">Senha do Keystore:</label>
+      <input type="password" id="keystore-password" placeholder="Senha do Keystore" class="sign-input" />
+      <label for="key-alias">Alias da Chave:</label>
+      <input type="text" id="key-alias" placeholder="Alias da Chave" class="sign-input" />
+      <label for="key-password">Senha da Chave:</label>
+      <input type="password" id="key-password" placeholder="Senha da Chave" class="sign-input" />
+      <button id="sign-apk-btn" class="sign-btn">Assinar APK</button>
+      <div id="sign-apk-status" class="sign-status"></div>
+    </div>
+  </div>
+  
+  <!-- Modais fora da .container para centralização absoluta -->
+  <div id="requirements-modal" class="modal">
+    <div class="modal-content">
+      <button id="close-requirements" class="close-btn">Fechar</button>
+      <h2>Requisitos para Gerar APK</h2>
+      <div id="requirements-status" class="requirements-grid"></div>
+      <h3>Passo a Passo</h3>
+      <ol class="step-list">
+        <li>Selecione a pasta do seu projeto Next.js</li>
+        <li>Clique em "Converter para APK"</li>
+        <li>Aguarde o processo automático de build</li>
+        <li>O APK será gerado em <code>android-apk/android/app/build/outputs/apk/debug/app-debug.apk</code></li>
+        <li>(Opcional) Para distribuição, assine o APK usando <code>jarsigner</code> ou Android Studio</li>
+      </ol>
+    </div>
+  </div>
+  <div id="keystore-help-modal" class="modal">
+    <div class="modal-content">
+      <button id="close-keystore-help" class="close-btn">Fechar</button>
+      <h3>Como gerar um Keystore</h3>
+      <p>Execute o comando abaixo no terminal para criar um keystore:</p>
+      <pre class="keystore-pre">keytool -genkey -v -keystore meu-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias meu-alias</pre>
+      <ul>
+        <li><b>-keystore</b>: nome do arquivo keystore a ser criado</li>
+        <li><b>-alias</b>: nome da chave (key alias)</li>
+        <li>Guarde bem a senha do keystore e do alias, pois são obrigatórias para assinar o APK</li>
+      </ul>
+    </div>
+  </div>
+  <script src="translations.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>
