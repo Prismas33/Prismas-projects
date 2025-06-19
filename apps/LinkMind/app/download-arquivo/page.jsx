@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { downloadArquivos, obterSugestoes } from "../../lib/firebase/arquivos";
 import CardArquivo from "../../components/CardArquivo";
 import Link from "next/link";
+import { useI18n } from "../../lib/context/I18nContext";
 
 export default function DownloadArquivoPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { t } = useI18n();
   const [busca, setBusca] = useState("");
   const [resultados, setResultados] = useState([]);
   const [sugestoes, setSugestoes] = useState([]);
@@ -171,19 +173,17 @@ export default function DownloadArquivoPage() {
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-            </Link>
-            <div>              <h1 className="text-2xl font-bold text-gray-800">📥 Download de Arquivos</h1>
-              <p className="text-gray-600">Encontre e baixe os seus arquivos mentais guardados</p>
+            </Link>            <div>              <h1 className="text-2xl font-bold text-gray-800">📥 {t('download_file.title')}</h1>
+              <p className="text-gray-600">{t('download_file.subtitle')}</p>
             </div>
           </div>
         </div>
 
         {/* Search and Filters */}
         {/* Busca avançada moderna */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 flex flex-col gap-6">
-          {/* Busca por nome */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 flex flex-col gap-6">          {/* Busca por nome */}
           <div>
-            <label htmlFor="busca-nome" className="block text-sm font-medium text-gray-700 mb-1">Buscar por nome do arquivo</label>
+            <label htmlFor="busca-nome" className="block text-sm font-medium text-gray-700 mb-1">{t('download_file.search_by_name')}</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,7 +193,7 @@ export default function DownloadArquivoPage() {
               <input
                 id="busca-nome"
                 type="text"
-                placeholder="Digite para buscar..."
+                placeholder={t('download_file.search_placeholder')}
                 value={busca}
                 onChange={e => setBusca(e.target.value)}
                 onFocus={() => setMostrarSugestoes(true)}
@@ -221,10 +221,9 @@ export default function DownloadArquivoPage() {
           {/* Divisor visual */}
           <div className="border-t border-gray-100 my-2"></div>
           {/* Busca por datas */}
-          <div>
-            <div className="flex flex-col md:flex-row md:items-end gap-4">
+          <div>            <div className="flex flex-col md:flex-row md:items-end gap-4">
               <div className="flex-1">
-                <label htmlFor="data-inicio" className="block text-sm font-medium text-gray-700 mb-1">Data de início</label>
+                <label htmlFor="data-inicio" className="block text-sm font-medium text-gray-700 mb-1">{t('download_file.start_date')}</label>
                 <input
                   id="data-inicio"
                   type="date"
@@ -236,7 +235,7 @@ export default function DownloadArquivoPage() {
                 />
               </div>
               <div className="flex-1">
-                <label htmlFor="data-fim" className="block text-sm font-medium text-gray-700 mb-1">Data de fim</label>
+                <label htmlFor="data-fim" className="block text-sm font-medium text-gray-700 mb-1">{t('download_file.end_date')}</label>
                 <input
                   id="data-fim"
                   type="date"
@@ -248,7 +247,7 @@ export default function DownloadArquivoPage() {
                 />
               </div>
               <div className="flex flex-col gap-2 md:ml-4">
-                <span className="block text-xs text-gray-500 mb-1">Tipo de data</span>
+                <span className="block text-xs text-gray-500 mb-1">{t('download_file.date_type')}</span>
                 <div className="flex gap-2">
                   <label className="flex items-center gap-1 text-sm text-gray-700">
                     <input
@@ -257,7 +256,7 @@ export default function DownloadArquivoPage() {
                       onChange={() => setTipoData("criacao")}
                       className="accent-[#7B4BFF]"
                     />
-                    Criação
+                    {t('download_file.creation')}
                   </label>
                   <label className="flex items-center gap-1 text-sm text-gray-700">
                     <input
@@ -266,7 +265,7 @@ export default function DownloadArquivoPage() {
                       onChange={() => setTipoData("inicio")}
                       className="accent-[#7B4BFF]"
                     />
-                    Início
+                    {t('download_file.start')}
                   </label>
                   <label className="flex items-center gap-1 text-sm text-gray-700">
                     <input
@@ -275,7 +274,7 @@ export default function DownloadArquivoPage() {
                       onChange={() => setTipoData("fim")}
                       className="accent-[#7B4BFF]"
                     />
-                    Fim
+                    {t('download_file.end')}
                   </label>
                 </div>
               </div>
@@ -284,22 +283,21 @@ export default function DownloadArquivoPage() {
                   onClick={buscarPorIntervaloDatas}
                   className="px-6 py-3 bg-[#7B4BFF] text-white rounded-lg hover:bg-[#6B46C1] transition-colors font-semibold shadow-md"
                 >
-                  Procurar
+                  {t('download_file.search_button')}
                 </button>
               </div>
             </div>
-            <span className="block text-xs text-gray-400 mt-2">Pesquise arquivos entre datas de criação, início ou fim.</span>
+            <span className="block text-xs text-gray-400 mt-2">{t('download_file.search_help')}</span>
           </div>
         </div>
 
         {/* Resultados */}
         {(busca || (buscaDataInicio && buscaDataFim)) && (
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-white rounded-xl shadow-lg p-6">            <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-800">
-                {busca ? `Resultados para "${busca}"` : `Arquivos entre ${buscaDataInicio.split('-').reverse().join('/')} e ${buscaDataFim.split('-').reverse().join('/')}`}
+                {busca ? `${t('download_file.results_for')} "${busca}"` : `${t('download_file.files_between')} ${buscaDataInicio.split('-').reverse().join('/')} e ${buscaDataFim.split('-').reverse().join('/')}`}
                 <span className="text-sm text-gray-500 ml-2">
-                  ({resultados.length} {resultados.length === 1 ? "arquivo" : "arquivos"})
+                  ({resultados.length} {resultados.length === 1 ? t('download_file.file') : t('download_file.files')})
                 </span>
               </h3>
             </div>
@@ -315,7 +313,7 @@ export default function DownloadArquivoPage() {
                     className="flex justify-between items-center border-b border-gray-100 py-3 cursor-pointer hover:bg-gray-50"
                     onClick={() => { setArquivoSelecionado(arquivo); setModalArquivo(true); }}
                   >
-                    <span className="font-medium text-black">{arquivo.nome || arquivo.quem || arquivo.titulo || "Arquivo sem título"}</span>
+                    <span className="font-medium text-black">{arquivo.nome || arquivo.quem || arquivo.titulo || t('download_file.untitled_file')}</span>
                     <span className="text-xs text-black ml-4">{(arquivo.criadoEm || arquivo.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT') || "---"}</span>
                   </div>
                 ))}
@@ -326,9 +324,8 @@ export default function DownloadArquivoPage() {
                   <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                </div>
-                <h3 className="text-lg font-medium text-gray-700 mb-2">Nenhum resultado encontrado</h3>
-                <p className="text-gray-500 mb-4">Tente outro nome ou intervalo de datas.</p>
+                </div>                <h3 className="text-lg font-medium text-gray-700 mb-2">{t('download_file.no_results')}</h3>
+                <p className="text-gray-500 mb-4">{t('download_file.try_different')}</p>
               </div>
             )}
             {/* Modal de detalhes do arquivo */}
@@ -340,26 +337,23 @@ export default function DownloadArquivoPage() {
                     onClick={() => setModalArquivo(false)}
                   >
                     &times;
-                  </button>
-                  <h2 className="text-xl font-bold mb-2 text-[#7B4BFF]">
-                    {arquivoSelecionado.nome || arquivoSelecionado.quem || arquivoSelecionado.titulo || "Arquivo sem título"}
+                  </button>                  <h2 className="text-xl font-bold mb-2 text-[#7B4BFF]">
+                    {arquivoSelecionado.nome || arquivoSelecionado.quem || arquivoSelecionado.titulo || t('download_file.untitled_file')}
                   </h2>
                   <div className="mb-2 text-sm text-gray-500">
-                    Data de criação: {(arquivoSelecionado.criadoEm || arquivoSelecionado.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT')}<br/>
-                    Data de fim: {arquivoSelecionado.dataFim?.toDate?.()?.toLocaleDateString('pt-PT') || (arquivoSelecionado.dataFim ? new Date(arquivoSelecionado.dataFim).toLocaleDateString('pt-PT') : '---')}
+                    {t('download_file.creation_date')}: {(arquivoSelecionado.criadoEm || arquivoSelecionado.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT')}<br/>
+                    {t('download_file.end_date_label')}: {arquivoSelecionado.dataFim?.toDate?.()?.toLocaleDateString('pt-PT') || (arquivoSelecionado.dataFim ? new Date(arquivoSelecionado.dataFim).toLocaleDateString('pt-PT') : '---')}
                   </div>
                   {arquivoSelecionado.categoria && (
                     <div className="mb-2 text-xs inline-block bg-[#7B4BFF]/10 text-[#7B4BFF] px-2 py-1 rounded-full">
                       {arquivoSelecionado.categoria}
                     </div>
-                  )}
-                  <div className="mt-4 text-gray-700 whitespace-pre-line">
-                    {arquivoSelecionado.conteudo || arquivoSelecionado.oque || arquivoSelecionado.descricao || "Sem descrição"}
-                  </div>                  {/* Múltiplos anexos */}
-                  {arquivoSelecionado.fileUrls && Array.isArray(arquivoSelecionado.fileUrls) && arquivoSelecionado.fileUrls.length > 0 ? (
-                    <div className="mt-4">
+                  )}                  <div className="mt-4 text-gray-700 whitespace-pre-line">
+                    {arquivoSelecionado.conteudo || arquivoSelecionado.oque || arquivoSelecionado.descricao || t('download_file.no_description')}
+                  </div>{/* Múltiplos anexos */}
+                  {arquivoSelecionado.fileUrls && Array.isArray(arquivoSelecionado.fileUrls) && arquivoSelecionado.fileUrls.length > 0 ? (                    <div className="mt-4">
                       <h3 className="text-sm font-medium text-gray-700 mb-2">
-                        {arquivoSelecionado.fileUrls.length > 1 ? 'Anexos' : 'Anexo'}:
+                        {arquivoSelecionado.fileUrls.length > 1 ? t('download_file.attachments') : t('download_file.attachment')}:
                       </h3>
                       <div className="space-y-2 bg-gray-50 p-3 rounded-md">
                         {arquivoSelecionado.fileUrls.map((url, index) => (
@@ -382,15 +376,14 @@ export default function DownloadArquivoPage() {
                         ))}
                       </div>
                     </div>
-                  ) : arquivoSelecionado.fileUrl ? (
-                    <div className="mt-4">
-                      <h3 className="text-sm font-medium text-gray-700 mb-2">Anexo:</h3>
+                  ) : arquivoSelecionado.fileUrl ? (                    <div className="mt-4">
+                      <h3 className="text-sm font-medium text-gray-700 mb-2">{t('download_file.attachment')}:</h3>
                       <div className="flex items-center bg-gray-50 p-3 rounded-md">
                         <svg className="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         <a href={arquivoSelecionado.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline text-sm">
-                          {arquivoSelecionado.fileName || "Abrir anexo"}
+                          {arquivoSelecionado.fileName || t('download_file.open_attachment')}
                         </a>
                       </div>
                     </div>

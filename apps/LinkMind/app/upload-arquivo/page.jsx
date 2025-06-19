@@ -9,10 +9,12 @@ import AutocompleteInput from "../../components/AutocompleteInput";
 import HistoricoArquivo from "../../components/HistoricoArquivo";
 import Link from "next/link";
 import jsPDF from 'jspdf';
+import { useI18n } from "../../lib/context/I18nContext";
 
 export default function UploadArquivoPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { t } = useI18n();
   const [categoria, setCategoria] = useState("");
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
@@ -376,19 +378,22 @@ export default function UploadArquivoPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
+      <div className="max-w-2xl mx-auto">        {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 mb-2">
             <Link href="/dashboard" className="text-[#7B4BFF] hover:text-[#6B46C1]">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-            </Link>            <div>
-              <h1 className="text-2xl font-bold text-gray-800">📁 Upload de Arquivo Mental</h1>
-              <p className="text-gray-600">Envie e organize arquivos da sua mente auxiliar</p>
-            </div>
+            </Link>
+            <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+              <svg className="w-7 h-7 text-yellow-400 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+              </svg>
+              {t('upload_file.title')}
+            </h1>
           </div>
+          <p className="text-gray-600 ml-10">{t('upload_file.subtitle')}</p>
         </div>
 
         {/* Form */}
@@ -397,8 +402,8 @@ export default function UploadArquivoPage() {
             <div>
               <AutocompleteInput
                 ref={nomeInputRef}
-                label="Nome do Arquivo *"
-                placeholder="Nome do arquivo mental (ex: João Silva, Projeto X, Ideia Y)"
+                label={t('upload_file.file_name')}
+                placeholder={t('upload_file.file_name_placeholder')}
                 value={nomeArquivo}
                 onChange={handleNomeArquivoChange}
                 onSelect={handleArquivoSelect}
@@ -418,9 +423,9 @@ export default function UploadArquivoPage() {
             )}
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Conteúdo do Arquivo *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('upload_file.file_content')}</label>
               <textarea
-                placeholder="Descreva o conteúdo do arquivo mental"
+                placeholder={t('upload_file.file_content_placeholder')}
                 value={conteudoArquivo}
                 onChange={e => setConteudoArquivo(e.target.value)}
                 required
@@ -431,12 +436,12 @@ export default function UploadArquivoPage() {
 
             {/* Prioridade */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Prioridade</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('upload_file.priority')}</label>
               <div className="flex space-x-4">
                 {[
-                  { value: "baixa", label: "Baixa", color: "from-green-400 to-green-500" },
-                  { value: "media", label: "Média", color: "from-yellow-400 to-yellow-500" },
-                  { value: "alta", label: "Alta", color: "from-red-400 to-red-500" }
+                  { value: "baixa", label: t('upload_file.priority_low'), color: "from-green-400 to-green-500" },
+                  { value: "media", label: t('upload_file.priority_medium'), color: "from-yellow-400 to-yellow-500" },
+                  { value: "alta", label: t('upload_file.priority_high'), color: "from-red-400 to-red-500" }
                 ].map(option => (
                   <label key={option.value} className="flex items-center cursor-pointer">
                     <input
@@ -456,14 +461,14 @@ export default function UploadArquivoPage() {
 
             {/* Quando - apenas título */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Quando</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('upload_file.when')}</label>
             </div>
 
             {/* Datas */}
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Data de Início (opcional)
+                  {t('upload_file.start_date')}
                 </label>                <input 
                   type="date" 
                   value={dataInicio} 
@@ -474,7 +479,7 @@ export default function UploadArquivoPage() {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Data de Fim (opcional)
+                  {t('upload_file.end_date')}
                 </label>                <input 
                   type="date" 
                   value={dataFim} 
@@ -484,7 +489,7 @@ export default function UploadArquivoPage() {
               </div>
             </div>            <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Documento (PDF ou Imagem) - Máximo 3 arquivos
+                {t('upload_file.document')} - {t('upload_file.max_files', { count: 3 })}
               </label>
               <input
                 type="file"
@@ -492,7 +497,7 @@ export default function UploadArquivoPage() {
                 onChange={handleFileChange}
                 multiple
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all"
-                aria-label="Escolher documentos PDF ou imagens (máximo 3)"
+                aria-label={t('upload_file.choose_documents')}
                 disabled={files.length >= 3}
               />
               
@@ -500,7 +505,7 @@ export default function UploadArquivoPage() {
               {files.length > 0 && (
                 <div className="mt-3 space-y-2">
                   <div className="text-sm text-gray-700 font-medium mb-1">
-                    {files.length} {files.length === 1 ? 'arquivo selecionado' : 'arquivos selecionados'}:
+                    {files.length} {files.length === 1 ? t('upload_file.file_selected') : t('upload_file.files_selected')}:
                   </div>
                   
                   {files.map((arquivo, index) => (
@@ -528,7 +533,7 @@ export default function UploadArquivoPage() {
                               setMostrarPreviaFoto(true);
                             }}
                             className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
-                            title="Ver foto original"
+                            title={t('upload_file.view_original_photo')}
                           >
                             👁️
                           </button>
@@ -539,7 +544,7 @@ export default function UploadArquivoPage() {
                           type="button"
                           onClick={() => removerArquivo(index)}
                           className="p-2 text-red-600 hover:bg-red-100 rounded-full transition-colors"
-                          title="Remover arquivo"
+                          title={t('upload_file.remove_file')}
                         >
                           🗑️
                         </button>
@@ -552,15 +557,15 @@ export default function UploadArquivoPage() {
               {/* Preview primeiro arquivo imagem */}
               {file && file.type.startsWith("image/") && filePreview && (
                 <div className="mt-2">
-                  <p className="text-xs text-gray-500 mb-1">Prévia da primeira imagem:</p>
+                  <p className="text-xs text-gray-500 mb-1">{t('upload_file.image_preview')}:</p>
                   <img src={filePreview} alt="Pré-visualização" className="max-h-40 rounded border" />
                 </div>
               )}
               
               {fileUrl && (
-                <div className="mt-2 text-green-700 text-sm">Arquivo enviado! <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="underline">Ver arquivo</a></div>
+                <div className="mt-2 text-green-700 text-sm">{t('upload_file.file_uploaded')} <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="underline">{t('upload_file.view_file')}</a></div>
               )}            </div><div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Câmera</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('upload_file.camera')}</label>
               <button
                 type="button"
                 onClick={abrirCamera}
@@ -571,10 +576,10 @@ export default function UploadArquivoPage() {
                     : 'bg-[#7B4BFF] text-white hover:bg-[#6B46C1]'
                 }`}
               >
-                📷 Tirar foto e guardar em PDF
+                📷 {t('upload_file.take_photo_pdf')}
               </button>
               {files.length >= 3 && (
-                <p className="mt-1 text-xs text-gray-500">Máximo de 3 arquivos atingido</p>
+                <p className="mt-1 text-xs text-gray-500">{t('upload_file.max_files_reached')}</p>
               )}
             </div>
 
@@ -597,14 +602,14 @@ export default function UploadArquivoPage() {
                 className="flex-1 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-white p-3 rounded-lg font-medium hover:shadow-lg transform hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-disabled={salvando}
               >
-                {salvando ? "A enviar..." : "� Upload do Arquivo"}
+                {salvando ? t('upload_file.sending') : t('upload_file.upload_file')}
               </button>
               
               <Link 
                 href="/dashboard"
                 className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                Cancelar
+                {t('upload_file.cancel')}
               </Link>
             </div>
           </form>        </div>
@@ -615,19 +620,19 @@ export default function UploadArquivoPage() {
             <div className="relative w-full h-full sm:max-w-md md:max-h-[90vh] bg-black flex flex-col">
               {/* Header */}
               <div className="flex items-center justify-between p-2 sm:p-4 bg-black/50 text-white">
-                <h3 className="text-base sm:text-lg font-medium">📷 Capturar Foto</h3>
+                <h3 className="text-base sm:text-lg font-medium">{t('upload_file.capture_photo')}</h3>
                 <div className="flex space-x-2">
                   <button
                     onClick={alternarCamera}
                     className="p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
-                    title="Alternar câmera"
+                    title={t('upload_file.switch_camera')}
                   >
                     🔄
                   </button>
                   <button
                     onClick={fecharCamera}
                     className="p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
-                    title="Fechar"
+                    title={t('upload_file.close')}
                   >
                     ✕
                   </button>
@@ -665,7 +670,7 @@ export default function UploadArquivoPage() {
                   </button>
                 </div>
                 <p className="text-center text-white text-xs sm:text-sm mt-2">
-                  Toque para capturar e converter para PDF
+                  {t('upload_file.tap_capture')}
                 </p>
               </div>
             </div>
@@ -678,11 +683,11 @@ export default function UploadArquivoPage() {
             <div className="relative w-full h-full sm:max-w-4xl sm:max-h-[90vh] sm:h-auto bg-white sm:rounded-lg overflow-hidden">
               {/* Header do modal */}
               <div className="flex items-center justify-between p-2 sm:p-4 bg-gray-50 border-b">
-                <h3 className="text-base sm:text-lg font-medium text-gray-900">📷 Foto Capturada</h3>
+                <h3 className="text-base sm:text-lg font-medium text-gray-900">{t('upload_file.captured_photo')}</h3>
                 <button
                   onClick={() => setMostrarPreviaFoto(false)}
                   className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
-                  title="Fechar"
+                  title={t('upload_file.close')}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -702,7 +707,7 @@ export default function UploadArquivoPage() {
               {/* Footer do modal - sticky para garantir que seja sempre visível */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-2 sm:p-4 bg-gray-50 border-t sticky bottom-0">
                 <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-0">
-                  Esta foto foi convertida para PDF (P&B) e está pronta para upload
+                  {t('upload_file.photo_converted')}
                 </p>
                 <div className="flex gap-2 w-full sm:w-auto">
                   <button
@@ -712,7 +717,7 @@ export default function UploadArquivoPage() {
                     }}
                     className="w-full sm:w-auto px-4 py-2 bg-[#7B4BFF] text-white rounded-lg hover:bg-[#6B46C1] transition-colors text-sm sm:text-base"
                   >
-                    Fechar
+                    {t('upload_file.close')}
                   </button>
                 </div>
               </div>

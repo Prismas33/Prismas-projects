@@ -6,6 +6,7 @@ import { downloadArquivos } from "../../lib/firebase/arquivos";
 import { logoutUtilizador, obterDadosUtilizador } from "../../lib/firebase/auth";
 import { nomeParaIdFirestore } from "../../lib/firebase/utils";
 import Link from "next/link";
+import { useI18n } from "../../lib/context/I18nContext";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
@@ -23,6 +24,7 @@ export default function DashboardPage() {
   const [arquivosVencemHoje, setArquivosVencemHoje] = useState([]);
   const [modalArquivo, setModalArquivo] = useState(false);
   const [arquivoSelecionado, setArquivoSelecionado] = useState(null);
+  const { t } = useI18n();
 
   useEffect(() => {
     setMounted(true);
@@ -158,9 +160,8 @@ export default function DashboardPage() {
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           <div className="flex flex-col gap-4 w-full">
             {/* Linha 1: Saudação e logo à direita */}
-            <div className="w-full flex flex-row items-center justify-between">
-              <h1 className="text-2xl font-bold text-gray-800">
-                Olá, {primeiroNome || "Utilizador"}!
+            <div className="w-full flex flex-row items-center justify-between">              <h1 className="text-2xl font-bold text-gray-800">
+                {t('dashboard.bemVindo', { name: primeiroNome || "Utilizador" })}
               </h1>
               <img 
                 src="/vector.png" 
@@ -197,7 +198,7 @@ export default function DashboardPage() {
                       <circle cx="12" cy="12" r="3" />
                     </svg>
                     <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                      Definições
+                      {t('definicoes')}
                     </span>
                   </button>
                 </Link>
@@ -210,7 +211,7 @@ export default function DashboardPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
                   <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    Terminar sessão
+                    {t('terminarSessao')}
                   </span>
                 </button>
               </div>
@@ -218,7 +219,7 @@ export default function DashboardPage() {
             {/* Linha 3: Mensagem de boas-vindas e data */}
             <div className="w-full flex flex-row items-center gap-2 justify-start">
               <span className="text-xl">👋</span>
-              <span className="text-gray-700 font-medium">Bem-vindo ao teu espaço mental digital</span>
+              <span className="text-gray-700 font-medium">{t('dashboard.bemVindoMensagem')}</span>
               <span className="text-sm text-gray-500 ml-2">
                 {new Date().toLocaleDateString('pt-PT', { 
                   weekday: 'long', 
@@ -241,9 +242,9 @@ export default function DashboardPage() {
                   </svg>
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold">Upload</h2>
-                  <p className="text-white/80 text-sm">Adiciona novos ficheiros à tua mente virtual</p>
-                  <p className="text-xs text-white/60 mt-1">💡 Capta o que pensas</p>
+                  <h2 className="text-lg font-bold">{t('acao.upload.titulo')}</h2>
+                  <p className="text-white/80 text-sm">{t('acao.upload.descricao')}</p>
+                  <p className="text-xs text-white/60 mt-1">💡 {t('acao.upload.dica')}</p>
                 </div>
               </div>
             </div>
@@ -257,9 +258,9 @@ export default function DashboardPage() {
                   </svg>
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold">Download</h2>
-                  <p className="text-white/80 text-sm">Vasculha no interior da tua mente</p>
-                  <p className="text-xs text-white/60 mt-1">🔍 Descobre e relembra</p>
+                  <h2 className="text-lg font-bold">{t('acao.download.titulo')}</h2>
+                  <p className="text-white/80 text-sm">{t('acao.download.descricao')}</p>
+                  <p className="text-xs text-white/60 mt-1">🔍 {t('acao.download.dica')}</p>
                 </div>
               </div>
             </div>
@@ -267,25 +268,25 @@ export default function DashboardPage() {
         </div>
         {/* Stats rápidas */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Total de ficheiros enviados hoje">            <div className="text-2xl font-bold text-[#7B4BFF]">{arquivosHoje}</div>
-            <div className="text-sm text-gray-600">Uploads de hoje</div>
+            <div className="text-sm text-gray-600">{t('dashboard.uploadsHoje')}</div>
           </div>          <div 
             className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow cursor-pointer" 
             title="Arquivos com data de fim esta semana"
             onClick={() => setModalSemanaAberto(true)}
           >
             <div className="text-2xl font-bold text-green-500">{arquivosSemanaAtual}</div>
-            <div className="text-sm text-gray-600">A vencer esta semana</div>
+            <div className="text-sm text-gray-600">{t('dashboard.aVencerEstaSemana')}</div>
           </div>          <div 
             className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow cursor-pointer" 
             title="Arquivos com data de fim hoje"
             onClick={() => setModalHojeAberto(true)}
           >
             <div className="text-2xl font-bold text-orange-500">{arquivosHoje}</div>
-            <div className="text-sm text-gray-600">A vencer hoje</div>
+            <div className="text-sm text-gray-600">{t('dashboard.aVencerHoje')}</div>
           </div>
           <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Dados sincronizados na nuvem">
             <div className="text-2xl font-bold text-blue-500">💾</div>
-            <div className="text-sm text-gray-600">Sincronizado</div>
+            <div className="text-sm text-gray-600">{t('sincronizado')}</div>
           </div>
         </div>
         {/* O que vai na tua mente - Últimos 10 tópicos */}
@@ -293,11 +294,11 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-bold text-gray-800 flex items-center space-x-2">
               <span>🧠</span>
-              <span>O que vai na tua mente</span>
+              <span>{t('dashboard.oQueVaiNaSuaMente')}</span>
             </h3>
             {arquivos.length > 3 && (
               <Link href="/download-arquivo" className="text-[#7B4BFF] hover:text-[#6A3FEF] text-sm font-medium transition-colors">
-                Ver todos →
+                {t('verTodos')} →
               </Link>
             )}
           </div>
@@ -314,10 +315,10 @@ export default function DashboardPage() {
                   onClick={() => { setArquivoSelecionado(arquivo); setModalArquivo(true); }}
                 >
                   <div className="font-medium text-gray-800 group-hover:text-[#7B4BFF] transition-colors">
-                    {arquivo.nome || arquivo.quem || arquivo.titulo || "Arquivo sem título"}
+                    {arquivo.nome || arquivo.quem || arquivo.titulo || t('arquivoSemTitulo')}
                   </div>
                   <div className="text-xs text-gray-400 ml-4 text-right">
-                    {(arquivo.criadoEm || arquivo.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT') || "Hoje"}
+                    {(arquivo.criadoEm || arquivo.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT') || t('hoje')}
                   </div>
                 </div>
               ))}
@@ -329,11 +330,11 @@ export default function DashboardPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </div>
-              <h4 className="text-lg font-medium text-gray-600 mb-2">Pronto para o seu primeiro arquivo?</h4>
-              <p className="text-gray-500 mb-6">Envie os seus pensamentos e organize-os de forma inteligente</p>
+              <h4 className="text-lg font-medium text-gray-600 mb-2">{t('prontoParaSeuPrimeiroArquivo')}</h4>
+              <p className="text-gray-500 mb-6">{t('envieSeusPensamentos')}</p>
               <Link href="/upload-arquivo">
                 <button className="bg-[#7B4BFF] text-white px-6 py-3 rounded-lg hover:bg-[#6A3FEF] transition-colors font-medium">
-                  📁 Enviar primeiro arquivo
+                  📁 {t('enviarPrimeiroArquivo')}
                 </button>
               </Link>
             </div>
@@ -349,11 +350,11 @@ export default function DashboardPage() {
                   &times;
                 </button>
                 <h2 className="text-xl font-bold mb-2 text-[#7B4BFF]">
-                  {arquivoSelecionado.nome || arquivoSelecionado.quem || arquivoSelecionado.titulo || "Arquivo sem título"}
+                  {arquivoSelecionado.nome || arquivoSelecionado.quem || arquivoSelecionado.titulo || t('arquivoSemTitulo')}
                 </h2>
                 <div className="mb-2 text-sm text-gray-500">
-                  Data de criação: {(arquivoSelecionado.criadoEm || arquivoSelecionado.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT')}<br/>
-                  Data de fim: {arquivoSelecionado.dataFim?.toDate?.()?.toLocaleDateString('pt-PT') || (arquivoSelecionado.dataFim ? new Date(arquivoSelecionado.dataFim).toLocaleDateString('pt-PT') : '---')}
+                  {t('dataCriacao')}: {(arquivoSelecionado.criadoEm || arquivoSelecionado.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT')}<br/>
+                  {t('dataFim')}: {arquivoSelecionado.dataFim?.toDate?.()?.toLocaleDateString('pt-PT') || (arquivoSelecionado.dataFim ? new Date(arquivoSelecionado.dataFim).toLocaleDateString('pt-PT') : '---')}
                 </div>
                 {arquivoSelecionado.categoria && (
                   <div className="mb-2 text-xs inline-block bg-[#7B4BFF]/10 text-[#7B4BFF] px-2 py-1 rounded-full">
@@ -361,11 +362,11 @@ export default function DashboardPage() {
                   </div>
                 )}
                 <div className="mt-4 text-gray-700 whitespace-pre-line">
-                  {arquivoSelecionado.conteudo || arquivoSelecionado.oque || arquivoSelecionado.descricao || "Sem descrição"}
+                  {arquivoSelecionado.conteudo || arquivoSelecionado.oque || arquivoSelecionado.descricao || t('semDescricao')}
                 </div>
                 {arquivoSelecionado.fileUrl && (
                   <div className="mt-4">
-                    <a href={arquivoSelecionado.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Abrir anexo</a>
+                    <a href={arquivoSelecionado.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{t('abrirAnexo')}</a>
                   </div>
                 )}
               </div>
@@ -378,7 +379,7 @@ export default function DashboardPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-800">📅 Arquivos a vencer esta semana</h2>
+                <h2 className="text-xl font-bold text-gray-800">{t('dashboard.arquivosAVencerEstaSemana')}</h2>
                 <button 
                   onClick={() => setModalSemanaAberto(false)}
                   className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -394,14 +395,14 @@ export default function DashboardPage() {
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-1">
                             <h4 className="font-medium text-gray-800">
-                              {arquivo.nome || arquivo.quem || arquivo.titulo || "Arquivo sem título"}
+                              {arquivo.nome || arquivo.quem || arquivo.titulo || t('arquivoSemTitulo')}
                             </h4>
                             {arquivo.fileUrl && (
                               <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">📎</span>
                             )}
                           </div>
                           <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                            {arquivo.conteudo?.substring(0, 150) || arquivo.oque?.substring(0, 150) || arquivo.descricao?.substring(0, 150) || "Sem descrição"}
+                            {arquivo.conteudo?.substring(0, 150) || arquivo.oque?.substring(0, 150) || arquivo.descricao?.substring(0, 150) || t('semDescricao')}
                             {(arquivo.conteudo?.length > 150 || arquivo.oque?.length > 150 || arquivo.descricao?.length > 150) && "..."}
                           </p>
                           {arquivo.categoria && (
@@ -412,10 +413,10 @@ export default function DashboardPage() {
                         </div>
                         <div className="text-xs text-gray-400 ml-4 text-right">
                           <div className="font-medium text-green-600">
-                            Vence: {arquivo.dataFim?.toDate?.()?.toLocaleDateString('pt-PT') || new Date(arquivo.dataFim).toLocaleDateString('pt-PT')}
+                            {t('vence')}: {arquivo.dataFim?.toDate?.()?.toLocaleDateString('pt-PT') || new Date(arquivo.dataFim).toLocaleDateString('pt-PT')}
                           </div>
                           <div className="mt-1 opacity-60">
-                            Criado: {(arquivo.criadoEm || arquivo.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT') || "N/A"}
+                            {t('criado')}: {(arquivo.criadoEm || arquivo.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT') || "N/A"}
                           </div>
                         </div>
                       </div>
@@ -425,7 +426,7 @@ export default function DashboardPage() {
               ) : (
                 <div className="text-center py-8">
                   <div className="text-gray-400 text-4xl mb-2">📅</div>
-                  <p className="text-gray-600">Nenhum arquivo vence esta semana</p>
+                  <p className="text-gray-600">{t('nenhumArquivoVenceEstaSemana')}</p>
                 </div>
               )}
             </div>
@@ -437,7 +438,7 @@ export default function DashboardPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-800">⚡ Arquivos a vencer hoje</h2>
+                <h2 className="text-xl font-bold text-gray-800">{t('dashboard.arquivosAVencerHoje')}</h2>
                 <button 
                   onClick={() => setModalHojeAberto(false)}
                   className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -453,14 +454,14 @@ export default function DashboardPage() {
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-1">
                             <h4 className="font-medium text-gray-800">
-                              {arquivo.nome || arquivo.quem || arquivo.titulo || "Arquivo sem título"}
+                              {arquivo.nome || arquivo.quem || arquivo.titulo || t('arquivoSemTitulo')}
                             </h4>
                             {arquivo.fileUrl && (
                               <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">📎</span>
                             )}
                           </div>
                           <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                            {arquivo.conteudo?.substring(0, 150) || arquivo.oque?.substring(0, 150) || arquivo.descricao?.substring(0, 150) || "Sem descrição"}
+                            {arquivo.conteudo?.substring(0, 150) || arquivo.oque?.substring(0, 150) || arquivo.descricao?.substring(0, 150) || t('semDescricao')}
                             {(arquivo.conteudo?.length > 150 || arquivo.oque?.length > 150 || arquivo.descricao?.length > 150) && "..."}
                           </p>
                           {arquivo.categoria && (
@@ -471,10 +472,10 @@ export default function DashboardPage() {
                         </div>
                         <div className="text-xs text-gray-400 ml-4 text-right">
                           <div className="font-medium text-orange-600">
-                            Vence: Hoje
+                            {t('vence')}: {t('hoje')}
                           </div>
                           <div className="mt-1 opacity-60">
-                            Criado: {(arquivo.criadoEm || arquivo.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT') || "N/A"}
+                            {t('criado')}: {(arquivo.criadoEm || arquivo.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT') || "N/A"}
                           </div>
                         </div>
                       </div>
@@ -484,7 +485,7 @@ export default function DashboardPage() {
               ) : (
                 <div className="text-center py-8">
                   <div className="text-gray-400 text-4xl mb-2">⚡</div>
-                  <p className="text-gray-600">Nenhum arquivo vence hoje</p>
+                  <p className="text-gray-600">{t('nenhumArquivoVenceHoje')}</p>
                 </div>
               )}
             </div>

@@ -20,9 +20,26 @@ export function I18nProvider({ children, initialLang }) {
       localStorage.setItem('lang', lang);
     }
   }, [lang]);
-
-  function t(key) {
-    return i18nData[lang]?.[key] || key;
+  function t(key, params = {}) {
+    // Suporte a chaves aninhadas, ex: 'dashboard.bemVindo'
+    const keys = key.split('.');
+    let value = i18nData[lang];
+    for (const k of keys) {
+      if (value && Object.prototype.hasOwnProperty.call(value, k)) {
+        value = value[k];
+      } else {
+        return key; // fallback: retorna a chave se não encontrar
+      }
+    }
+    
+    // Suporte a interpolação de parâmetros
+    if (typeof value === 'string' && Object.keys(params).length > 0) {
+      return value.replace(/\{(\w+)\}/g, (match, paramKey) => {
+        return params[paramKey] !== undefined ? params[paramKey] : match;
+      });
+    }
+    
+    return value;
   }
 
   return (
