@@ -255,7 +255,7 @@ export default function DashboardPage() {
           </Link>
         </div>
         {/* Stats rápidas */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Total de ficheiros enviados hoje">            <div className="text-2xl font-bold text-[#7B4BFF]">{arquivos.length}</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">          <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Total de ficheiros enviados hoje">            <div className="text-2xl font-bold text-[#7B4BFF]">{arquivosHoje}</div>
             <div className="text-sm text-gray-600">Uploads de hoje</div>
           </div>          <div 
             className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow cursor-pointer" 
