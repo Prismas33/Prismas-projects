@@ -1,15 +1,16 @@
 "use client";
 import Link from "next/link";
-import { useAuth } from "../lib/context/AuthContext";
+import { useAuth } from "../../lib/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { logoutUtilizador, obterDadosUtilizador } from "../lib/firebase/auth";
+import { logoutUtilizador, obterDadosUtilizador } from "../../lib/firebase/auth";
 
-export default function HomePage() {
+export default function HomePageEN() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const [nome, setNome] = useState("");  const [logoutLoading, setLogoutLoading] = useState(false);
+  const [nome, setNome] = useState("");
+  const [logoutLoading, setLogoutLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
@@ -30,17 +31,15 @@ export default function HomePage() {
       }
     }
     if (mounted && !loading) fetchNome();
-  }, [user, loading, mounted]);  // Separate effect for navigation to avoid hydration issues
+  }, [user, loading, mounted]);
+
   useEffect(() => {
-    // Redirecionar usuário autenticado para dashboard
     if (mounted && !loading && user && !redirecting) {
-      console.log('Home - Usuário autenticado, iniciando redirecionamento para dashboard');
       setRedirecting(true);
-      // Redirecionamento imediato sem replace para evitar loops
-      router.push("/dashboard");
+      router.push("/dashboard-en");
     }
-  }, [user, loading, mounted, redirecting]); // Removido router das dependências
-  // Don't render interactive content until mounted
+  }, [user, loading, mounted, redirecting]);
+
   if (!mounted || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{
@@ -51,14 +50,13 @@ export default function HomePage() {
     );
   }
 
-  // Show loading if user is authenticated and redirecting
   if (!loading && user && redirecting) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center" style={{
         background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)'
       }}>
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#7B4BFF] mb-4"></div>
-        <p className="text-white text-lg">A redirecionar para o dashboard...</p>
+        <p className="text-white text-lg">Redirecting to dashboard...</p>
       </div>
     );
   }
@@ -67,10 +65,12 @@ export default function HomePage() {
     setLogoutLoading(true);
     try {
       await logoutUtilizador();
-      router.push("/");
+      router.push("/en");
     } catch {}
     setLogoutLoading(false);
-  }  return (
+  }
+
+  return (
     <main style={{
       minHeight: '100vh',
       display: 'flex',
@@ -111,14 +111,7 @@ export default function HomePage() {
           filter: 'blur(100px)'
         }}></div>
       </div>
-      
-      {/* Loading Overlay */}
-      {mounted && loading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-[#0f172a]/60">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#7B4BFF]"></div>
-        </div>
-      )}
-      
+
       {/* Header/Nav */}
       <header className="relative z-10 flex items-center justify-between px-6 py-6 lg:px-12 backdrop-blur-md bg-black/10">
         <div className="flex items-center gap-3">
@@ -130,26 +123,27 @@ export default function HomePage() {
           <span className="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#7B4BFF] to-[#FFD700]">
             LinkMind
           </span>
-        </div>        <div className="flex items-center gap-4">
+        </div>
+        <div className="flex items-center gap-4">
           {/* Selector de idioma */}
           <button
             className="px-3 py-1 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors bg-white/80"
             onClick={() => {
-              router.push('/en');
+              router.push('/');
             }}
-            title="Switch to English"
+            title="Mudar para Português"
           >
-            EN
+            PT
           </button>
           {user && nome ? (
             <>
-              <span className="text-white/90 font-medium">Bem-vindo, {nome}!</span>
+              <span className="text-white/90 font-medium">Welcome, {nome}!</span>
               <button
                 onClick={handleLogout}
                 disabled={logoutLoading}
                 className="rounded-full px-4 py-2 text-sm font-medium bg-gradient-to-r from-[#7B4BFF] to-[#6C2BFF] text-white shadow-lg transition-all disabled:opacity-60"
               >
-                {logoutLoading ? "A sair..." : "Logout"}
+                {logoutLoading ? "Logging out..." : "Logout"}
               </button>
             </>
           ) : null}
@@ -161,30 +155,30 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto flex flex-col lg:flex-row items-center gap-12">
           <div className="lg:w-1/2 space-y-6 text-center lg:text-left animate-fade-in">
             <h1 className="text-4xl lg:text-6xl font-black leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#7B4BFF] to-[#FFD700]">
-              Usa o teu arquivo mental, sempre acessível
+              Use your mental file, always accessible
             </h1>
             <p className="text-lg text-white/80 max-w-xl">
-              Guarda, conecta e explora tudo o que passa pela tua mente. A tua memória digital, sempre contigo.
+              Save, connect and explore everything that goes through your mind. Your digital memory, always with you.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Link
                 href="/registo"
                 className="rounded-full px-6 py-3 text-base font-semibold bg-gradient-to-r from-[#7B4BFF] to-[#6C2BFF] hover:from-[#8B5AFF] hover:to-[#7C3BFF] text-white shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
               >
-                🚀 Começar Agora
+                🚀 Get Started
               </Link>
               <Link
                 href="/login"
                 className="rounded-full px-6 py-3 text-base font-semibold bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white/90 hover:text-white border border-white/10 shadow-lg hover:shadow-xl transition-all"
               >
-                Iniciar Sessão
+                Sign In
               </Link>
             </div>
           </div>
           <div className="lg:w-1/2 flex justify-center">
             <img
               src="/vector.png"
-              alt="LinkMind Ilustração"
+              alt="LinkMind Illustration"
               className="w-64 h-64 object-contain animate-float"
               style={{
                 filter: 'drop-shadow(0 0 32px #bdbdbd88) drop-shadow(0 0 8px #fff4)',
@@ -198,7 +192,7 @@ export default function HomePage() {
       {/* Features Section */}
       <section className="relative z-10 px-2 py-4 sm:px-4 sm:py-8 lg:px-16">
         <h2 className="text-2xl lg:text-3xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-white to-[#7B4BFF]">
-          Funcionalidades Poderosas
+          Powerful Features
         </h2>
         <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           <div className="backdrop-blur-lg bg-white/5 rounded-2xl p-6 border border-white/10 shadow-xl hover:shadow-2xl hover:translate-y-[-4px] transition-all">
@@ -207,11 +201,12 @@ export default function HomePage() {
                 <path d="M11 5L8 8M8 8L11 11M8 8H15C16.1046 8 17 8.89543 17 10V16M17 19L14 16M14 16L17 13M14 16H19C20.1046 16 21 15.1046 21 14V5" 
                   stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </div>            <h3 className="text-xl font-bold mb-3 text-center text-transparent bg-clip-text bg-gradient-to-r from-white to-[#7B4BFF]">
-              Interface Simples
+            </div>
+            <h3 className="text-xl font-bold mb-3 text-center text-transparent bg-clip-text bg-gradient-to-r from-white to-[#7B4BFF]">
+              Simple Interface
             </h3>
             <p className="text-white/70 text-center">
-              Adiciona e procura os teus arquivos mentais de forma rápida e intuitiva com apenas um clique.
+              Add and search your mental files quickly and intuitively with just one click.
             </p>
           </div>
           
@@ -225,10 +220,10 @@ export default function HomePage() {
               </svg>
             </div>
             <h3 className="text-xl font-bold mb-3 text-center text-transparent bg-clip-text bg-gradient-to-r from-white to-[#FFD700]">
-              Acesso Universal
+              Universal Access
             </h3>
             <p className="text-white/70 text-center">
-              PWA: Usa no computador ou telemóvel, mesmo offline. As tuas ideias sempre disponíveis.
+              PWA: Use it on your computer or phone, even offline. Your ideas always available.
             </p>
           </div>
           
@@ -240,10 +235,10 @@ export default function HomePage() {
               </svg>
             </div>
             <h3 className="text-xl font-bold mb-3 text-center text-transparent bg-clip-text bg-gradient-to-r from-[#7B4BFF] to-[#FFD700]">
-              Pesquisa Inteligente
+              Smart Search
             </h3>
             <p className="text-white/70 text-center">
-              Encontra rapidamente qualquer ideia usando filtros, etiquetas e inteligência contextual.
+              Quickly find any idea using filters, tags and contextual intelligence.
             </p>
           </div>
         </div>
@@ -253,23 +248,23 @@ export default function HomePage() {
       <section className="relative z-10 px-2 py-4 sm:px-4 sm:py-8 lg:px-16 lg:py-20">
         <div className="max-w-4xl mx-auto backdrop-blur-lg bg-gradient-to-br from-[#7B4BFF]/20 to-[#FFD700]/10 rounded-3xl p-8 lg:p-12 border border-white/10 shadow-2xl">
           <h2 className="text-2xl lg:text-3xl font-bold text-center mb-6 text-white">
-            Começa a organizar a tua mente digital hoje
+            Start organizing your digital mind today
           </h2>
           <p className="text-white/70 text-center mb-8 max-w-xl mx-auto">
-            Junta-te a milhares de pessoas que já confiam na LinkMind como extensão da sua mente.
+            Join thousands of people who already trust LinkMind as an extension of their mind.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link
               href="/registo"
               className="rounded-full px-8 py-4 text-base font-semibold bg-gradient-to-r from-[#7B4BFF] to-[#6C2BFF] hover:from-[#8B5AFF] hover:to-[#7C3BFF] text-white shadow-lg hover:shadow-xl transition-all text-center"
             >
-              Criar Conta Grátis
+              Create Free Account
             </Link>
             <Link
               href="/login"
               className="rounded-full px-8 py-4 text-base font-semibold bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/10 shadow-lg hover:shadow-xl transition-all text-center"
             >
-              Iniciar Sessão
+              Sign In
             </Link>
           </div>
         </div>
@@ -277,9 +272,11 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="relative z-10 text-center py-2 sm:py-4 text-white/60 text-sm backdrop-blur-sm bg-black/20">
-        <div className="max-w-6xl mx-auto px-6">          <span>
-            © {new Date().getFullYear()} LinkMind. Todos os direitos reservados.
-          </span>        </div>
+        <div className="max-w-6xl mx-auto px-6">
+          <span>
+            © {new Date().getFullYear()} LinkMind. All rights reserved.
+          </span>
+        </div>
       </footer>
     </main>
   );
