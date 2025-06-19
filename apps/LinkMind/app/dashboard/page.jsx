@@ -112,6 +112,17 @@ export default function DashboardPage() {
       });
       setArquivosVencemHoje(arquivosHojeOrdenados);
       setArquivosHoje(arquivosComDataFimHoje.length);
+
+      // Calcular uploads feitos hoje (data de criação)
+      const hojeCriacao = new Date();
+      hojeCriacao.setHours(0, 0, 0, 0);
+      const fimHojeCriacao = new Date(hojeCriacao);
+      fimHojeCriacao.setHours(23, 59, 59, 999);
+      const uploadsCriadosHoje = arquivosDoUtilizador.filter(arquivo => {
+        const dataCriacao = (arquivo.criadoEm?.toDate?.() || arquivo.criadaEm?.toDate?.() || new Date(arquivo.criadoEm || arquivo.criadaEm));
+        return dataCriacao >= hojeCriacao && dataCriacao <= fimHojeCriacao;
+      });
+      setArquivosHoje(uploadsCriadosHoje.length);
     } catch (error) {
       console.error("Erro ao carregar arquivos:", error);
     } finally {
