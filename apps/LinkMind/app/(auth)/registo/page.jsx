@@ -11,13 +11,22 @@ export default function RegistoPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [accessPass, setAccessPass] = useState("");
-  const [error, setError] = useState("");
+  const [accessPass, setAccessPass] = useState("");  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [lang, setLang] = useState(() => localStorage.getItem('lang') || 'pt');
+  const [lang, setLang] = useState('pt');
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const { t, setLang: setGlobalLang } = useI18n();
+
+  // Inicializar idioma do localStorage após montar componente
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedLang = localStorage.getItem('lang');
+      if (savedLang) {
+        setLang(savedLang);
+      }
+    }
+  }, []);
 
   // Redirecionar se já estiver logado
   useEffect(() => {

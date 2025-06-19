@@ -2,10 +2,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import i18nData from '../i18n.json';
 
-const defaultLang = typeof window !== 'undefined' && localStorage.getItem('lang')
-  ? localStorage.getItem('lang')
-  : 'pt';
-
 const I18nContext = createContext({
   lang: 'pt',
   setLang: () => {},
@@ -13,10 +9,16 @@ const I18nContext = createContext({
 });
 
 export function I18nProvider({ children, initialLang }) {
-  const [lang, setLang] = useState(initialLang || defaultLang);
-
+  const [lang, setLang] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('lang') || initialLang || 'pt';
+    }
+    return initialLang || 'pt';
+  });
   useEffect(() => {
-    localStorage.setItem('lang', lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lang', lang);
+    }
   }, [lang]);
 
   function t(key) {
