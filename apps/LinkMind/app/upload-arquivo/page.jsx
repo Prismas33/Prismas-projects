@@ -25,6 +25,7 @@ export default function UploadArquivoPage() {
   const [salvando, setSalvando] = useState(false);  
   
   const [nomeArquivo, setNomeArquivo] = useState("");
+  const [subNomeArquivo, setSubNomeArquivo] = useState(""); // Novo estado para o subnome
   const [conteudoArquivo, setConteudoArquivo] = useState("");  const [quando, setQuando] = useState("");
   const [file, setFile] = useState(null);
   const [files, setFiles] = useState([]); // Array para múltiplos arquivos
@@ -295,6 +296,7 @@ export default function UploadArquivoPage() {
       
       const novoArquivo = {
         nome: nomeArquivo,
+        subNome: subNomeArquivo,
         conteudo: conteudoArquivo,
         categoria,
         prioridade,
@@ -313,6 +315,7 @@ export default function UploadArquivoPage() {
       
       setSuccess("Arquivo enviado com sucesso!");
       setNomeArquivo("");
+      setSubNomeArquivo(""); // Limpar subnome
       setConteudoArquivo("");
       setCategoria("");
       setDataInicio("");
@@ -423,6 +426,17 @@ export default function UploadArquivoPage() {
               />
             )}
             
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('upload_file.sub_name')}</label>
+              <input
+                type="text"
+                placeholder={t('upload_file.sub_name_placeholder')}
+                value={subNomeArquivo || ''}
+                onChange={e => setSubNomeArquivo(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">{t('upload_file.file_content')}</label>
               <textarea

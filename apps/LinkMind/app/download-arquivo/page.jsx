@@ -331,14 +331,16 @@ export default function DownloadArquivoPage() {
             )}
             {/* Modal de detalhes do arquivo */}
             {modalArquivo && arquivoSelecionado && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                <div className="bg-white rounded-xl shadow-2xl p-8 max-w-lg w-full relative">
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+                <div className="relative bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-auto p-6 sm:p-8 flex flex-col animate-fade-in">
                   <button
-                    className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl"
+                    className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl font-bold focus:outline-none focus:ring-2 focus:ring-[#7B4BFF] focus:ring-offset-2 z-10"
+                    aria-label="Fechar modal"
                     onClick={() => setModalArquivo(false)}
                   >
                     &times;
-                  </button>                  <h2 className="text-xl font-bold mb-2 text-[#7B4BFF]">
+                  </button>
+                  <h2 className="text-xl font-bold mb-2 text-[#7B4BFF] pr-8">
                     {arquivoSelecionado.nome || arquivoSelecionado.quem || arquivoSelecionado.titulo || t('download_file.untitled_file')}
                   </h2>
                   <div className="mb-2 text-sm text-gray-500">
@@ -349,10 +351,13 @@ export default function DownloadArquivoPage() {
                     <div className="mb-2 text-xs inline-block bg-[#7B4BFF]/10 text-[#7B4BFF] px-2 py-1 rounded-full">
                       {arquivoSelecionado.categoria}
                     </div>
-                  )}                  <div className="mt-4 text-gray-700 whitespace-pre-line">
+                  )}
+                  <div className="mt-4 text-gray-700 whitespace-pre-line">
                     {arquivoSelecionado.conteudo || arquivoSelecionado.oque || arquivoSelecionado.descricao || t('download_file.no_description')}
-                  </div>{/* Múltiplos anexos */}
-                  {arquivoSelecionado.fileUrls && Array.isArray(arquivoSelecionado.fileUrls) && arquivoSelecionado.fileUrls.length > 0 ? (                    <div className="mt-4">
+                  </div>
+                  {/* Múltiplos anexos */}
+                  {arquivoSelecionado.fileUrls && Array.isArray(arquivoSelecionado.fileUrls) && arquivoSelecionado.fileUrls.length > 0 ? (
+                    <div className="mt-4">
                       <h3 className="text-sm font-medium text-gray-700 mb-2">
                         {arquivoSelecionado.fileUrls.length > 1 ? t('download_file.attachments') : t('download_file.attachment')}:
                       </h3>
@@ -377,7 +382,8 @@ export default function DownloadArquivoPage() {
                         ))}
                       </div>
                     </div>
-                  ) : arquivoSelecionado.fileUrl ? (                    <div className="mt-4">
+                  ) : arquivoSelecionado.fileUrl ? (
+                    <div className="mt-4">
                       <h3 className="text-sm font-medium text-gray-700 mb-2">{t('download_file.attachment')}:</h3>
                       <div className="flex items-center bg-gray-50 p-3 rounded-md">
                         <svg className="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
