@@ -92,9 +92,8 @@ export default function SettingsPage() {
   async function handleCancelSubscription() {
     // Verificar diferentes possíveis campos de ID da assinatura
     const subscriptionId = dadosUsuario?.paypalSubscriptionId || dadosUsuario?.subscriptionID;
-    
-    if (!subscriptionId || !user?.displayName) {
-      setError("Não foi possível encontrar informações da assinatura.");
+      if (!subscriptionId || !user?.displayName) {
+      setError(t('configuracoes.assinatura.erroEncontrarAssinatura'));
       return;
     }
     
@@ -114,19 +113,17 @@ export default function SettingsPage() {
         })
       });
 
-      const data = await response.json();
-
-      if (data.success) {
-        setSuccess("Assinatura cancelada com sucesso!");
+      const data = await response.json();      if (data.success) {
+        setSuccess(t('configuracoes.assinatura.assinaturaCanceladaSucesso'));
         setShowCancelConfirmation(false);
         // Recarregar dados do usuário
         await carregarDadosUsuario();
       } else {
-        setError(data.error || "Erro ao cancelar assinatura");
+        setError(data.error || t('configuracoes.assinatura.erroCancelarAssinatura'));
       }
     } catch (error) {
       console.error("Erro ao cancelar assinatura:", error);
-      setError("Erro ao cancelar assinatura. Tente novamente.");
+      setError(t('configuracoes.assinatura.erroCancelarAssinatura'));
     } finally {
       setCancellingSubscription(false);
     }
@@ -235,10 +232,9 @@ export default function SettingsPage() {
       setUploadingFoto(false);
     }
   }
-
   async function handleAplicarCodigo() {
     if (!codigoCupom.trim()) {
-      setError("Por favor, insira um código.");
+      setError(t('configuracoes.cupom.inserirCodigoError'));
       return;
     }
 
@@ -261,7 +257,7 @@ export default function SettingsPage() {
       }
     } catch (error) {
       console.error("Erro ao aplicar código:", error);
-      setError("Erro ao aplicar código. Tente novamente.");
+      setError(t('configuracoes.cupom.erroAplicarCodigo'));
     } finally {
       setAplicandoCodigo(false);
     }
@@ -610,7 +606,7 @@ export default function SettingsPage() {
             <svg className="w-5 h-5 text-[#7B4BFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m-3-3h6m-6 0h6"/>
             </svg>
-            <span>Assinatura e Planos</span>
+            <span>{t('configuracoes.assinatura.titulo')}</span>
           </h2>
           
           {carregandoDados ? (
@@ -622,23 +618,22 @@ export default function SettingsPage() {
               {/* Status da Assinatura */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status da Conta</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('configuracoes.assinatura.statusConta')}</label>
                   <div className={`border rounded-lg px-3 py-2 text-sm font-medium ${
                     dadosUsuario?.subscriptionStatus === 'premium_free' ? 'bg-green-50 border-green-200 text-green-800' :
                     dadosUsuario?.subscriptionStatus === 'active' ? 'bg-blue-50 border-blue-200 text-blue-800' :
                     dadosUsuario?.subscriptionStatus === 'trial' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
                     'bg-red-50 border-red-200 text-red-800'
-                  }`}>
-                    {dadosUsuario?.subscriptionStatus === 'premium_free' ? '✨ Premium Gratuito' :
-                     dadosUsuario?.subscriptionStatus === 'active' ? '💎 Premium Ativo' :
-                     dadosUsuario?.subscriptionStatus === 'trial' ? '🎯 Trial Ativo' :
-                     '⏰ Trial Expirado'}
+                  }`}>                    {dadosUsuario?.subscriptionStatus === 'premium_free' ? t('configuracoes.assinatura.premiumGratuito') :
+                     dadosUsuario?.subscriptionStatus === 'active' ? t('configuracoes.assinatura.premiumAtivo') :
+                     dadosUsuario?.subscriptionStatus === 'trial' ? t('configuracoes.assinatura.trialAtivo') :
+                     t('configuracoes.assinatura.trialExpirado')}
                   </div>
                 </div>
 
                 {dadosUsuario?.subscriptionStatus === 'trial' && dadosUsuario?.trialEndDate && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Trial válido até</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('configuracoes.assinatura.trialValidoAte')}</label>
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-yellow-800 text-sm">
                       {new Date(dadosUsuario.trialEndDate.seconds * 1000).toLocaleDateString('pt-PT')}
                     </div>
@@ -646,19 +641,17 @@ export default function SettingsPage() {
                 )}
 
                 {dadosUsuario?.planType && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Plano Atual</label>
+                  <div>                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('configuracoes.assinatura.planoAtual')}</label>
                     <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-blue-800 text-sm font-medium">
-                      {dadosUsuario.planType === 'monthly' ? '📅 Mensal - €5/mês' : '📆 Anual - €50/ano'}
+                      {dadosUsuario.planType === 'monthly' ? t('configuracoes.assinatura.mensal') : t('configuracoes.assinatura.anual')}
                     </div>
                   </div>
                 )}
 
                 {dadosUsuario?.hasSecretCode && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Acesso Especial</label>
+                  <div>                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('configuracoes.assinatura.acessoEspecial')}</label>
                     <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-green-800 text-sm font-medium">
-                      🔑 Código de acesso utilizado
+                      {t('configuracoes.assinatura.codigoAcessoUtilizado')}
                     </div>
                   </div>
                 )}
@@ -667,14 +660,13 @@ export default function SettingsPage() {
               {/* Ações baseadas no status */}
               <div className="pt-4 border-t border-gray-200">
                 {dadosUsuario?.subscriptionStatus === 'trial' && (
-                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4 mb-4">
-                    <h3 className="font-medium text-gray-800 mb-2">🚀 Aproveite o seu trial!</h3>                    <p className="text-sm text-gray-600 mb-3">
-                      Tem acesso completo durante o período de trial. Para continuar após o trial, escolha um plano:
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4 mb-4">                    <h3 className="font-medium text-gray-800 mb-2">{t('configuracoes.assinatura.aproveiteTrial')}</h3>                    <p className="text-sm text-gray-600 mb-3">
+                      {t('configuracoes.assinatura.acessoCompletoTrial')}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-2">
                       <Link href="/subscription">
                         <button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                          Ver Planos - €5/mês ou €50/ano
+                          {t('configuracoes.assinatura.verPlanos')}
                         </button>
                       </Link>
                     </div>
@@ -682,41 +674,39 @@ export default function SettingsPage() {
                 )}
 
                 {dadosUsuario?.subscriptionStatus === 'expired' && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-                    <h3 className="font-medium text-red-800 mb-2">⚠️ Trial expirado</h3>                    <p className="text-sm text-red-600 mb-3">
-                      O seu período de trial expirou. Para continuar a usar o LinkMind, subscreva um dos nossos planos:
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">                    <h3 className="font-medium text-red-800 mb-2">{t('configuracoes.assinatura.trialExpiradoTitulo')}</h3>                    <p className="text-sm text-red-600 mb-3">
+                      {t('configuracoes.assinatura.trialExpiradoDescricao')}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-2">
                       <Link href="/subscription">                        <button className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                          Subscrever Agora - A partir de €5/mês
+                          {t('configuracoes.assinatura.subscreverAgora')}
                         </button>
                       </Link>
                     </div>
                   </div>
                 )}                {dadosUsuario?.subscriptionStatus === 'active' && (dadosUsuario?.subscriptionID || dadosUsuario?.paypalSubscriptionId) && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">                    <h3 className="font-medium text-blue-800 mb-2">💎 Subscrição activa</h3>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">                    <h3 className="font-medium text-blue-800 mb-2">{t('configuracoes.assinatura.subscricaoAtiva')}</h3>
                     <p className="text-sm text-blue-600 mb-2">
-                      Obrigado por ser um subscritor premium! A sua subscrição está activa.
+                      {t('configuracoes.assinatura.obrigadoSubscritor')}
                     </p>
                     <p className="text-xs text-gray-500 mb-3">
-                      ID da subscrição: {dadosUsuario.subscriptionID}
+                      {t('configuracoes.assinatura.idSubscricao')} {dadosUsuario.subscriptionID}
                     </p>
                       {/* Informações detalhadas da assinatura */}
                     {subscriptionData && !loadingSubscription && (
                       <div className="bg-white rounded-lg p-3 mb-3 border border-blue-100">
-                        <div className="grid grid-cols-2 gap-2 text-xs">
-                          <div>
-                            <span className="text-gray-500">Status:</span>
+                        <div className="grid grid-cols-2 gap-2 text-xs">                          <div>
+                            <span className="text-gray-500">{t('configuracoes.assinatura.status')}</span>
                             <span className="ml-1 font-medium capitalize">{subscriptionData.status}</span>
                           </div>
                           <div>
-                            <span className="text-gray-500">Plano:</span>
-                            <span className="ml-1 font-medium">{subscriptionData.plan_id?.includes('monthly') ? 'Mensal' : 'Anual'}</span>
+                            <span className="text-gray-500">{t('configuracoes.assinatura.plano')}</span>
+                            <span className="ml-1 font-medium">{subscriptionData.plan_id?.includes('monthly') ? t('configuracoes.assinatura.mensal').replace('📅 ', '') : t('configuracoes.assinatura.anual').replace('📆 ', '')}</span>
                           </div>
                           <div className="col-span-2">
-                            <span className="text-gray-500">Iniciado em:</span>
+                            <span className="text-gray-500">{t('configuracoes.assinatura.iniciadoEm')}</span>
                             <span className="ml-1 font-medium">
-                              {new Date(subscriptionData.start_time).toLocaleDateString('pt-PT')}
+                              {new Date(subscriptionData.start_time).toLocaleDateString(lang === 'pt' ? 'pt-PT' : 'en-US')}
                             </span>
                           </div>
                         </div>
@@ -729,14 +719,14 @@ export default function SettingsPage() {
                         onClick={carregarDadosAssinatura}
                         className="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded text-xs font-medium transition-colors mb-3"
                       >
-                        Ver detalhes da assinatura
+                        {t('configuracoes.assinatura.verDetalhesAssinatura')}
                       </button>
                     )}
                     
                     {loadingSubscription && (
                       <div className="flex items-center space-x-2 mb-3">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                        <span className="text-xs text-blue-600">Carregando detalhes...</span>
+                        <span className="text-xs text-blue-600">{t('configuracoes.assinatura.carregandoDetalhes')}</span>
                       </div>
                     )}
                     
@@ -746,14 +736,13 @@ export default function SettingsPage() {
                       className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto"
                       disabled={cancellingSubscription}
                     >
-                      {cancellingSubscription ? "Cancelando..." : "Cancelar Assinatura"}
+                      {cancellingSubscription ? t('configuracoes.assinatura.cancelando') : t('configuracoes.assinatura.cancelarAssinatura')}
                     </button>
                   </div>
                 )}
 
-                {dadosUsuario?.subscriptionStatus === 'premium_free' && (                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <h3 className="font-medium text-green-800 mb-2">✨ Acesso premium gratuito</h3>                    <p className="text-sm text-green-600">
-                      Tem acesso premium permanente através do código especial. Aproveite todas as funcionalidades!
+                {dadosUsuario?.subscriptionStatus === 'premium_free' && (                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">                    <h3 className="font-medium text-green-800 mb-2">{t('configuracoes.assinatura.acessoPremiumGratuito')}</h3>                    <p className="text-sm text-green-600">
+                      {t('configuracoes.assinatura.acessoPermanente')}
                     </p>
                   </div>
                 )}
@@ -769,12 +758,11 @@ export default function SettingsPage() {
               <svg className="w-5 h-5 text-[#7B4BFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
               </svg>
-              <span>Código de Cupão</span>
+              <span>{t('configuracoes.cupom.titulo')}</span>
             </h2>
             
-            <div className="space-y-4">
-              <p className="text-gray-600 text-sm">
-                Tem um código de acesso especial?
+            <div className="space-y-4">              <p className="text-gray-600 text-sm">
+                {t('configuracoes.cupom.temCodigo')}
               </p>
               
               {!mostrarFormularioCodigo ? (
@@ -785,20 +773,19 @@ export default function SettingsPage() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
                   </svg>
-                  <span>Tenho um código de cupão</span>
+                  <span>{t('configuracoes.cupom.tenhoCodigoCupao')}</span>
                 </button>
               ) : (
                 <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <label htmlFor="codigoCupom" className="block text-sm font-medium text-gray-700 mb-2">
-                      Código de Cupão
+                  <div>                    <label htmlFor="codigoCupom" className="block text-sm font-medium text-gray-700 mb-2">
+                      {t('configuracoes.cupom.codigoCupao')}
                     </label>
                     <input
                       type="text"
                       id="codigoCupom"
                       value={codigoCupom}
                       onChange={(e) => setCodigoCupom(e.target.value)}
-                      placeholder="Insira o código de acesso"
+                      placeholder={t('configuracoes.cupom.inserirCodigo')}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent"
                       disabled={aplicandoCodigo}
                     />
@@ -813,14 +800,14 @@ export default function SettingsPage() {
                       {aplicandoCodigo ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                          <span>A aplicar...</span>
+                          <span>{t('configuracoes.cupom.aplicandoCodigo')}</span>
                         </>
                       ) : (
                         <>
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                           </svg>
-                          <span>Aplicar Código</span>
+                          <span>{t('configuracoes.cupom.aplicarCodigo')}</span>
                         </>
                       )}
                     </button>
@@ -834,7 +821,7 @@ export default function SettingsPage() {
                       disabled={aplicandoCodigo}
                       className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Cancelar
+                      {t('configuracoes.cupom.cancelar')}
                     </button>
                   </div>
                 </div>
@@ -870,7 +857,7 @@ export default function SettingsPage() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-red-700">Cancelar Assinatura</h3>
+                <h3 className="text-xl font-bold text-red-700">{t('configuracoes.assinatura.cancelarAssinaturaTitulo')}</h3>
                 <button 
                   onClick={() => setShowCancelConfirmation(false)}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -887,11 +874,9 @@ export default function SettingsPage() {
                   <svg className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                   </svg>
-                  <div>
-                    <p className="text-yellow-800 font-medium mb-1">Tem certeza?</p>
+                  <div>                    <p className="text-yellow-800 font-medium mb-1">{t('configuracoes.assinatura.temCerteza')}</p>
                     <p className="text-yellow-700 text-sm">
-                      Ao cancelar sua assinatura, você perderá o acesso premium ao final do período atual de cobrança. 
-                      Esta ação é irreversível.
+                      {t('configuracoes.assinatura.cancelarDescricao')}
                     </p>
                   </div>
                 </div>
@@ -903,7 +888,7 @@ export default function SettingsPage() {
                   className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" 
                   disabled={cancellingSubscription}
                 >
-                  Manter Assinatura
+                  {t('configuracoes.assinatura.manterAssinatura')}
                 </button>
                 <button 
                   onClick={handleCancelSubscription}
@@ -916,10 +901,10 @@ export default function SettingsPage() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      <span>Cancelando...</span>
+                      <span>{t('configuracoes.assinatura.cancelando')}</span>
                     </>
                   ) : (
-                    <span>Sim, Cancelar</span>
+                    <span>{t('configuracoes.assinatura.simCancelar')}</span>
                   )}
                 </button>
               </div>
