@@ -141,16 +141,15 @@ export default function RegistoPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Código de Acesso (opcional)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('access_code_optional')}</label>
             <input
               type="text"
-              placeholder="Digite o código para acesso premium gratuito"
+              placeholder={t('access_code_placeholder')}
               value={accessPass}
               onChange={e => setAccessPass(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Sem código? Você terá 7 dias gratuitos, depois precisará de assinatura.
+            />            <p className="text-xs text-gray-500 mt-1">
+              {t('trial_message')}
             </p>
           </div>
           {error && (

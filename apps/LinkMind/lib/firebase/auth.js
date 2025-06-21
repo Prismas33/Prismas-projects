@@ -22,10 +22,9 @@ export async function registarUtilizador(email, password, nome, codigoAcesso = n
     await updateProfile(user, {
       displayName: nome
     });
-    
-    // Configurar dados do usuário baseado no código de acesso
+      // Configurar dados do usuário baseado no código de acesso
     const now = new Date();
-    const trialEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 dias
+    const trialEnd = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 dias (1 mês)
       let subscriptionStatus = 'trial';
     let hasSecretCode = false;
     
