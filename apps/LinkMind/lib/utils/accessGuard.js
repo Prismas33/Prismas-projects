@@ -17,7 +17,8 @@ export async function checkPremiumAccess(user) {
     // - Está em trial válido
     const hasAccess = status.type === 'premium' || 
                      status.type === 'premium_free' || 
-                     status.type === 'trial';
+                     status.type === 'trial' ||
+                     status.reason === 'secret_code';
 
     return {
       hasAccess,
