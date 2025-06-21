@@ -154,10 +154,35 @@ export default function HomePage() {
             </>
           ) : null}
         </div>
-      </header>
-
-      {/* Hero Section */}
+      </header>      {/* Hero Section */}
       <section className="relative flex-1 flex flex-col items-center justify-center px-2 py-4 sm:px-4 sm:py-8 lg:px-16 lg:py-24 z-10">
+        {/* CTA Banner de Teste de 30 Dias */}
+        <div className="w-full max-w-4xl mx-auto mb-8">
+          <div className="backdrop-blur-lg bg-gradient-to-r from-[#7B4BFF]/20 via-[#FFD700]/10 to-[#7B4BFF]/20 rounded-2xl p-4 lg:p-6 border border-[#7B4BFF]/30 shadow-xl animate-pulse-subtle">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-br from-[#7B4BFF] to-[#FFD700] shadow-lg">
+                  <span className="text-2xl">🎯</span>
+                </div>
+                <div className="text-center sm:text-left">
+                  <h3 className="text-lg lg:text-xl font-bold text-white mb-1">
+                    🚀 Teste GRÁTIS por 30 dias!
+                  </h3>
+                  <p className="text-white/80 text-sm lg:text-base">
+                    Descubra o poder da sua mente digital - sem compromisso
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/registo"
+                className="rounded-full px-6 py-3 text-sm lg:text-base font-semibold bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFE55C] hover:to-[#FFB347] text-black shadow-lg hover:shadow-xl transition-all hover:scale-[1.05] whitespace-nowrap"
+              >
+                Começar Teste Grátis
+              </Link>
+            </div>
+          </div>
+        </div>
+
         <div className="max-w-5xl mx-auto flex flex-col lg:flex-row items-center gap-12">
           <div className="lg:w-1/2 space-y-6 text-center lg:text-left animate-fade-in">
             <h1 className="text-4xl lg:text-6xl font-black leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#7B4BFF] to-[#FFD700]">

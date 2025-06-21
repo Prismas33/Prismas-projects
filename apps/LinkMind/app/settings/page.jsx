@@ -779,14 +779,13 @@ export default function SettingsPage() {
                 <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
                   <div>                    <label htmlFor="codigoCupom" className="block text-sm font-medium text-gray-700 mb-2">
                       {t('configuracoes.cupom.codigoCupao')}
-                    </label>
-                    <input
+                    </label>                    <input
                       type="text"
                       id="codigoCupom"
                       value={codigoCupom}
                       onChange={(e) => setCodigoCupom(e.target.value)}
                       placeholder={t('configuracoes.cupom.inserirCodigo')}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent"
                       disabled={aplicandoCodigo}
                     />
                   </div>

@@ -95,6 +95,25 @@ a {
   }
 }
 
+/* Scroll suave */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Animação sutil para o CTA */
+@keyframes pulse-subtle {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(123, 75, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(123, 75, 255, 0);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
@@ -105,11 +124,6 @@ a {
 
 .animate-slide-in-up {
   animation: slideInUp 0.5s cubic-bezier(0.4,0,0.2,1);
-}
-
-/* Scroll suave */
-html {
-  scroll-behavior: smooth;
 }
 
 /* Melhorar foco para acessibilidade */
