@@ -141,8 +141,7 @@
         "assinaturaCanceladaSucesso": "Assinatura cancelada com sucesso!",
         "erroEncontrarAssinatura": "Não foi possível encontrar informações da assinatura.",
         "erroCancelarAssinatura": "Erro ao cancelar assinatura. Tente novamente."
-      },
-      "cupom": {
+      },      "cupom": {
         "titulo": "Código de Cupão",
         "temCodigo": "Tem um código de acesso especial?",
         "tenhoCodigoCupao": "Tenho um código de cupão",
@@ -153,6 +152,49 @@
         "cancelar": "Cancelar",
         "inserirCodigoError": "Por favor, insira um código.",
         "erroAplicarCodigo": "Erro ao aplicar código. Tente novamente."
+      },
+      "subscriptionPage": {
+        "titulo": "Escolha seu Plano",
+        "acessoCompleto": "Acesso completo ao LinkMind para organizar suas ideias e arquivos",
+        "trialDias": "Você ainda tem",
+        "dias": "dias",
+        "trialAtivo": "de trial gratuito!",
+        "assineAgora": "Assine agora para continuar usando após o trial.",
+        "mensal": "Mensal",
+        "anual": "Anual",
+        "planoMensal": "Plano Mensal",
+        "planoAnual": "Plano Anual",
+        "preco5": "€5",
+        "preco50": "€50",
+        "porMes": "/mês",
+        "porAno": "/ano",
+        "descricaoMensal": "Acesso completo com renovação mensal",
+        "descricaoAnual": "Acesso completo com renovação anual",
+        "economize": "Economize €10!",        "incluido": "Incluído:",
+        "uploadIlimitado": "Upload ilimitado de arquivos",
+        "organizacaoIdeias": "Organização de ideias",
+        "acessoCompletoSistema": "Acesso completo ao sistema",
+        "suportePrioritario": "Suporte prioritário",
+        "cancelarQualquerMomento": "Cancele a qualquer momento. Renovação automática.",
+        "voltarDashboard": "← Voltar ao Dashboard",
+        "premiumAtivo": "Acesso Premium Ativo",
+        "codigoEspecial": "Você tem acesso permanente com código especial.",
+        "subscricaoPaypal": "Sua assinatura PayPal está ativa.",
+        "irDashboard": "Ir para Dashboard",
+        "erroProcessarPagamento": "Erro ao processar pagamento. Tente novamente.",
+        "assinaturaAtivada": "Assinatura ativada com sucesso!",
+        "erroAtivarAssinatura": "Erro ao ativar assinatura. Tente novamente.",
+        "erroProcessarAssinatura": "Erro ao processar assinatura."
+      },
+      "premiumGuard": {
+        "acessoRestrito": "Acesso Restrito",
+        "precisaLogin": "Você precisa estar logado para acessar esta página.",
+        "fazerLogin": "Fazer Login",
+        "acessoPremiumNecessario": "Acesso Premium Necessário",
+        "trialExpirou": "Seu trial expirou. Para continuar usando esta funcionalidade, assine um dos nossos planos.",
+        "funcionalidadePremium": "Esta funcionalidade requer uma assinatura premium.",
+        "verPlanos": "Ver Planos - A partir de €5/mês",
+        "voltarDashboard": "Voltar ao Dashboard"
       }
     },
     "geral": {
@@ -367,8 +409,7 @@
         "assinaturaCanceladaSucesso": "Subscription canceled successfully!",
         "erroEncontrarAssinatura": "Could not find subscription information.",
         "erroCancelarAssinatura": "Error canceling subscription. Please try again."
-      },
-      "cupom": {
+      },      "cupom": {
         "titulo": "Coupon Code",
         "temCodigo": "Do you have a special access code?",
         "tenhoCodigoCupao": "I have a coupon code",
@@ -379,6 +420,50 @@
         "cancelar": "Cancel",
         "inserirCodigoError": "Please enter a code.",
         "erroAplicarCodigo": "Error applying code. Please try again."
+      },
+      "subscriptionPage": {
+        "titulo": "Choose Your Plan",
+        "acessoCompleto": "Full access to LinkMind to organize your ideas and files",
+        "trialDias": "You still have",
+        "dias": "days",
+        "trialAtivo": "of free trial left!",
+        "assineAgora": "Subscribe now to continue using after the trial.",
+        "mensal": "Monthly",
+        "anual": "Annual",
+        "planoMensal": "Monthly Plan",
+        "planoAnual": "Annual Plan",
+        "preco5": "€5",
+        "preco50": "€50",
+        "porMes": "/month",
+        "porAno": "/year",
+        "descricaoMensal": "Full access with monthly renewal",
+        "descricaoAnual": "Full access with annual renewal",
+        "economize": "Save €10!",
+        "incluido": "Included:",
+        "uploadIlimitado": "Unlimited file uploads",
+        "organizacaoIdeias": "Idea organization",
+        "acessoCompletoSistema": "Full system access",
+        "suportePrioritario": "Priority support",
+        "cancelarQualquerMomento": "Cancel anytime. Automatic renewal.",
+        "voltarDashboard": "← Back to Dashboard",
+        "premiumAtivo": "Premium Access Active",
+        "codigoEspecial": "You have permanent access with special code.",
+        "subscricaoPaypal": "Your PayPal subscription is active.",
+        "irDashboard": "Go to Dashboard",
+        "erroProcessarPagamento": "Error processing payment. Please try again.",
+        "assinaturaAtivada": "Subscription activated successfully!",
+        "erroAtivarAssinatura": "Error activating subscription. Please try again.",
+        "erroProcessarAssinatura": "Error processing subscription."
+      },
+      "premiumGuard": {
+        "acessoRestrito": "Restricted Access",
+        "precisaLogin": "You need to be logged in to access this page.",
+        "fazerLogin": "Login",
+        "acessoPremiumNecessario": "Premium Access Required",
+        "trialExpirou": "Your trial has expired. To continue using this feature, subscribe to one of our plans.",
+        "funcionalidadePremium": "This feature requires a premium subscription.",
+        "verPlanos": "View Plans - Starting at €5/month",
+        "voltarDashboard": "Back to Dashboard"
       }
     },"geral": {
       "cancelar": "Cancel",

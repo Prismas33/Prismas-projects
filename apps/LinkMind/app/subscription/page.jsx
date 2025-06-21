@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../lib/context/AuthContext";
+import { useI18n } from "../../lib/context/I18nContext";
 import { useRouter } from "next/navigation";
 import { verificarAcessoPremium } from "../../lib/firebase/auth";
 import { nomeParaIdFirestore } from "../../lib/firebase/utils";
@@ -8,6 +9,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 export default function SubscriptionPage() {
   const { user, loading: authLoading } = useAuth();
+  const { t } = useI18n();
   const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState('monthly');
   const [accessStatus, setAccessStatus] = useState(null);
@@ -17,25 +19,24 @@ export default function SubscriptionPage() {
     monthly: process.env.NEXT_PUBLIC_PAYPAL_MONTHLY_PLAN_ID || "P-2S058014PP6652810NBLHD2A",
     annual: process.env.NEXT_PUBLIC_PAYPAL_ANNUAL_PLAN_ID || "P-1Y572463M65637718NBLHETI"
   };
-  const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "ASW3a4x9be9lfHENHHj4VsVsVcTFbFa_IuZYD3EiO1l3LCJYMtltBx6ouuI_Wm_kTSXz6GFT16aqngzh";
-  const plans = {
+  const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "ASW3a4x9be9lfHENHHj4VsVsVcTFbFa_IuZYD3EiO1l3LCJYMtltBx6ouuI_Wm_kTSXz6GFT16aqngzh";  const plans = {
     monthly: {
       id: planIds.monthly,
-      name: "Plano Mensal",
-      price: "€5",
-      period: "/mês",
-      description: "Acesso completo com renovação mensal",
+      name: t('configuracoes.subscriptionPage.planoMensal'),
+      price: t('configuracoes.subscriptionPage.preco5'),
+      period: t('configuracoes.subscriptionPage.porMes'),
+      description: t('configuracoes.subscriptionPage.descricaoMensal'),
       savings: null
     },
     annual: {
       id: planIds.annual,
-      name: "Plano Anual",
-      price: "€50",
-      period: "/ano",
-      description: "Acesso completo com renovação anual",
-      savings: "Economize €10!"
+      name: t('configuracoes.subscriptionPage.planoAnual'),
+      price: t('configuracoes.subscriptionPage.preco50'),
+      period: t('configuracoes.subscriptionPage.porAno'),
+      description: t('configuracoes.subscriptionPage.descricaoAnual'),
+      savings: t('configuracoes.subscriptionPage.economize')
     }
-  };  const checkUserAccess = useCallback(async () => {
+  };const checkUserAccess = useCallback(async () => {
     if (!user?.displayName || checkingAccess) return;
     
     setCheckingAccess(true);
@@ -78,17 +79,15 @@ export default function SubscriptionPage() {
           planType: selectedPlan,
           userDisplayName: user.displayName
         })
-      });
-      
-      if (response.ok) {
-        alert('Assinatura ativada com sucesso!');
+      });      if (response.ok) {
+        alert(t('configuracoes.subscriptionPage.assinaturaAtivada'));
         router.push('/dashboard');
       } else {
-        alert('Erro ao ativar assinatura. Tente novamente.');
+        alert(t('configuracoes.subscriptionPage.erroAtivarAssinatura'));
       }
     } catch (error) {
       console.error("Erro ao processar assinatura:", error);
-      alert('Erro ao processar assinatura.');
+      alert(t('configuracoes.subscriptionPage.erroProcessarAssinatura'));
     }
   };
   if (authLoading || loading || checkingAccess) {
@@ -101,21 +100,19 @@ export default function SubscriptionPage() {
 
   // Se tem acesso permanente, mostrar status
   if (accessStatus?.hasAccess && accessStatus.reason !== 'trial_active') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f7f8fa]">
+    return (      <div className="min-h-screen flex items-center justify-center bg-[#f7f8fa]">
         <div className="max-w-md bg-white rounded-xl shadow-lg p-8 text-center">
-          <div className="text-green-500 text-6xl mb-4">✓</div>
-          <h1 className="text-2xl font-bold text-[#2A3F9E] mb-4">Acesso Premium Ativo</h1>
+          <div className="text-green-500 text-6xl mb-4">✓</div>          <h1 className="text-2xl font-bold text-[#2A3F9E] mb-4">{t('configuracoes.subscriptionPage.premiumAtivo')}</h1>
           <p className="text-gray-600 mb-6">
             {accessStatus.reason === 'secret_code' 
-              ? 'Você tem acesso permanente com código especial.'
-              : 'Sua assinatura PayPal está ativa.'}
+              ? t('configuracoes.subscriptionPage.codigoEspecial')
+              : t('configuracoes.subscriptionPage.subscricaoPaypal')}
           </p>
           <button
             onClick={() => router.push('/dashboard')}
             className="w-full bg-gradient-to-r from-[#2A3F9E] to-[#7B4BFF] text-white p-3 rounded-lg font-medium hover:shadow-lg transform hover:scale-[1.02] transition-all"
           >
-            Ir para Dashboard
+            {t('configuracoes.subscriptionPage.irDashboard')}
           </button>
         </div>
       </div>
@@ -128,37 +125,33 @@ export default function SubscriptionPage() {
 
   return (
     <div className="min-h-screen bg-[#f7f8fa] py-12">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-[#2A3F9E] mb-4">
-            Escolha seu Plano
+      <div className="max-w-4xl mx-auto px-4">        <div className="text-center mb-12">          <h1 className="text-4xl font-bold text-[#2A3F9E] mb-4">
+            {t('configuracoes.subscriptionPage.titulo')}
           </h1>
           {accessStatus?.reason === 'trial_active' && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
               <p className="text-blue-700">
-                🎉 Você ainda tem <strong>{trialDaysLeft} dias</strong> de trial gratuito!
+                🎉 {t('configuracoes.subscriptionPage.trialDias')} <strong>{trialDaysLeft} {t('configuracoes.subscriptionPage.dias')}</strong> {t('configuracoes.subscriptionPage.trialAtivo')}
                 <br />
-                Assine agora para continuar usando após o trial.
+                {t('configuracoes.subscriptionPage.assineAgora')}
               </p>
             </div>
           )}
           <p className="text-gray-600 text-lg">
-            Acesso completo ao LinkMind para organizar suas ideias e arquivos
+            {t('configuracoes.subscriptionPage.acessoCompleto')}
           </p>
         </div>
 
         {/* Seletor de Planos */}
         <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-sm">
-            <button
+          <div className="bg-white rounded-lg p-1 shadow-sm">            <button
               onClick={() => setSelectedPlan('monthly')}
               className={`px-6 py-2 rounded-md font-medium transition-all ${
                 selectedPlan === 'monthly'
                   ? 'bg-[#7B4BFF] text-white shadow-sm'
                   : 'text-gray-600 hover:text-[#7B4BFF]'
               }`}
-            >
-              Mensal
+            >              {t('configuracoes.subscriptionPage.mensal')}
             </button>
             <button
               onClick={() => setSelectedPlan('annual')}
@@ -168,7 +161,7 @@ export default function SubscriptionPage() {
                   : 'text-gray-600 hover:text-[#7B4BFF]'
               }`}
             >
-              Anual
+              {t('configuracoes.subscriptionPage.anual')}
             </button>
           </div>
         </div>
@@ -190,26 +183,24 @@ export default function SubscriptionPage() {
                 </div>
               )}
               <p className="text-gray-600 mt-4">{plans[selectedPlan].description}</p>
-            </div>
-
-            <div className="mb-6">
-              <h4 className="font-semibold text-gray-800 mb-3">Incluído:</h4>
+            </div>            <div className="mb-6">
+              <h4 className="font-semibold text-gray-800 mb-3">{t('configuracoes.subscriptionPage.incluido')}</h4>
               <ul className="space-y-2 text-gray-600">
                 <li className="flex items-center">
                   <span className="text-green-500 mr-2">✓</span>
-                  Upload ilimitado de arquivos
+                  {t('configuracoes.subscriptionPage.uploadIlimitado')}
                 </li>
                 <li className="flex items-center">
                   <span className="text-green-500 mr-2">✓</span>
-                  Organização de ideias
+                  {t('configuracoes.subscriptionPage.organizacaoIdeias')}
                 </li>
                 <li className="flex items-center">
                   <span className="text-green-500 mr-2">✓</span>
-                  Acesso completo ao sistema
+                  {t('configuracoes.subscriptionPage.acessoCompletoSistema')}
                 </li>
                 <li className="flex items-center">
                   <span className="text-green-500 mr-2">✓</span>
-                  Suporte prioritário
+                  {t('configuracoes.subscriptionPage.suportePrioritario')}
                 </li>
               </ul>
             </div>
@@ -232,16 +223,13 @@ export default function SubscriptionPage() {
                     plan_id: plans[selectedPlan].id
                   });
                 }}
-                onApprove={handlePayPalSuccess}
-                onError={(err) => {
+                onApprove={handlePayPalSuccess}                onError={(err) => {
                   console.error("Erro PayPal:", err);
-                  alert('Erro ao processar pagamento. Tente novamente.');
+                  alert(t('configuracoes.subscriptionPage.erroProcessarPagamento'));
                 }}
               />
-            </PayPalScriptProvider>
-
-            <p className="text-xs text-gray-500 text-center mt-4">
-              Cancele a qualquer momento. Renovação automática.
+            </PayPalScriptProvider>            <p className="text-xs text-gray-500 text-center mt-4">
+              {t('configuracoes.subscriptionPage.cancelarQualquerMomento')}
             </p>
           </div>
         </div>
@@ -251,7 +239,7 @@ export default function SubscriptionPage() {
             onClick={() => router.push('/dashboard')}
             className="text-[#7B4BFF] hover:underline"
           >
-            ← Voltar ao Dashboard
+            {t('configuracoes.subscriptionPage.voltarDashboard')}
           </button>
         </div>
       </div>
