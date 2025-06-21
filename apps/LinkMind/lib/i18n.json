@@ -423,7 +423,8 @@
         "aplicarCodigo": "Apply Code",
         "cancelar": "Cancel",
         "inserirCodigoError": "Please enter a code.",
-        "erroAplicarCodigo": "Error applying code. Please try again."
+        "erroAplicarCodigo": "Error applying code. Please try again.",
+        "sucessoAplicarCodigo": "Code applied successfully! You now have free premium access."
       },
       "subscriptionPage": {
         "titulo": "Choose Your Plan",
