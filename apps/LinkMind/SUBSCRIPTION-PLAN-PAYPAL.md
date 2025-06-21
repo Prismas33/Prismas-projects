@@ -5,34 +5,111 @@
 - Acesse o painel de desenvolvedor: https://developer.paypal.com/
 - Crie um app para obter Client ID e Secret (sandbox e live).
 
-## 2. Criar Produtos e Planos no PayPal
-- No painel PayPal, acesse "Products & Services" > "Subscriptions".
-- Crie dois produtos: "Plano Mensal" e "Plano Anual".
-- Para cada produto, crie um plano de pagamento recorrente (mensal e anual).
-- Guarde os IDs dos planos (plan_id) para uso na integração.
+## 2. Produtos e Planos Configurados
+### Planos Criados:
+- **Plano Mensal**: €5/mês - ID: `P-2S058014PP6652810NBLHD2A`
+- **Plano Anual**: €50/ano - ID: `P-1Y572463M65637718NBLHETI`
+- **Client ID**: `ASW3a4x9be9lfHENHHj4VsVsVcTFbFa_IuZYD3EiO1l3LCJYMtltBx6ouuI_Wm_kTSXz6GFT16aqngzh`
+
+### Sistema de Acesso:
+- **Trial**: 7 dias gratuitos após registro
+- **Código de senha**: Acesso permanente gratuito se inserido no registro
+- **Assinatura**: Necessária após trial (exceto usuários com código)
 
 ## 3. Integração Frontend (Next.js)
 - Instale o SDK PayPal JS: `npm install @paypal/react-paypal-js`
-- Adicione o botão PayPal na página de pagamento:
 
+### Exemplo com React PayPal JS:
 ```jsx
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
-<PayPalScriptProvider options={{ "client-id": "YOUR_CLIENT_ID" }}>
-  <PayPalButtons
-    createSubscription={(data, actions) => {
-      return actions.subscription.create({
-        plan_id: "PAYPAL_PLAN_ID" // Mensal ou anual
-      });
-    }}
-    onApprove={(data, actions) => {
-      // Chame sua API para registrar a subscrição
-      // data.subscriptionID
-    }}
-  />
-</PayPalScriptProvider>
+const SubscriptionPlans = ({ selectedPlan }) => {
+  const planIds = {
+    monthly: "P-2S058014PP6652810NBLHD2A",
+    annual: "P-1Y572463M65637718NBLHETI"
+  };
+
+  return (
+    <PayPalScriptProvider options={{ 
+      "client-id": "ASW3a4x9be9lfHENHHj4VsVsVcTFbFa_IuZYD3EiO1l3LCJYMtltBx6ouuI_Wm_kTSXz6GFT16aqngzh",
+      vault: true,
+      intent: "subscription"
+    }}>
+      <PayPalButtons
+        style={{
+          shape: selectedPlan === 'monthly' ? 'pill' : 'rect',
+          color: 'silver',
+          layout: 'vertical',
+          label: 'subscribe'
+        }}
+        createSubscription={(data, actions) => {
+          return actions.subscription.create({
+            plan_id: planIds[selectedPlan]
+          });
+        }}
+        onApprove={async (data, actions) => {
+          // Registrar subscrição no backend
+          const response = await fetch('/api/paypal/subscription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              subscriptionID: data.subscriptionID,
+              planType: selectedPlan
+            })
+          });
+          
+          if (response.ok) {
+            alert('Subscrição ativada com sucesso!');
+            window.location.href = '/dashboard';
+          }
+        }}
+      />
+    </PayPalScriptProvider>
+  );
+};
 ```
-- Permita o usuário escolher entre mensal/anual e use o respectivo `plan_id`.
+
+### Implementação HTML/JS Pura:
+```html
+<!-- Plano Mensal -->
+<div id="paypal-button-container-monthly"></div>
+
+<!-- Plano Anual -->
+<div id="paypal-button-container-annual"></div>
+
+<script src="https://www.paypal.com/sdk/js?client-id=ASW3a4x9be9lfHENHHj4VsVsVcTFbFa_IuZYD3EiO1l3LCJYMtltBx6ouuI_Wm_kTSXz6GFT16aqngzh&vault=true&intent=subscription"></script>
+<script>
+  // Plano Mensal
+  paypal.Buttons({
+    style: { shape: 'pill', color: 'silver', layout: 'vertical', label: 'subscribe' },
+    createSubscription: function(data, actions) {
+      return actions.subscription.create({ plan_id: 'P-2S058014PP6652810NBLHD2A' });
+    },
+    onApprove: function(data, actions) {
+      // Registrar no backend
+      fetch('/api/paypal/subscription', {
+        method: 'POST',
+        body: JSON.stringify({ subscriptionID: data.subscriptionID, planType: 'monthly' })
+      });
+    }
+  }).render('#paypal-button-container-monthly');
+
+  // Plano Anual
+  paypal.Buttons({
+    style: { shape: 'rect', color: 'silver', layout: 'vertical', label: 'subscribe' },
+    createSubscription: function(data, actions) {
+      return actions.subscription.create({ plan_id: 'P-1Y572463M65637718NBLHETI' });
+    },
+    onApprove: function(data, actions) {
+      // Registrar no backend
+      fetch('/api/paypal/subscription', {
+        method: 'POST',
+        body: JSON.stringify({ subscriptionID: data.subscriptionID, planType: 'annual' })
+      });
+    }
+  }).render('#paypal-button-container-annual');
+</script>
+```
 
 ## 4. Backend: Validação e Controle de Acesso
 - Crie um endpoint API (ex: `/api/paypal/webhook`) para receber webhooks do PayPal.

@@ -2,7 +2,7 @@
 import { useAuth } from "../../lib/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { trocarSenha, excluirConta, logoutUtilizador, obterDadosUtilizador, atualizarFotoPerfil } from "../../lib/firebase/auth";
+import { trocarSenha, excluirConta, logoutUtilizador, obterDadosUtilizador, atualizarFotoPerfil, aplicarCodigoSecreto, verificarAcessoPremium } from "../../lib/firebase/auth";
 import { uploadArquivo } from "../../lib/firebase/storage";
 import { nomeParaIdFirestore } from "../../lib/firebase/utils";
 import Link from "next/link";
@@ -23,16 +23,23 @@ export default function SettingsPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [dadosUsuario, setDadosUsuario] = useState(null);
-  const [carregandoDados, setCarregandoDados] = useState(true);
-  const [uploadingFoto, setUploadingFoto] = useState(false);
-  useEffect(() => {
+  const [carregandoDados, setCarregandoDados] = useState(true);  const [uploadingFoto, setUploadingFoto] = useState(false);
+    // Estados para código de cupom
+  const [codigoCupom, setCodigoCupom] = useState("");
+  const [aplicandoCodigo, setAplicandoCodigo] = useState(false);
+  const [mostrarFormularioCodigo, setMostrarFormularioCodigo] = useState(false);
+  // Estados para assinatura
+  const [subscriptionData, setSubscriptionData] = useState(null);
+  const [loadingSubscription, setLoadingSubscription] = useState(true);
+  const [cancellingSubscription, setCancellingSubscription] = useState(false);
+  const [accessStatus, setAccessStatus] = useState(null);
+  const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);  useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login");
     } else if (user) {
       carregarDadosUsuario();
     }
-  }, [user, authLoading, router]);
-  async function carregarDadosUsuario() {
+  }, [user, authLoading, router]);async function carregarDadosUsuario() {
     if (!user) return;
     try {
       setCarregandoDados(true);
@@ -44,10 +51,84 @@ export default function SettingsPage() {
         dados.arquivos = [];
       }
       setDadosUsuario(dados);
+      
+      // Carregar dados da assinatura se tiver
+      if (dados.subscriptionStatus === 'active' && dados.paypalSubscriptionId) {
+        await carregarDadosAssinatura();
+      }
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
     } finally {
       setCarregandoDados(false);
+    }
+  }
+  async function carregarDadosAssinatura() {
+    if (!user?.displayName) return;
+    
+    try {
+      setLoadingSubscription(true);
+      const response = await fetch(`/api/paypal/get-subscription?userDisplayName=${encodeURIComponent(user.displayName)}`);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.log('API route não encontrada - funcionalidade pode não estar disponível');
+          return;
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.hasSubscription) {
+        setSubscriptionData(data.subscription);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar dados da assinatura:", error);
+      // Não mostrar erro ao usuário se for apenas a API não estar disponível
+    } finally {
+      setLoadingSubscription(false);
+    }
+  }
+  async function handleCancelSubscription() {
+    // Verificar diferentes possíveis campos de ID da assinatura
+    const subscriptionId = dadosUsuario?.paypalSubscriptionId || dadosUsuario?.subscriptionID;
+    
+    if (!subscriptionId || !user?.displayName) {
+      setError("Não foi possível encontrar informações da assinatura.");
+      return;
+    }
+    
+    try {
+      setCancellingSubscription(true);
+      setError("");
+      
+      const response = await fetch('/api/paypal/cancel-subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          subscriptionId: subscriptionId,
+          userDisplayName: user.displayName,
+          reason: 'Cancelamento solicitado pelo usuário nas configurações'
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSuccess("Assinatura cancelada com sucesso!");
+        setShowCancelConfirmation(false);
+        // Recarregar dados do usuário
+        await carregarDadosUsuario();
+      } else {
+        setError(data.error || "Erro ao cancelar assinatura");
+      }
+    } catch (error) {
+      console.error("Erro ao cancelar assinatura:", error);
+      setError("Erro ao cancelar assinatura. Tente novamente.");
+    } finally {
+      setCancellingSubscription(false);
     }
   }
 
@@ -150,9 +231,39 @@ export default function SettingsPage() {
       setDadosUsuario(prev => ({ ...prev, fotoPerfil: fotoUrl }));
       setSuccess(t('configuracoes.informacoesPessoais.fotoAtualizadaSucesso') || "Foto de perfil atualizada com sucesso!");
     } catch (err) {
-      setError(err.message);
-    } finally {
+      setError(err.message);    } finally {
       setUploadingFoto(false);
+    }
+  }
+
+  async function handleAplicarCodigo() {
+    if (!codigoCupom.trim()) {
+      setError("Por favor, insira um código.");
+      return;
+    }
+
+    try {
+      setAplicandoCodigo(true);
+      setError("");
+      setSuccess("");
+      
+      const nomeId = nomeParaIdFirestore(user.displayName || "");
+      const resultado = await aplicarCodigoSecreto(nomeId, codigoCupom.trim());
+      
+      if (resultado.success) {
+        setSuccess(resultado.message);
+        setCodigoCupom("");
+        setMostrarFormularioCodigo(false);
+        // Recarregar dados do utilizador
+        await carregarDadosUsuario();
+      } else {
+        setError(resultado.message);
+      }
+    } catch (error) {
+      console.error("Erro ao aplicar código:", error);
+      setError("Erro ao aplicar código. Tente novamente.");
+    } finally {
+      setAplicandoCodigo(false);
     }
   }
   return (
@@ -493,9 +604,244 @@ export default function SettingsPage() {
               </div>
             </div>
           </div>
-        )}
+        )}        {/* Informações de Assinatura */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+            <svg className="w-5 h-5 text-[#7B4BFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m-3-3h6m-6 0h6"/>
+            </svg>
+            <span>Assinatura e Planos</span>
+          </h2>
+          
+          {carregandoDados ? (
+            <div className="flex justify-center py-4">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#7B4BFF]"></div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Status da Assinatura */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status da Conta</label>
+                  <div className={`border rounded-lg px-3 py-2 text-sm font-medium ${
+                    dadosUsuario?.subscriptionStatus === 'premium_free' ? 'bg-green-50 border-green-200 text-green-800' :
+                    dadosUsuario?.subscriptionStatus === 'active' ? 'bg-blue-50 border-blue-200 text-blue-800' :
+                    dadosUsuario?.subscriptionStatus === 'trial' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
+                    'bg-red-50 border-red-200 text-red-800'
+                  }`}>
+                    {dadosUsuario?.subscriptionStatus === 'premium_free' ? '✨ Premium Gratuito' :
+                     dadosUsuario?.subscriptionStatus === 'active' ? '💎 Premium Ativo' :
+                     dadosUsuario?.subscriptionStatus === 'trial' ? '🎯 Trial Ativo' :
+                     '⏰ Trial Expirado'}
+                  </div>
+                </div>
 
-        {/* Feedback visual */}
+                {dadosUsuario?.subscriptionStatus === 'trial' && dadosUsuario?.trialEndDate && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Trial válido até</label>
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-yellow-800 text-sm">
+                      {new Date(dadosUsuario.trialEndDate.seconds * 1000).toLocaleDateString('pt-PT')}
+                    </div>
+                  </div>
+                )}
+
+                {dadosUsuario?.planType && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Plano Atual</label>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-blue-800 text-sm font-medium">
+                      {dadosUsuario.planType === 'monthly' ? '📅 Mensal - €5/mês' : '📆 Anual - €50/ano'}
+                    </div>
+                  </div>
+                )}
+
+                {dadosUsuario?.hasSecretCode && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Acesso Especial</label>
+                    <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-green-800 text-sm font-medium">
+                      🔑 Código de acesso utilizado
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Ações baseadas no status */}
+              <div className="pt-4 border-t border-gray-200">
+                {dadosUsuario?.subscriptionStatus === 'trial' && (
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <h3 className="font-medium text-gray-800 mb-2">🚀 Aproveite o seu trial!</h3>                    <p className="text-sm text-gray-600 mb-3">
+                      Tem acesso completo durante o período de trial. Para continuar após o trial, escolha um plano:
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <Link href="/subscription">
+                        <button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                          Ver Planos - €5/mês ou €50/ano
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {dadosUsuario?.subscriptionStatus === 'expired' && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                    <h3 className="font-medium text-red-800 mb-2">⚠️ Trial expirado</h3>                    <p className="text-sm text-red-600 mb-3">
+                      O seu período de trial expirou. Para continuar a usar o LinkMind, subscreva um dos nossos planos:
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <Link href="/subscription">                        <button className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                          Subscrever Agora - A partir de €5/mês
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                )}                {dadosUsuario?.subscriptionStatus === 'active' && (dadosUsuario?.subscriptionID || dadosUsuario?.paypalSubscriptionId) && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">                    <h3 className="font-medium text-blue-800 mb-2">💎 Subscrição activa</h3>
+                    <p className="text-sm text-blue-600 mb-2">
+                      Obrigado por ser um subscritor premium! A sua subscrição está activa.
+                    </p>
+                    <p className="text-xs text-gray-500 mb-3">
+                      ID da subscrição: {dadosUsuario.subscriptionID}
+                    </p>
+                      {/* Informações detalhadas da assinatura */}
+                    {subscriptionData && !loadingSubscription && (
+                      <div className="bg-white rounded-lg p-3 mb-3 border border-blue-100">
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div>
+                            <span className="text-gray-500">Status:</span>
+                            <span className="ml-1 font-medium capitalize">{subscriptionData.status}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Plano:</span>
+                            <span className="ml-1 font-medium">{subscriptionData.plan_id?.includes('monthly') ? 'Mensal' : 'Anual'}</span>
+                          </div>
+                          <div className="col-span-2">
+                            <span className="text-gray-500">Iniciado em:</span>
+                            <span className="ml-1 font-medium">
+                              {new Date(subscriptionData.start_time).toLocaleDateString('pt-PT')}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Botão para carregar dados detalhados se ainda não foram carregados */}
+                    {!subscriptionData && !loadingSubscription && (dadosUsuario?.paypalSubscriptionId || dadosUsuario?.subscriptionID) && (
+                      <button
+                        onClick={carregarDadosAssinatura}
+                        className="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded text-xs font-medium transition-colors mb-3"
+                      >
+                        Ver detalhes da assinatura
+                      </button>
+                    )}
+                    
+                    {loadingSubscription && (
+                      <div className="flex items-center space-x-2 mb-3">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        <span className="text-xs text-blue-600">Carregando detalhes...</span>
+                      </div>
+                    )}
+                    
+                    {/* Botão de cancelamento */}
+                    <button
+                      onClick={() => setShowCancelConfirmation(true)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto"
+                      disabled={cancellingSubscription}
+                    >
+                      {cancellingSubscription ? "Cancelando..." : "Cancelar Assinatura"}
+                    </button>
+                  </div>
+                )}
+
+                {dadosUsuario?.subscriptionStatus === 'premium_free' && (                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h3 className="font-medium text-green-800 mb-2">✨ Acesso premium gratuito</h3>                    <p className="text-sm text-green-600">
+                      Tem acesso premium permanente através do código especial. Aproveite todas as funcionalidades!
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Código de Cupão */}
+        {!dadosUsuario?.hasSecretCode && (
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+              <svg className="w-5 h-5 text-[#7B4BFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+              </svg>
+              <span>Código de Cupão</span>
+            </h2>
+            
+            <div className="space-y-4">
+              <p className="text-gray-600 text-sm">
+                Tem um código de acesso especial?
+              </p>
+              
+              {!mostrarFormularioCodigo ? (
+                <button
+                  onClick={() => setMostrarFormularioCodigo(true)}
+                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all transform hover:scale-[1.02] flex items-center space-x-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
+                  </svg>
+                  <span>Tenho um código de cupão</span>
+                </button>
+              ) : (
+                <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <label htmlFor="codigoCupom" className="block text-sm font-medium text-gray-700 mb-2">
+                      Código de Cupão
+                    </label>
+                    <input
+                      type="text"
+                      id="codigoCupom"
+                      value={codigoCupom}
+                      onChange={(e) => setCodigoCupom(e.target.value)}
+                      placeholder="Insira o código de acesso"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent"
+                      disabled={aplicandoCodigo}
+                    />
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <button
+                      onClick={handleAplicarCodigo}
+                      disabled={aplicandoCodigo || !codigoCupom.trim()}
+                      className="flex-1 bg-gradient-to-r from-[#2A3F9E] to-[#7B4BFF] hover:shadow-lg text-white px-4 py-2 rounded-lg text-sm font-medium transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
+                    >
+                      {aplicandoCodigo ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <span>A aplicar...</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                          <span>Aplicar Código</span>
+                        </>
+                      )}
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        setMostrarFormularioCodigo(false);
+                        setCodigoCupom("");
+                        setError("");
+                      }}
+                      disabled={aplicandoCodigo}
+                      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}        {/* Feedback visual */}
         {(error || success) && (
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className={`text-center ${error ? "text-red-600" : "text-green-600"}`}>
@@ -515,6 +861,68 @@ export default function SettingsPage() {
                   <span>{success}</span>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Modal de confirmação de cancelamento de assinatura */}
+        {showCancelConfirmation && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-red-700">Cancelar Assinatura</h3>
+                <button 
+                  onClick={() => setShowCancelConfirmation(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  disabled={cancellingSubscription}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                <div className="flex items-start space-x-3">
+                  <svg className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                  <div>
+                    <p className="text-yellow-800 font-medium mb-1">Tem certeza?</p>
+                    <p className="text-yellow-700 text-sm">
+                      Ao cancelar sua assinatura, você perderá o acesso premium ao final do período atual de cobrança. 
+                      Esta ação é irreversível.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3">
+                <button 
+                  onClick={() => setShowCancelConfirmation(false)}
+                  className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" 
+                  disabled={cancellingSubscription}
+                >
+                  Manter Assinatura
+                </button>
+                <button 
+                  onClick={handleCancelSubscription}
+                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center space-x-2" 
+                  disabled={cancellingSubscription}
+                >
+                  {cancellingSubscription ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Cancelando...</span>
+                    </>
+                  ) : (
+                    <span>Sim, Cancelar</span>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         )}

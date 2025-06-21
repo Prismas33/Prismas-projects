@@ -7,6 +7,7 @@ import { uploadArquivo as uploadFileStorage } from "../../lib/firebase/storage";
 import { nomeParaIdFirestore } from "../../lib/firebase/utils";
 import AutocompleteInput from "../../components/AutocompleteInput";
 import HistoricoArquivo from "../../components/HistoricoArquivo";
+import PremiumGuard from "../../components/PremiumGuard";
 import Link from "next/link";
 import jsPDF from 'jspdf';
 import { useI18n } from "../../lib/context/I18nContext";
@@ -375,9 +376,9 @@ export default function UploadArquivoPage() {
   if (!user) {
     return null;
   }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+    <PremiumGuard>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
       <div className="max-w-2xl mx-auto">        {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           <div className="flex items-center space-x-4 mb-2">
@@ -720,11 +721,11 @@ export default function UploadArquivoPage() {
                     {t('upload_file.close')}
                   </button>
                 </div>
-              </div>
-            </div>
+              </div>            </div>
           </div>
         )}
       </div>
     </div>
+    </PremiumGuard>
   );
 }

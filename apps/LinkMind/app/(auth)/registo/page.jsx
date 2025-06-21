@@ -47,15 +47,9 @@ export default function RegistoPage() {
   // Se usuário já está logado, não mostrar a página de registo
   if (user) {
     return null;
-  }
-  async function handleSubmit(e) {
+  }  async function handleSubmit(e) {
     e.preventDefault();
     setError("");
-    
-    if (accessPass !== "Prismas2025?") {
-      setError(t('access_password_incorrect') || "Access password incorrect");
-      return;
-    }
     
     if (password !== confirmPassword) {
       setError(t('passwords_do_not_match') || "Passwords do not match");
@@ -69,7 +63,8 @@ export default function RegistoPage() {
     
     setLoading(true);
     try {
-      await registarUtilizador(email, password, nome);
+      // Passar o código de acesso para a função de registro
+      await registarUtilizador(email, password, nome, accessPass || null);
       router.push("/dashboard");
     } catch (err) {
       setError(err.message);
@@ -134,8 +129,7 @@ export default function RegistoPage() {
               required
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
             />
-          </div>
-          <div>
+          </div>          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{t('confirm_password') || 'Confirmar Password'}</label>
             <input
               type="password"
@@ -145,6 +139,19 @@ export default function RegistoPage() {
               required
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Código de Acesso (opcional)</label>
+            <input
+              type="text"
+              placeholder="Digite o código para acesso premium gratuito"
+              value={accessPass}
+              onChange={e => setAccessPass(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B4BFF] focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Sem código? Você terá 7 dias gratuitos, depois precisará de assinatura.
+            </p>
           </div>
           {error && (
             <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg text-sm">

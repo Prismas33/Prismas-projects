@@ -3,7 +3,7 @@ import { useAuth } from "../../lib/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { downloadArquivos } from "../../lib/firebase/arquivos";
-import { logoutUtilizador, obterDadosUtilizador } from "../../lib/firebase/auth";
+import { logoutUtilizador, obterDadosUtilizador, verificarAcessoPremium } from "../../lib/firebase/auth";
 import { nomeParaIdFirestore } from "../../lib/firebase/utils";
 import Link from "next/link";
 import { useI18n } from "../../lib/context/I18nContext";
@@ -24,6 +24,8 @@ export default function DashboardPage() {
   const [arquivosVencemHoje, setArquivosVencemHoje] = useState([]);
   const [modalArquivo, setModalArquivo] = useState(false);
   const [arquivoSelecionado, setArquivoSelecionado] = useState(null);
+  const [accessStatus, setAccessStatus] = useState(null);
+  const [showTrialWarning, setShowTrialWarning] = useState(false);
   const { t } = useI18n();
 
   useEffect(() => {
@@ -40,6 +42,7 @@ export default function DashboardPage() {
     if (user) {
       carregarArquivos();
       carregarPrimeiroNome();
+      verificarStatusAssinatura();
     }
   }, [user]);
   async function carregarPrimeiroNome() {
@@ -129,6 +132,23 @@ export default function DashboardPage() {
       console.error("Erro ao carregar arquivos:", error);
     } finally {
       setCarregandoArquivos(false);
+    }
+  }
+
+  async function verificarStatusAssinatura() {
+    if (!user?.displayName) return;
+    
+    try {
+      const nomeId = nomeParaIdFirestore(user.displayName);
+      const status = await verificarAcessoPremium(nomeId);
+      setAccessStatus(status);
+      
+      // Mostrar aviso se o trial está próximo do fim
+      if (status.type === 'trial' && status.daysRemaining <= 3) {
+        setShowTrialWarning(true);
+      }
+    } catch (error) {
+      console.error("Erro ao verificar status da assinatura:", error);
     }
   }
 
@@ -490,6 +510,107 @@ export default function DashboardPage() {
               )}
             </div>
           </div>
+        )}
+
+        {/* Banner de Trial/Assinatura */}
+        {accessStatus && (
+          <>
+            {/* Trial Warning */}
+            {accessStatus.type === 'trial' && showTrialWarning && (
+              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4 mb-6">
+                <div className="flex items-start space-x-3">
+                  <svg className="w-6 h-6 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-yellow-800">
+                      ⏰ Trial terminando em {accessStatus.daysRemaining} dia{accessStatus.daysRemaining !== 1 ? 's' : ''}
+                    </h3>
+                    <p className="text-sm text-yellow-700 mt-1">
+                      Para continuar usando todas as funcionalidades do LinkMind, escolha um dos nossos planos.
+                    </p>
+                    <div className="flex gap-2 mt-3">
+                      <Link href="/subscription">
+                        <button className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                          Ver Planos - €5/mês
+                        </button>
+                      </Link>
+                      <button 
+                        onClick={() => setShowTrialWarning(false)}
+                        className="bg-white hover:bg-gray-50 text-yellow-800 border border-yellow-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                      >
+                        Lembrar depois
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Trial Expired */}
+            {accessStatus.type === 'expired' && (
+              <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl p-4 mb-6">
+                <div className="flex items-start space-x-3">
+                  <svg className="w-6 h-6 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-red-800">
+                      🚫 Trial expirado
+                    </h3>
+                    <p className="text-sm text-red-700 mt-1">
+                      Seu período de trial expirou. Para continuar usando o LinkMind, assine um dos nossos planos.
+                    </p>
+                    <div className="flex gap-2 mt-3">
+                      <Link href="/subscription">
+                        <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                          Assinar Agora - €5/mês
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Premium Active */}
+            {accessStatus.type === 'premium' && (
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 mb-6">
+                <div className="flex items-center space-x-3">
+                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <h3 className="font-semibold text-green-800">
+                      💎 Assinatura Premium Ativa
+                    </h3>
+                    <p className="text-sm text-green-700">
+                      Obrigado por ser um assinante premium! Aproveite todas as funcionalidades.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Free Premium (Secret Code) */}
+            {accessStatus.type === 'premium_free' && (
+              <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-4 mb-6">
+                <div className="flex items-center space-x-3">
+                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-3c0-.265.105-.52.293-.707L10.293 8.293A1 1 0 0111 8h2m-1-5a2 2 0 012 2v1" />
+                  </svg>
+                  <div>
+                    <h3 className="font-semibold text-purple-800">
+                      ✨ Acesso Premium Especial
+                    </h3>
+                    <p className="text-sm text-purple-700">
+                      Você tem acesso premium permanente! Aproveite todas as funcionalidades sem limitações.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

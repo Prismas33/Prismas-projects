@@ -13,8 +13,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
-  useEffect(() => {
+  }, []);  useEffect(() => {
     if (!mounted) return;
     
     console.log('AuthProvider - Iniciando listener de autenticação');

@@ -4,6 +4,7 @@ import { useAuth } from "../../lib/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { downloadArquivos, obterSugestoes } from "../../lib/firebase/arquivos";
 import CardArquivo from "../../components/CardArquivo";
+import PremiumGuard from "../../components/PremiumGuard";
 import Link from "next/link";
 import { useI18n } from "../../lib/context/I18nContext";
 
@@ -162,9 +163,9 @@ export default function DownloadArquivoPage() {
   if (!user) {
     return null;
   }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+    <PremiumGuard>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
@@ -390,10 +391,10 @@ export default function DownloadArquivoPage() {
                   ) : null}
                 </div>
               </div>
-            )}
-          </div>
+            )}          </div>
         )}
       </div>
     </div>
+    </PremiumGuard>
   );
 }
