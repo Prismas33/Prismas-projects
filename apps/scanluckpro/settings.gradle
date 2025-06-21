@@ -1,0 +1,2 @@
+rootProject.name = "ScanLuck Pro"
+include ':app'
