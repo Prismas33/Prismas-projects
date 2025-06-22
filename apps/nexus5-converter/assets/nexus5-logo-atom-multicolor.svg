@@ -1,0 +1,30 @@
+<svg width="340" height="220" viewBox="0 0 340 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="atom-multicolor" x1="0" y1="0" x2="340" y2="220" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00E5FF"/>
+      <stop offset="0.3" stop-color="#00FFB0"/>
+      <stop offset="0.6" stop-color="#FF00E5"/>
+      <stop offset="1" stop-color="#FFB300"/>
+    </linearGradient>
+    <filter id="glow-multicolor" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="340" height="220" rx="32" fill="#181A20"/>
+  <!-- Atomic symbol, larger and more detailed, multicolor -->
+  <g transform="translate(170,90)">
+    <ellipse rx="70" ry="24" fill="none" stroke="url(#atom-multicolor)" stroke-width="4" opacity="0.9" filter="url(#glow-multicolor)"/>
+    <ellipse rx="24" ry="70" fill="none" stroke="url(#atom-multicolor)" stroke-width="4" opacity="0.9" filter="url(#glow-multicolor)" transform="rotate(60)"/>
+    <ellipse rx="24" ry="70" fill="none" stroke="url(#atom-multicolor)" stroke-width="4" opacity="0.9" filter="url(#glow-multicolor)" transform="rotate(-60)"/>
+    <circle r="18" fill="#FF00E5" filter="url(#glow-multicolor)" fill-opacity="0.7"/>
+    <circle cx="70" cy="0" r="7" fill="#00E5FF"/>
+    <circle cx="-35" cy="60" r="5.5" fill="#FFB300"/>
+    <circle cx="-35" cy="-60" r="5.5" fill="#00FFB0"/>
+  </g>
+  <!-- Text below the atom -->
+  <text x="50%" y="185" text-anchor="middle" font-family="'Orbitron', 'Segoe UI', Arial, sans-serif" font-size="54" font-weight="bold" fill="url(#atom-multicolor)" filter="url(#glow-multicolor)" letter-spacing="4">nexus5</text>
+</svg>

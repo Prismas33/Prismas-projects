@@ -1,0 +1,57 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*
+
+# VSCode
+.vscode/
+
+# Package lock
+package-lock.json
+yarn.lock
+
+# Electron specific
+*.asar
+
+# Others
+*.log
+coverage/
+
+# Ignore executables and installers
+*.exe
+*.dmg
+*.app
+*.msi
+*.deb
+*.rpm
+*.snap
+
+# Ignore output from electron-builder
+/build/
+/release/
+
+# Ignore test output
+/test-results/
+
+# Ignore cache
+.cache/
+
+# Ignore Mac system files
+Icon?
+
+# Ignore Windows system files
+Desktop.ini

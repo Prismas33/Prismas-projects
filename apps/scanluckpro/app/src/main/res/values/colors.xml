@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ScanLuck Pro Brand Colors -->
+    <!-- Dourado - Prosperidade -->
+    <color name="gold_primary">#FFD700</color>
+    <color name="gold_light">#FFEB3B</color>
+    <color name="gold_dark">#F57F17</color>
+    
+    <!-- Verde-Esmeralda - Crescimento e equilíbrio -->
+    <color name="emerald_primary">#2ECC71</color>
+    <color name="emerald_light">#58D68D</color>
+    <color name="emerald_dark">#239B56</color>
+    
+    <!-- Branco - Pureza e eficiência -->
+    <color name="white_pure">#FFFFFF</color>
+    <color name="white_soft">#FAFAFA</color>
+    <color name="white_medium">#F5F5F5</color>
+    
+    <!-- Vermelho - Proteção (detalhes) -->
+    <color name="red_accent">#E74C3C</color>
+    <color name="red_light">#EC7063</color>
+    
+    <!-- Neutros -->
+    <color name="black_text">#000000</color>
+    <color name="gray_light">#ECEFF1</color>
+    <color name="gray_medium">#90A4AE</color>
+    <color name="gray_dark">#37474F</color>
+    
+    <!-- Surface Colors -->
+    <color name="surface_primary">#FFFFFF</color>
+    <color name="surface_secondary">#F8F9FA</color>
+    <color name="surface_card">#FFFFFF</color>
+    
+    <!-- Metal effect -->
+    <color name="metal_silver">#C0C0C0</color>
+    <color name="metal_shine">#E8E8E8</color>
+</resources>
