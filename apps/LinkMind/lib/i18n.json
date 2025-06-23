@@ -256,8 +256,7 @@
       "start": "Início",
       "end": "Fim",
       "search_button": "Procurar",
-      "search_help": "Pesquise arquivos entre datas de criação, início ou fim.",
-      "results_for": "Resultados para",
+      "search_help": "Pesquise arquivos entre datas de criação, início ou fim.",      "results_for": "Resultados para",
       "files_between": "Arquivos entre",
       "file": "arquivo",
       "files": "arquivos",
@@ -270,7 +269,23 @@
       "attachments": "Anexos",
       "attachment": "Anexo",
       "open_attachment": "Abrir anexo"
-    }
+    },
+    "editar": "Editar",
+    "remover": "Remover",
+    "salvar": "Salvar",
+    "cancelar": "Cancelar",
+    "editarArquivo": "Editar Arquivo",
+    "confirmarRemocao": "Confirmar Remoção",
+    "temCertezaRemover": "Tem certeza que deseja remover o arquivo \"{nome}\"? Esta ação não pode ser desfeita.",
+    "removendo": "Removendo...",
+    "salvando": "Salvando...",
+    "subtituloOuCategoria": "Subtítulo ou Categoria",
+    "placeholderSubtitulo": "Ex: Ideia principal, subtítulo, categoria...",
+    "descricao": "Descrição",
+    "prioridade": "Prioridade",
+    "baixa": "Baixa",
+    "media": "Média",
+    "alta": "Alta"
   },
   "en": {
     "welcome": "Welcome to LinkMind!",
@@ -529,8 +544,7 @@
       "start": "Start",
       "end": "End",
       "search_button": "Search",
-      "search_help": "Search files between creation, start or end dates.",
-      "results_for": "Results for",
+      "search_help": "Search files between creation, start or end dates.",      "results_for": "Results for",
       "files_between": "Files between",
       "file": "file",
       "files": "files",
@@ -543,6 +557,22 @@
       "attachments": "Attachments",
       "attachment": "Attachment",
       "open_attachment": "Open attachment"
-    }
+    },
+    "editar": "Edit",
+    "remover": "Remove",
+    "salvar": "Save",
+    "cancelar": "Cancel",
+    "editarArquivo": "Edit File",
+    "confirmarRemocao": "Confirm Removal",
+    "temCertezaRemover": "Are you sure you want to remove the file \"{nome}\"? This action cannot be undone.",
+    "removendo": "Removing...",
+    "salvando": "Saving...",
+    "subtituloOuCategoria": "Subtitle or Category",
+    "placeholderSubtitulo": "Ex: Main idea, subtitle, category...",
+    "descricao": "Description",
+    "prioridade": "Priority",
+    "baixa": "Low",
+    "media": "Medium",
+    "alta": "High"
   }
 }

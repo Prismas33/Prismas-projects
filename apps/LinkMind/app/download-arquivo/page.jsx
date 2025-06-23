@@ -2,7 +2,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../lib/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { downloadArquivos, obterSugestoes } from "../../lib/firebase/arquivos";
+import { downloadArquivos, obterSugestoes, removerArquivo, editarArquivo } from "../../lib/firebase/arquivos";
+import { nomeParaIdFirestore } from "../../lib/firebase/utils";
 import CardArquivo from "../../components/CardArquivo";
 import PremiumGuard from "../../components/PremiumGuard";
 import Link from "next/link";
@@ -20,10 +21,14 @@ export default function DownloadArquivoPage() {
   const [filtroCategoria, setFiltroCategoria] = useState("");
   const [filtroPrioridade, setFiltroPrioridade] = useState("");
   const [buscaDataInicio, setBuscaDataInicio] = useState("");
-  const [buscaDataFim, setBuscaDataFim] = useState("");
-  const [tipoData, setTipoData] = useState("fim"); // "criacao", "inicio" ou "fim"
+  const [buscaDataFim, setBuscaDataFim] = useState("");  const [tipoData, setTipoData] = useState("fim"); // "criacao", "inicio" ou "fim"
   const [modalArquivo, setModalArquivo] = useState(false);
   const [arquivoSelecionado, setArquivoSelecionado] = useState(null);
+  const [modalEdicao, setModalEdicao] = useState(false);
+  const [modalConfirmacao, setModalConfirmacao] = useState(false);
+  const [arquivoEditando, setArquivoEditando] = useState(null);
+  const [removendo, setRemovendo] = useState(false);
+  const [editando, setEditando] = useState(false);
   const timeoutRef = useRef(null);
 
   useEffect(() => {
@@ -115,10 +120,84 @@ export default function DownloadArquivoPage() {
       console.error("Erro ao obter sugestões:", error);
     }
   }
-
   function selecionarSugestao(sugestao) {
     setBusca(sugestao);
     setMostrarSugestoes(false);
+  }  // Função para abrir modal de edição
+  function abrirModalEdicao() {
+    setArquivoEditando({
+      originalIndex: arquivoSelecionado.originalIndex,
+      nome: arquivoSelecionado.nome || '',
+      subNome: arquivoSelecionado.subNome || '',
+      conteudo: arquivoSelecionado.conteudo || arquivoSelecionado.oque || arquivoSelecionado.descricao || '',
+      prioridade: arquivoSelecionado.prioridade || 'media',
+      dataInicio: arquivoSelecionado.dataInicio ? 
+        (arquivoSelecionado.dataInicio.toDate ? 
+          arquivoSelecionado.dataInicio.toDate().toISOString().split('T')[0] : 
+          new Date(arquivoSelecionado.dataInicio).toISOString().split('T')[0]) : '',
+      dataFim: arquivoSelecionado.dataFim ? 
+        (arquivoSelecionado.dataFim.toDate ? 
+          arquivoSelecionado.dataFim.toDate().toISOString().split('T')[0] : 
+          new Date(arquivoSelecionado.dataFim).toISOString().split('T')[0]) : ''
+    });
+    setModalEdicao(true);
+  }
+
+  // Função para salvar edição
+  async function salvarEdicao() {
+    if (!arquivoEditando || !user) return;
+    
+    setEditando(true);
+    try {
+      const userNomeId = nomeParaIdFirestore(user.displayName || "");
+      const dadosAtualizados = {
+        nome: arquivoEditando.nome,
+        subNome: arquivoEditando.subNome,
+        conteudo: arquivoEditando.conteudo,
+        prioridade: arquivoEditando.prioridade,
+        dataInicio: arquivoEditando.dataInicio || null,
+        dataFim: arquivoEditando.dataFim || null
+      };await editarArquivo(userNomeId, arquivoEditando.originalIndex, dadosAtualizados);
+      
+      // Atualizar arquivo selecionado
+      setArquivoSelecionado(prev => ({...prev, ...dadosAtualizados}));
+      
+      // Atualizar lista de resultados
+      setResultados(prev => prev.map(arquivo => 
+        arquivo.originalIndex === arquivoEditando.originalIndex ? {...arquivo, ...dadosAtualizados} : arquivo
+      ));
+      
+      setModalEdicao(false);
+      setArquivoEditando(null);
+    } catch (error) {
+      console.error("Erro ao editar arquivo:", error);
+      alert("Erro ao editar arquivo. Tente novamente.");
+    } finally {
+      setEditando(false);
+    }
+  }
+
+  // Função para confirmar remoção
+  async function confirmarRemocao() {
+    if (!arquivoSelecionado || !user) return;
+    
+    setRemovendo(true);
+    try {
+      const userNomeId = nomeParaIdFirestore(user.displayName || "");      await removerArquivo(userNomeId, arquivoSelecionado.originalIndex);
+      
+      // Remover da lista de resultados
+      setResultados(prev => prev.filter(arquivo => arquivo.originalIndex !== arquivoSelecionado.originalIndex));
+      
+      // Fechar modais
+      setModalConfirmacao(false);
+      setModalArquivo(false);
+      setArquivoSelecionado(null);
+    } catch (error) {
+      console.error("Erro ao remover arquivo:", error);
+      alert("Erro ao remover arquivo. Tente novamente.");
+    } finally {
+      setRemovendo(false);
+    }
   }
 
   // Busca por intervalo de datas e tipo
@@ -306,15 +385,23 @@ export default function DownloadArquivoPage() {
               <div className="flex justify-center py-12">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B4BFF]"></div>
               </div>
-            ) : resultados.length > 0 ? (
-              <div className="space-y-2">
+            ) : resultados.length > 0 ? (              <div className="space-y-2">
                 {resultados.map((arquivo, idx) => (
                   <div
                     key={arquivo.id || idx}
                     className="flex justify-between items-center border-b border-gray-100 py-3 cursor-pointer hover:bg-gray-50"
                     onClick={() => { setArquivoSelecionado(arquivo); setModalArquivo(true); }}
                   >
-                    <span className="font-medium text-black">{arquivo.nome || arquivo.quem || arquivo.titulo || t('download_file.untitled_file')}</span>
+                    <div className="flex-1">
+                      <div className="font-medium text-black">
+                        {arquivo.nome || arquivo.quem || arquivo.titulo || t('download_file.untitled_file')}
+                      </div>
+                      {arquivo.subNome && (
+                        <div className="text-sm text-gray-600 mt-1">
+                          {arquivo.subNome}
+                        </div>
+                      )}
+                    </div>
                     <span className="text-xs text-black ml-4">{(arquivo.criadoEm || arquivo.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT') || "---"}</span>
                   </div>
                 ))}
@@ -339,10 +426,14 @@ export default function DownloadArquivoPage() {
                     onClick={() => setModalArquivo(false)}
                   >
                     &times;
-                  </button>
-                  <h2 className="text-xl font-bold mb-2 text-[#7B4BFF] pr-8">
+                  </button>                  <h2 className="text-xl font-bold mb-2 text-[#7B4BFF] pr-8">
                     {arquivoSelecionado.nome || arquivoSelecionado.quem || arquivoSelecionado.titulo || t('download_file.untitled_file')}
                   </h2>
+                  {arquivoSelecionado.subNome && (
+                    <p className="text-md text-gray-600 mb-2 font-medium">
+                      {arquivoSelecionado.subNome}
+                    </p>
+                  )}
                   <div className="mb-2 text-sm text-gray-500">
                     {t('download_file.creation_date')}: {(arquivoSelecionado.criadoEm || arquivoSelecionado.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT')}<br/>
                     {t('download_file.end_date_label')}: {arquivoSelecionado.dataFim?.toDate?.()?.toLocaleDateString('pt-PT') || (arquivoSelecionado.dataFim ? new Date(arquivoSelecionado.dataFim).toLocaleDateString('pt-PT') : '---')}
@@ -392,12 +483,162 @@ export default function DownloadArquivoPage() {
                         <a href={arquivoSelecionado.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline text-sm">
                           {arquivoSelecionado.fileName || t('download_file.open_attachment')}
                         </a>
-                      </div>
-                    </div>
+                      </div>                    </div>
                   ) : null}
+                  
+                  {/* Botões de ação */}
+                  <div className="mt-6 pt-4 border-t border-gray-200 flex gap-3">
+                    <button
+                      onClick={abrirModalEdicao}
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                    >                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      {t('editar')}
+                    </button>
+                    <button
+                      onClick={() => setModalConfirmacao(true)}
+                      className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      {t('remover')}
+                    </button>
+                  </div>
                 </div>
               </div>
-            )}          </div>
+            )}
+
+            {/* Modal de edição */}
+            {modalEdicao && arquivoEditando && (
+              <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60">
+                <div className="relative bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-auto p-6 sm:p-8 animate-fade-in">
+                  <button
+                    className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl font-bold focus:outline-none"
+                    onClick={() => {setModalEdicao(false); setArquivoEditando(null);}}
+                  >
+                    &times;
+                  </button>
+                  
+                  <h2 className="text-xl font-bold mb-6 text-[#7B4BFF] pr-8">{t('editarArquivo')}</h2>
+                  
+                  <div className="space-y-4">                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t('name')}*</label>
+                      <input
+                        type="text"
+                        value={arquivoEditando.nome}
+                        onChange={(e) => setArquivoEditando(prev => ({...prev, nome: e.target.value}))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B4BFF] text-gray-900"
+                        required
+                      />
+                    </div>
+                      <div>                      <label className="block text-sm font-medium text-gray-700 mb-1">{t('subtituloOuCategoria')}</label>
+                      <input
+                        type="text"
+                        placeholder={t('placeholderSubtitulo')}
+                        value={arquivoEditando.subNome}
+                        onChange={(e) => setArquivoEditando(prev => ({...prev, subNome: e.target.value}))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B4BFF] text-gray-900"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t('descricao')}</label>
+                      <textarea
+                        value={arquivoEditando.conteudo}
+                        onChange={(e) => setArquivoEditando(prev => ({...prev, conteudo: e.target.value}))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B4BFF] h-24 text-gray-900"
+                        rows={3}
+                      />
+                    </div>
+                    
+                    <div>                      <label className="block text-sm font-medium text-gray-700 mb-1">{t('prioridade')}</label>
+                      <select
+                        value={arquivoEditando.prioridade}
+                        onChange={(e) => setArquivoEditando(prev => ({...prev, prioridade: e.target.value}))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B4BFF] text-gray-900"
+                      >
+                        <option value="baixa">{t('baixa')}</option>
+                        <option value="media">{t('media')}</option>
+                        <option value="alta">{t('alta')}</option>
+                      </select>
+                    </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">{t('upload_file.start_date')}</label>
+                        <input
+                          type="date"
+                          value={arquivoEditando.dataInicio}
+                          onChange={(e) => setArquivoEditando(prev => ({...prev, dataInicio: e.target.value}))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B4BFF] text-gray-900"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">{t('upload_file.end_date')}</label>
+                        <input
+                          type="date"
+                          value={arquivoEditando.dataFim}
+                          onChange={(e) => setArquivoEditando(prev => ({...prev, dataFim: e.target.value}))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B4BFF] text-gray-900"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6 flex gap-3">
+                    <button
+                      onClick={() => {setModalEdicao(false); setArquivoEditando(null);}}                      className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                      disabled={editando}
+                    >
+                      {t('cancelar')}
+                    </button>
+                    <button
+                      onClick={salvarEdicao}
+                      disabled={editando || !arquivoEditando.nome.trim()}
+                      className="flex-1 bg-[#7B4BFF] hover:bg-[#6A3FE6] disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                    >
+                      {editando ? t('salvando') : t('salvar')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Modal de confirmação de remoção */}
+            {modalConfirmacao && (
+              <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60">
+                <div className="relative bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-fade-in">
+                  <div className="text-center">
+                    <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                      <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </div>                    <h3 className="text-lg font-medium text-gray-900 mb-2">{t('confirmarRemocao')}</h3>
+                    <p className="text-sm text-gray-500 mb-6">
+                      {t('temCertezaRemover', { nome: arquivoSelecionado?.nome })}
+                    </p>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setModalConfirmacao(false)}
+                        className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                        disabled={removendo}
+                      >
+                        {t('cancelar')}
+                      </button>
+                      <button
+                        onClick={confirmarRemocao}
+                        disabled={removendo}
+                        className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                      >
+                        {removendo ? t('removendo') : t('remover')}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}</div>
         )}
       </div>
     </div>

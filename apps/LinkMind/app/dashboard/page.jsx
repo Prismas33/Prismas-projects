@@ -301,7 +301,7 @@ export default function DashboardPage() {
             title="Arquivos com data de fim hoje"
             onClick={() => setModalHojeAberto(true)}
           >
-            <div className="text-2xl font-bold text-orange-500">{arquivosHoje}</div>
+            <div className="text-2xl font-bold text-orange-500">{arquivosVencemHoje.length}</div>
             <div className="text-sm text-gray-600">{t('dashboard.aVencerHoje')}</div>
           </div>
           <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow" title="Dados sincronizados na nuvem">
@@ -358,20 +358,23 @@ export default function DashboardPage() {
                 </button>
               </Link>
             </div>
-          )}
-          {/* Modal de detalhes do arquivo */}
+          )}          {/* Modal de detalhes do arquivo */}
           {modalArquivo && arquivoSelecionado && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
               <div className="bg-white rounded-xl shadow-2xl p-8 max-w-lg w-full relative">
                 <button
                   className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl"
                   onClick={() => setModalArquivo(false)}
                 >
                   &times;
-                </button>
-                <h2 className="text-xl font-bold mb-2 text-[#7B4BFF]">
+                </button>                <h2 className="text-xl font-bold mb-2 text-[#7B4BFF]">
                   {arquivoSelecionado.nome || arquivoSelecionado.quem || arquivoSelecionado.titulo || t('arquivoSemTitulo')}
                 </h2>
+                {arquivoSelecionado.subNome && (
+                  <p className="text-md text-gray-600 mb-2 font-medium">
+                    {arquivoSelecionado.subNome}
+                  </p>
+                )}
                 <div className="mb-2 text-sm text-gray-500">
                   {t('dataCriacao')}: {(arquivoSelecionado.criadoEm || arquivoSelecionado.criadaEm)?.toDate?.()?.toLocaleDateString('pt-PT')}<br/>
                   {t('dataFim')}: {arquivoSelecionado.dataFim?.toDate?.()?.toLocaleDateString('pt-PT') || (arquivoSelecionado.dataFim ? new Date(arquivoSelecionado.dataFim).toLocaleDateString('pt-PT') : '---')}
@@ -408,9 +411,9 @@ export default function DashboardPage() {
                 </button>
               </div>
               {arquivosVencemSemana.length > 0 ? (
-                <div className="space-y-3">
-                  {arquivosVencemSemana.map((arquivo, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-green-300 transition-all cursor-pointer">
+                <div className="space-y-3">                  {arquivosVencemSemana.map((arquivo, index) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-green-300 transition-all cursor-pointer"
+                      onClick={() => { setArquivoSelecionado(arquivo); setModalArquivo(true); }}>
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-1">
@@ -467,9 +470,9 @@ export default function DashboardPage() {
                 </button>
               </div>
               {arquivosVencemHoje.length > 0 ? (
-                <div className="space-y-3">
-                  {arquivosVencemHoje.map((arquivo, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-orange-300 transition-all cursor-pointer">
+                <div className="space-y-3">                  {arquivosVencemHoje.map((arquivo, index) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-orange-300 transition-all cursor-pointer"
+                      onClick={() => { setArquivoSelecionado(arquivo); setModalArquivo(true); }}>
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-1">
