@@ -64,7 +64,7 @@ export default function AdminDashboardPage() {
       ]);
 
       // Calcular estatísticas
-      const activeProjects = projects.filter(p => p.status === 'active').length;
+      const activeProjects = projects.filter(p => p.status === 'development' || p.status === 'ready').length;
       const pendingMessages = messages.filter(m => m.status === 'pending').length;
       const activeProposals = proposals.filter(p => p.status === 'sent' || p.status === 'draft').length;
       const totalRevenue = proposals

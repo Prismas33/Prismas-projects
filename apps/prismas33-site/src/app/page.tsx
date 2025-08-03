@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import Modals from '../components/Modals/Modals'
 import Particles from '../components/Particles/Particles'
@@ -110,7 +110,6 @@ export default function HomePage() {
           emailjs.init(publicKey)
           // Fazer EmailJS disponível globalmente para compatibilidade
           ;(window as any).emailjs = emailjs
-          console.log('EmailJS inicializado com variáveis de ambiente')
         } else {
           console.error('EmailJS Public Key não encontrada nas variáveis de ambiente')
         }
@@ -164,7 +163,7 @@ export default function HomePage() {
       
       showcaseCards.push(
         <motion.div 
-          key={`project-${project.id}`}
+          key={`project-${project.id}-original`}
           className={`showcase-card ${colorClass} ${isComingSoon ? 'coming-soon' : 'firebase-project'}`}
           initial={{ opacity: 0, y: 50, rotateY: index % 2 === 0 ? -10 : 10 }}
           whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
@@ -253,12 +252,23 @@ export default function HomePage() {
 
     // Duplicar todos os cartões para o efeito infinito (mínimo de 8 para o efeito funcionar bem)
     if (showcaseCards.length > 0) {
-      const duplicatedCards = [...showcaseCards, ...showcaseCards]
-      // Se ainda não temos cartões suficientes, duplicar mais uma vez
-      if (duplicatedCards.length < 16) {
-        return [...duplicatedCards, ...showcaseCards]
+      // Criar duplicatas com chaves únicas
+      const firstDuplicate = showcaseCards.map(card => 
+        React.cloneElement(card, { 
+          key: card.key?.toString().replace('-original', '-duplicate1') 
+        })
+      )
+      const secondDuplicate = showcaseCards.map(card => 
+        React.cloneElement(card, { 
+          key: card.key?.toString().replace('-original', '-duplicate2') 
+        })
+      )
+      
+      // Se ainda não temos cartões suficientes, adicionar mais duplicatas
+      if (showcaseCards.length < 6) {
+        return [...showcaseCards, ...firstDuplicate, ...secondDuplicate]
       }
-      return duplicatedCards
+      return [...showcaseCards, ...firstDuplicate]
     }
     
     return showcaseCards
@@ -753,7 +763,7 @@ export default function HomePage() {
         transition={{ duration: 1 }}
         viewport={{ once: true, margin: "-100px" }}
       >
-        <div className="container">
+        <div className="container" style={{ position: 'relative' }}>
           <motion.div 
             className="showcase-header"
             initial={{ opacity: 0, y: 50 }}

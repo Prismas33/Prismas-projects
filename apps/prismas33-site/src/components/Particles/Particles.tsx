@@ -149,8 +149,6 @@ const Particles: React.FC<ParticlesProps> = ({
     const colors = new Float32Array(count * 3);
     const palette = particleColors && particleColors.length > 0 ? particleColors : defaultColors;
 
-    console.log('Palette colors:', palette);
-
     for (let i = 0; i < count; i++) {
       let x, y, z, len;
       do {
@@ -163,7 +161,6 @@ const Particles: React.FC<ParticlesProps> = ({
       positions.set([x * r, y * r, z * r], i * 3);
       randoms.set([Math.random(), Math.random(), Math.random(), Math.random()], i * 4);
       const col = hexToRgb(palette[Math.floor(Math.random() * palette.length)]);
-      if (i < 5) console.log('Color converted:', col);
       colors.set(col, i * 3);
     }
 
