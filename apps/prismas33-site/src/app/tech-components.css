@@ -164,31 +164,53 @@
 .premium-showcase {
   padding: 120px 0;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   background: transparent;
+  isolation: isolate;
 }
 
 .showcase-header {
   text-align: center;
   margin-bottom: 80px;
   position: relative;
-  z-index: 2;
+  z-index: 5;
+  padding: 20px 0;
+  overflow: visible;
 }
 
-.premium-badge {
+.premium-header-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   background: linear-gradient(135deg, #ff6b35, #ff8c42);
   color: #ffffff;
-  padding: 8px 20px;
-  border-radius: 24px;
+  padding: 10px 24px;
+  border-radius: 28px;
   font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   margin-bottom: 24px;
-  box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+  box-shadow: 
+    0 4px 20px rgba(255, 107, 53, 0.4),
+    0 2px 8px rgba(255, 107, 53, 0.2);
+  z-index: 10;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.premium-header-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 30px rgba(255, 107, 53, 0.5),
+    0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.premium-header-badge i {
+  font-size: 16px;
+  margin-right: 2px;
 }
 
 .showcase-title {
@@ -870,11 +892,13 @@ html {
 
 /* Enhanced section transitions */
 .marketplace.available-section {
+  position: relative; /* Fix for Framer Motion warning */
   will-change: transform, opacity, scale;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .premium-showcase {
+  position: relative; /* Fix for Framer Motion warning */
   will-change: transform, opacity, scale;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }

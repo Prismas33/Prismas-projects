@@ -5,9 +5,8 @@ import AdminDashboardLayout from "@/components/admin/AdminDashboardLayout";
 import { 
   getNotifications, 
   updateNotificationStatus,
-  Notification 
-} from "@/lib/firebase/firestore";
-import { sendFollowUpEmail } from "@/lib/services/email";
+  type Notification 
+} from "@/lib/api/admin";
 import { 
   Bell, 
   Mail, 
@@ -24,7 +23,7 @@ export default function NotificationsPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [appFilter, setAppFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
 
   useEffect(() => {
     loadNotifications();
@@ -33,348 +32,318 @@ export default function NotificationsPage() {
   async function loadNotifications() {
     try {
       setLoading(true);
-      const notificationsData = await getNotifications();
-      setNotifications(notificationsData);
+      const data = await getNotifications();
+      setNotifications(data);
     } catch (error) {
-      console.error("Erro ao carregar notificações:", error);
+      console.error('Erro ao carregar notificações:', error);
     } finally {
       setLoading(false);
     }
   }
 
   const filteredNotifications = notifications.filter(notification => {
-    const matchesSearch = 
-      notification.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      notification.appName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = searchTerm === "" || (
+      (notification.title && notification.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (notification.message && notification.message.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (notification.type && notification.type.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
     
-    const matchesStatus = statusFilter === "all" || notification.status === statusFilter;
-    const matchesApp = appFilter === "all" || notification.appName === appFilter;
+    const matchesStatus = statusFilter === "all" || 
+      (statusFilter === "read" && notification.read) ||
+      (statusFilter === "unread" && !notification.read);
     
-    return matchesSearch && matchesStatus && matchesApp;
+    const matchesType = typeFilter === "all" || notification.type === typeFilter;
+    
+    return matchesSearch && matchesStatus && matchesType;
   });
 
   // Estatísticas
   const stats = {
     total: notifications.length,
-    pending: notifications.filter(n => n.status === 'pending').length,
-    contacted: notifications.filter(n => n.status === 'contacted').length,
-    converted: notifications.filter(n => n.status === 'converted').length,
-    ignored: notifications.filter(n => n.status === 'ignored').length
+    unread: notifications.filter(n => !n.read).length,
+    read: notifications.filter(n => n.read).length,
+    project_messages: notifications.filter(n => n.type === 'new_project_message').length,
   };
 
-  // Apps únicos para filtro
-  const uniqueApps = Array.from(new Set(notifications.map(n => n.appName)));
+  // Tipos únicos para filtro
+  const uniqueTypes = Array.from(new Set(notifications.map(n => n.type)));
 
-  async function handleStatusUpdate(notificationId: string, newStatus: Notification['status']) {
+  async function handleMarkAsRead(id: string) {
     try {
-      await updateNotificationStatus(notificationId, newStatus);
-      setNotifications(notifications.map(notif => 
-        notif.id === notificationId ? {...notif, status: newStatus} : notif
-      ));
-    } catch (error) {
-      console.error("Erro ao atualizar status:", error);
+      await updateNotificationStatus(id, true);
+      await loadNotifications();
+    } catch (error: any) {
+      console.error('Erro ao marcar como lida:', error);
+      alert(`Erro ao marcar como lida: ${error.message}`);
     }
   }
 
-  async function handleSendFollowUp(notification: Notification) {
+  async function handleMarkAsUnread(id: string) {
     try {
-      const emailSent = await sendFollowUpEmail({
-        to_email: notification.email,
-        app_name: notification.appName,
-        custom_message: `Obrigado pelo seu interesse na aplicação ${notification.appName}! Gostaríamos de saber mais sobre as suas necessidades e como podemos ajudar.`
-      });
-
-      if (emailSent) {
-        // Atualizar status para "contacted"
-        await handleStatusUpdate(notification.id!, 'contacted');
-        alert("✅ Email de follow-up enviado com sucesso!");
-      } else {
-        alert("❌ Erro ao enviar follow-up. Verifique as configurações do EmailJS.");
-      }
-    } catch (error) {
-      console.error("Erro ao enviar follow-up:", error);
-      alert("❌ Erro ao enviar follow-up. Tente novamente.");
+      await updateNotificationStatus(id, false);
+      await loadNotifications();
+    } catch (error: any) {
+      console.error('Erro ao marcar como não lida:', error);
+      alert(`Erro ao marcar como não lida: ${error.message}`);
     }
   }
 
   function exportToCSV() {
-    const csvHeader = "Email,App,Data,Status,User Agent,Idioma,Referrer\n";
-    const csvData = filteredNotifications.map(notif => 
-      `"${notif.email}","${notif.appName}","${notif.timestamp.toLocaleString('pt-PT')}","${notif.status}","${notif.userAgent || ''}","${notif.language || ''}","${notif.referrer || ''}"`
-    ).join("\n");
+    const headers = 'ID,Tipo,Título,Mensagem,Data,Status\n';
+    const rows = notifications.map(notif => 
+      `"${notif.id}","${notif.type}","${notif.title}","${notif.message}","${new Date(notif.timestamp).toLocaleString('pt-PT')}","${notif.read ? 'Lida' : 'Não lida'}"`
+    ).join('\n');
     
-    const csvContent = csvHeader + csvData;
+    const csvContent = headers + rows;
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
-    
-    link.setAttribute("href", url);
-    link.setAttribute("download", `notificacoes_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `notificacoes_${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   }
 
-  function getStatusBadge(status: string) {
-    const styles = {
-      pending: "bg-yellow-100 text-yellow-800",
-      contacted: "bg-blue-100 text-blue-800",
-      converted: "bg-green-100 text-green-800",
-      ignored: "bg-gray-100 text-gray-800"
-    };
-    
-    const labels = {
-      pending: "Pendente",
-      contacted: "Contactado",
-      converted: "Convertido",
-      ignored: "Ignorado"
+  const getTypeBadge = (type: string) => {
+    const typeLabels: { [key: string]: string } = {
+      'new_project_message': 'Mensagem de Projeto',
+      'contact_form': 'Formulário de Contato',
+      'newsletter_signup': 'Newsletter',
+      'app_interest': 'Interesse em App'
     };
 
     return (
-      <span className={`px-2 py-1 text-xs font-medium rounded-full ${styles[status as keyof typeof styles]}`}>
-        {labels[status as keyof typeof labels]}
+      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+        {typeLabels[type] || type}
       </span>
     );
-  }
+  };
 
-  function getAppBadge(appName: string) {
-    const colors = [
-      "bg-purple-100 text-purple-800",
-      "bg-blue-100 text-blue-800",
-      "bg-green-100 text-green-800",
-      "bg-yellow-100 text-yellow-800",
-      "bg-pink-100 text-pink-800"
-    ];
-    
-    const index = uniqueApps.indexOf(appName) % colors.length;
-    
+  const formatTimestamp = (timestamp: Date | string) => {
+    const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
+    return date.toLocaleString('pt-PT', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  if (loading) {
     return (
-      <span className={`px-2 py-1 text-xs font-medium rounded-full ${colors[index]}`}>
-        {appName}
-      </span>
+      <AdminDashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        </div>
+      </AdminDashboardLayout>
     );
   }
 
   return (
     <AdminDashboardLayout>
       <div className="p-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Notificações</h1>
-            <p className="text-gray-600 mt-2">Emails coletados dos formulários de interesse</p>
-          </div>
-          <button
-            onClick={exportToCSV}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-          >
-            <Download className="h-4 w-4" />
-            <span>Exportar CSV</span>
-          </button>
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <Bell className="h-8 w-8 text-blue-600" />
+            Notificações
+          </h1>
+          <p className="mt-2 text-gray-600">
+            Gerencie todas as notificações do sistema
+          </p>
         </div>
 
-        {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <Bell className="h-6 w-6 text-gray-400" />
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Total</dt>
+                    <dd className="text-lg font-medium text-gray-900">{stats.total}</dd>
+                  </dl>
+                </div>
               </div>
-              <Bell className="h-8 w-8 text-gray-400" />
             </div>
           </div>
-          
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Pendentes</p>
-                <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <Mail className="h-6 w-6 text-red-400" />
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Não Lidas</dt>
+                    <dd className="text-lg font-medium text-red-600">{stats.unread}</dd>
+                  </dl>
+                </div>
               </div>
-              <Clock className="h-8 w-8 text-yellow-400" />
             </div>
           </div>
-          
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Contactados</p>
-                <p className="text-2xl font-bold text-blue-600">{stats.contacted}</p>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <CheckCircle className="h-6 w-6 text-green-400" />
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Lidas</dt>
+                    <dd className="text-lg font-medium text-green-600">{stats.read}</dd>
+                  </dl>
+                </div>
               </div>
-              <Mail className="h-8 w-8 text-blue-400" />
             </div>
           </div>
-          
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Convertidos</p>
-                <p className="text-2xl font-bold text-green-600">{stats.converted}</p>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <Clock className="h-6 w-6 text-blue-400" />
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Mensagens de Projeto</dt>
+                    <dd className="text-lg font-medium text-blue-600">{stats.project_messages}</dd>
+                  </dl>
+                </div>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-400" />
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Ignorados</p>
-                <p className="text-2xl font-bold text-gray-600">{stats.ignored}</p>
-              </div>
-              <XCircle className="h-8 w-8 text-gray-400" />
             </div>
           </div>
         </div>
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <input
-                  type="text"
-                  placeholder="Buscar por email ou app..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
+          <div className="flex flex-col sm:flex-row gap-4">
+              {/* Search */}
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Buscar notificações..."
+                    className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="lg:w-48">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+
+              {/* Status Filter */}
+              <div className="sm:w-48">
+                <select
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="all">Todos os Status</option>
+                  <option value="unread">Não Lidas</option>
+                  <option value="read">Lidas</option>
+                </select>
+              </div>
+
+              {/* Type Filter */}
+              <div className="sm:w-48">
+                <select
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                >
+                  <option value="all">Todos os Tipos</option>
+                  {uniqueTypes.map(type => (
+                    <option key={type} value={type}>
+                      {type === 'new_project_message' ? 'Mensagem de Projeto' : type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Export Button */}
+              <button
+                onClick={exportToCSV}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                <option value="all">Todos os Status</option>
-                <option value="pending">Pendente</option>
-                <option value="contacted">Contactado</option>
-                <option value="converted">Convertido</option>
-                <option value="ignored">Ignorado</option>
-              </select>
+                <Download className="h-4 w-4 mr-2" />
+                Exportar CSV
+              </button>
             </div>
-            <div className="lg:w-48">
-              <select
-                value={appFilter}
-                onChange={(e) => setAppFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              >
-                <option value="all">Todas as Apps</option>
-                {uniqueApps.map(app => (
-                  <option key={app} value={app}>{app}</option>
-                ))}
-              </select>
-            </div>
-          </div>
         </div>
 
-        {/* Notifications Table */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    App
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Data
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ações
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {loading ? (
-                  [...Array(10)].map((_, i) => (
-                    <tr key={i} className="animate-pulse">
-                      <td className="px-6 py-4"><div className="h-4 bg-gray-300 rounded w-3/4"></div></td>
-                      <td className="px-6 py-4"><div className="h-4 bg-gray-300 rounded w-1/2"></div></td>
-                      <td className="px-6 py-4"><div className="h-4 bg-gray-300 rounded w-1/2"></div></td>
-                      <td className="px-6 py-4"><div className="h-4 bg-gray-300 rounded w-1/3"></div></td>
-                      <td className="px-6 py-4"><div className="h-4 bg-gray-300 rounded w-1/2"></div></td>
-                    </tr>
-                  ))
-                ) : filteredNotifications.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center">
-                      <Bell className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma notificação encontrada</h3>
-                      <p className="text-gray-500">
-                        {searchTerm || statusFilter !== "all" || appFilter !== "all"
-                          ? "Tente ajustar os filtros de busca"
-                          : "As notificações aparecerão aqui quando os visitantes demonstrarem interesse"
-                        }
-                      </p>
-                    </td>
-                  </tr>
-                ) : (
-                  filteredNotifications.map((notification) => (
-                    <tr key={notification.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <Mail className="h-4 w-4 text-gray-400 mr-2" />
-                          <span className="text-sm font-medium text-gray-900">
-                            {notification.email}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {getAppBadge(notification.appName)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {notification.timestamp.toLocaleString('pt-PT')}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatusBadge(notification.status)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex space-x-2">
-                          {notification.status === 'pending' && (
-                            <button
-                              onClick={() => handleSendFollowUp(notification)}
-                              className="text-blue-600 hover:text-blue-900 text-sm"
-                              title="Enviar Follow-up"
-                            >
-                              <Mail className="h-4 w-4" />
-                            </button>
+        {/* Notifications List */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="p-4 border-b border-gray-200">
+            <h2 className="font-semibold text-gray-900">
+              Notificações ({filteredNotifications.length})
+            </h2>
+          </div>
+          
+          <div className="max-h-[600px] overflow-y-auto">
+            {filteredNotifications.length === 0 ? (
+              <div className="p-8 text-center text-gray-500">
+                <Bell className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <p>Nenhuma notificação encontrada</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-200">
+                {filteredNotifications.map((notification) => (
+                  <div key={notification.id} className={`p-4 hover:bg-gray-50 ${!notification.read ? 'bg-blue-50' : ''}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-2">
+                          {getTypeBadge(notification.type)}
+                          {!notification.read && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                              Nova
+                            </span>
                           )}
-                          <select
-                            value={notification.status}
-                            onChange={(e) => handleStatusUpdate(notification.id!, e.target.value as Notification['status'])}
-                            className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                          >
-                            <option value="pending">Pendente</option>
-                            <option value="contacted">Contactado</option>
-                            <option value="converted">Convertido</option>
-                            <option value="ignored">Ignorado</option>
-                          </select>
                         </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                        <h3 className="text-sm font-medium text-gray-900">
+                          {notification.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {notification.message}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-2">
+                          {formatTimestamp(notification.timestamp)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 ml-4">
+                        {notification.read ? (
+                          <button
+                            onClick={() => handleMarkAsUnread(notification.id)}
+                            className="inline-flex items-center px-3 py-1 border border-gray-300 rounded text-xs font-medium text-gray-700 bg-white hover:bg-gray-50"
+                          >
+                            <Mail className="h-3 w-3 mr-1" />
+                            Marcar como não lida
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleMarkAsRead(notification.id)}
+                            className="inline-flex items-center px-3 py-1 border border-transparent rounded text-xs font-medium text-white bg-blue-600 hover:bg-blue-700"
+                          >
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Marcar como lida
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Pagination could be added here */}
-        {filteredNotifications.length > 0 && (
-          <div className="mt-6 flex justify-between items-center">
-            <p className="text-sm text-gray-700">
-              Mostrando {filteredNotifications.length} de {notifications.length} notificações
-            </p>
-          </div>
-        )}
       </div>
     </AdminDashboardLayout>
   );

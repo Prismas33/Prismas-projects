@@ -7,9 +7,9 @@ import {
   createProject, 
   updateProject, 
   deleteProject,
-  uploadProjectImage,
-  Project 
-} from "@/lib/firebase/firestore";
+  type Project 
+} from "@/lib/api/admin";
+import { uploadProjectImage } from "@/lib/firebase/firestore";
 import { CATEGORIES, CategorySelect } from "@/components/Categories/Categories";
 import "@/components/Categories/Categories.css";
 import { Plus, Edit, Trash2, Eye, Search, Filter } from "lucide-react";

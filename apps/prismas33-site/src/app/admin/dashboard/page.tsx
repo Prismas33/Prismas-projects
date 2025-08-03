@@ -6,14 +6,14 @@ import {
   getProjects, 
   getContactMessages, 
   getNotifications, 
-  getClients, 
+  getClients,
   getProposals,
   Project,
   ContactMessage,
   Notification,
   Client,
   Proposal
-} from "@/lib/firebase/firestore";
+} from "@/lib/api/admin";
 import { 
   FolderOpen, 
   MessageSquare, 
@@ -106,7 +106,11 @@ export default function AdminDashboardPage() {
           icon: FileText,
           color: 'bg-green-500'
         }))
-      ].sort((a, b) => b.time.getTime() - a.time.getTime()).slice(0, 8);
+      ].sort((a, b) => {
+        const timeA = a.time instanceof Date ? a.time.getTime() : new Date(a.time).getTime();
+        const timeB = b.time instanceof Date ? b.time.getTime() : new Date(b.time).getTime();
+        return timeB - timeA;
+      }).slice(0, 8);
 
       setRecentActivity(activity);
     } catch (error) {

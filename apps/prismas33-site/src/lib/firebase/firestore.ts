@@ -1,4 +1,4 @@
-// Funções para gerenciar dados do Firestore
+// Funções para gerenciar dados do Firestore (apenas funções que ainda não têm API routes)
 import { 
   collection, 
   doc, 
@@ -51,238 +51,7 @@ export async function deleteProjectImage(imageUrl: string): Promise<void> {
   }
 }
 
-// ===== PROJETOS =====
-export interface Project {
-  id?: string;
-  name: string;
-  description: string;
-  category: 'premium' | 'enterprise' | 'creative' | 'fintech';
-  images: string[];
-  features: string[];
-  demoUrl?: string;
-  status: 'coming-soon' | 'development' | 'ready' | 'delivered';
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export async function createProject(project: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) {
-  try {
-    const projectData = {
-      ...project,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    
-    const docRef = await addDoc(collection(db, "projects"), projectData);
-    return docRef.id;
-  } catch (error: any) {
-    throw new Error("Erro ao criar projeto: " + error.message);
-  }
-}
-
-export async function getProjects() {
-  try {
-    const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate() || new Date(),
-      updatedAt: doc.data().updatedAt?.toDate() || new Date()
-    })) as Project[];
-  } catch (error: any) {
-    throw new Error("Erro ao buscar projetos: " + error.message);
-  }
-}
-
-export async function updateProject(id: string, updates: Partial<Project>) {
-  try {
-    const projectRef = doc(db, "projects", id);
-    await updateDoc(projectRef, {
-      ...updates,
-      updatedAt: new Date()
-    });
-  } catch (error: any) {
-    throw new Error("Erro ao atualizar projeto: " + error.message);
-  }
-}
-
-export async function deleteProject(id: string) {
-  try {
-    await deleteDoc(doc(db, "projects", id));
-  } catch (error: any) {
-    throw new Error("Erro ao deletar projeto: " + error.message);
-  }
-}
-
-// ===== MENSAGENS DE CONTATO =====
-export interface ContactMessage {
-  id?: string;
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-  status: 'pending' | 'read' | 'replied' | 'archived';
-  createdAt: Date;
-  updatedAt: Date;
-  reply?: string;
-  repliedAt?: Date;
-}
-
-export async function getContactMessages() {
-  try {
-    const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate() || new Date(),
-      updatedAt: doc.data().updatedAt?.toDate() || new Date(),
-      repliedAt: doc.data().repliedAt?.toDate() || undefined
-    })) as ContactMessage[];
-  } catch (error: any) {
-    throw new Error("Erro ao buscar mensagens: " + error.message);
-  }
-}
-
-export async function updateMessageStatus(id: string, status: ContactMessage['status']) {
-  try {
-    const messageRef = doc(db, "messages", id);
-    await updateDoc(messageRef, {
-      status,
-      updatedAt: new Date()
-    });
-  } catch (error: any) {
-    throw new Error("Erro ao atualizar status da mensagem: " + error.message);
-  }
-}
-
-export async function replyToMessage(id: string, reply: string) {
-  try {
-    const messageRef = doc(db, "messages", id);
-    await updateDoc(messageRef, {
-      reply,
-      repliedAt: new Date(),
-      status: 'replied',
-      updatedAt: new Date()
-    });
-  } catch (error: any) {
-    throw new Error("Erro ao responder mensagem: " + error.message);
-  }
-}
-
-// ===== NOTIFICAÇÕES (emails coletados) =====
-export interface Notification {
-  id?: string;
-  email: string;
-  appName: string;
-  timestamp: Date;
-  userAgent?: string;
-  language?: string;
-  referrer?: string;
-  status: 'pending' | 'contacted' | 'converted' | 'ignored';
-}
-
-export async function getNotifications() {
-  try {
-    const q = query(collection(db, "notifications"), orderBy("timestamp", "desc"));
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      timestamp: doc.data().timestamp?.toDate() || new Date()
-    })) as Notification[];
-  } catch (error: any) {
-    throw new Error("Erro ao buscar notificações: " + error.message);
-  }
-}
-
-export async function updateNotificationStatus(id: string, status: Notification['status']) {
-  try {
-    const notificationRef = doc(db, "notifications", id);
-    await updateDoc(notificationRef, { status });
-  } catch (error: any) {
-    throw new Error("Erro ao atualizar status da notificação: " + error.message);
-  }
-}
-
-// ===== CLIENTES (CRM) =====
-export interface Client {
-  id?: string;
-  name: string;
-  email: string;
-  phone?: string;
-  company?: string;
-  status: 'lead' | 'prospect' | 'client' | 'inactive';
-  source: 'website' | 'referral' | 'social' | 'email' | 'other';
-  notes: string;
-  lastContact: Date;
-  createdAt: Date;
-  updatedAt: Date;
-  proposalsSent?: number;
-  projectsCompleted?: number;
-  totalValue?: number;
-}
-
-export async function createClient(client: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>) {
-  try {
-    const clientData = {
-      ...client,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      proposalsSent: 0,
-      projectsCompleted: 0,
-      totalValue: 0
-    };
-    
-    const docRef = await addDoc(collection(db, "clients"), clientData);
-    return docRef.id;
-  } catch (error: any) {
-    throw new Error("Erro ao criar cliente: " + error.message);
-  }
-}
-
-export async function getClients() {
-  try {
-    const q = query(collection(db, "clients"), orderBy("lastContact", "desc"));
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      lastContact: doc.data().lastContact?.toDate() || new Date(),
-      createdAt: doc.data().createdAt?.toDate() || new Date(),
-      updatedAt: doc.data().updatedAt?.toDate() || new Date()
-    })) as Client[];
-  } catch (error: any) {
-    throw new Error("Erro ao buscar clientes: " + error.message);
-  }
-}
-
-export async function updateClient(id: string, updates: Partial<Client>) {
-  try {
-    const clientRef = doc(db, "clients", id);
-    await updateDoc(clientRef, {
-      ...updates,
-      updatedAt: new Date()
-    });
-  } catch (error: any) {
-    throw new Error("Erro ao atualizar cliente: " + error.message);
-  }
-}
-
-export async function deleteClient(id: string) {
-  try {
-    await deleteDoc(doc(db, "clients", id));
-  } catch (error: any) {
-    throw new Error("Erro ao deletar cliente: " + error.message);
-  }
-}
-
-// ===== PROPOSTAS =====
+// ===== PROPOSTAS (ainda não migradas para API) =====
 export interface Proposal {
   id?: string;
   clientId: string;
@@ -365,5 +134,195 @@ export async function deleteProposal(id: string) {
     await deleteDoc(doc(db, "proposals", id));
   } catch (error: any) {
     throw new Error("Erro ao deletar proposta: " + error.message);
+  }
+}
+
+// ===== MENSAGENS DE PROJETO (Sistema Organizado) - ainda não migradas =====
+export interface ProjectMessage {
+  id?: string;
+  // Dados do Cliente
+  clientId: string;
+  clientName: string;
+  clientEmail: string;
+  clientPhone?: string;
+  clientCompany?: string;
+  
+  // Tipo de Mensagem
+  messageType: 'novo-projeto' | 'projeto-existente' | 'orcamento' | 'suporte' | 'outro';
+  projectReference?: string; // Nome do projeto se for projeto existente
+  
+  // Conteúdo
+  subject: string;
+  message: string;
+  
+  // Status e Organização
+  status: 'pending' | 'in-review' | 'replied' | 'quoted' | 'closed';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  category: 'sales' | 'support' | 'technical' | 'billing';
+  folderId?: string; // ID da pasta onde a mensagem está organizada
+  
+  // Gestão
+  assignedTo?: string; // Admin que está a tratar
+  tags: string[]; // Tags para organização (ex: ['website', 'ecommerce', 'urgent'])
+  
+  // Resposta
+  adminReply?: string;
+  repliedAt?: Date;
+  repliedBy?: string;
+  
+  // Timestamps
+  createdAt: Date;
+  updatedAt: Date;
+  
+  // Metadados
+  source: 'website-form' | 'email' | 'phone' | 'meeting';
+  userAgent?: string;
+  referrer?: string;
+}
+
+// Buscar todas as mensagens de projeto
+export async function getProjectMessages() {
+  try {
+    const q = query(collection(db, "project_messages"), orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt?.toDate() || new Date(),
+      updatedAt: doc.data().updatedAt?.toDate() || new Date(),
+      repliedAt: doc.data().repliedAt?.toDate() || undefined
+    })) as ProjectMessage[];
+  } catch (error: any) {
+    throw new Error("Erro ao buscar mensagens de projeto: " + error.message);
+  }
+}
+
+// Buscar mensagens por status
+export async function getProjectMessagesByStatus(status: ProjectMessage['status']) {
+  try {
+    const q = query(
+      collection(db, "project_messages"), 
+      where("status", "==", status),
+      orderBy("createdAt", "desc")
+    );
+    const querySnapshot = await getDocs(q);
+    
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt?.toDate() || new Date(),
+      updatedAt: doc.data().updatedAt?.toDate() || new Date(),
+      repliedAt: doc.data().repliedAt?.toDate() || undefined
+    })) as ProjectMessage[];
+  } catch (error: any) {
+    throw new Error("Erro ao buscar mensagens por status: " + error.message);
+  }
+}
+
+// Atualizar status da mensagem
+export async function updateProjectMessageStatus(
+  id: string, 
+  status: ProjectMessage['status'],
+  assignedTo?: string
+) {
+  try {
+    const messageRef = doc(db, "project_messages", id);
+    const updateData: any = {
+      status,
+      updatedAt: new Date()
+    };
+    
+    if (assignedTo) {
+      updateData.assignedTo = assignedTo;
+    }
+    
+    await updateDoc(messageRef, updateData);
+  } catch (error: any) {
+    throw new Error("Erro ao atualizar status da mensagem: " + error.message);
+  }
+}
+
+// Responder a mensagem de projeto
+export async function replyToProjectMessage(
+  id: string, 
+  reply: string, 
+  repliedBy: string
+) {
+  try {
+    const messageRef = doc(db, "project_messages", id);
+    await updateDoc(messageRef, {
+      adminReply: reply,
+      repliedAt: new Date(),
+      repliedBy,
+      status: 'replied',
+      updatedAt: new Date()
+    });
+  } catch (error: any) {
+    throw new Error("Erro ao responder mensagem: " + error.message);
+  }
+}
+
+// Adicionar tags a uma mensagem
+export async function addTagsToProjectMessage(id: string, tags: string[]) {
+  try {
+    const messageRef = doc(db, "project_messages", id);
+    await updateDoc(messageRef, {
+      tags,
+      updatedAt: new Date()
+    });
+  } catch (error: any) {
+    throw new Error("Erro ao adicionar tags: " + error.message);
+  }
+}
+
+// Definir prioridade da mensagem
+export async function setProjectMessagePriority(
+  id: string, 
+  priority: ProjectMessage['priority']
+) {
+  try {
+    const messageRef = doc(db, "project_messages", id);
+    await updateDoc(messageRef, {
+      priority,
+      updatedAt: new Date()
+    });
+  } catch (error: any) {
+    throw new Error("Erro ao definir prioridade: " + error.message);
+  }
+}
+
+// Estatísticas das mensagens para dashboard
+export async function getProjectMessagesStats() {
+  try {
+    const allMessages = await getProjectMessages();
+    
+    const stats = {
+      total: allMessages.length,
+      pending: allMessages.filter(m => m.status === 'pending').length,
+      inReview: allMessages.filter(m => m.status === 'in-review').length,
+      replied: allMessages.filter(m => m.status === 'replied').length,
+      quoted: allMessages.filter(m => m.status === 'quoted').length,
+      closed: allMessages.filter(m => m.status === 'closed').length,
+      
+      byType: {
+        novoProjet: allMessages.filter(m => m.messageType === 'novo-projeto').length,
+        projetoExistente: allMessages.filter(m => m.messageType === 'projeto-existente').length,
+        orcamento: allMessages.filter(m => m.messageType === 'orcamento').length,
+        suporte: allMessages.filter(m => m.messageType === 'suporte').length,
+        outro: allMessages.filter(m => m.messageType === 'outro').length
+      },
+      
+      byPriority: {
+        urgent: allMessages.filter(m => m.priority === 'urgent').length,
+        high: allMessages.filter(m => m.priority === 'high').length,
+        medium: allMessages.filter(m => m.priority === 'medium').length,
+        low: allMessages.filter(m => m.priority === 'low').length
+      }
+    };
+    
+    return stats;
+  } catch (error: any) {
+    throw new Error("Erro ao calcular estatísticas: " + error.message);
   }
 }

@@ -3,15 +3,12 @@
 import { useState, useEffect } from "react";
 import AdminDashboardLayout from "@/components/admin/AdminDashboardLayout";
 import { 
-  getProposals, 
   getClients,
-  createProposal, 
-  updateProposal, 
-  deleteProposal,
-  Proposal,
-  Client 
+  type Client 
+} from "@/lib/api/admin";
+import { 
+  type Proposal
 } from "@/lib/firebase/firestore";
-import { sendProposalEmail } from "@/lib/services/email";
 import { 
   Plus, 
   Edit, 
@@ -25,7 +22,8 @@ import {
   Check,
   X,
   Clock,
-  Eye
+  Eye,
+  Download
 } from "lucide-react";
 
 export default function ProposalsPage() {
@@ -45,11 +43,23 @@ export default function ProposalsPage() {
   async function loadData() {
     try {
       setLoading(true);
-      const [proposalsData, clientsData] = await Promise.all([
-        getProposals(),
+      const [proposalsResponse, clientsData] = await Promise.all([
+        fetch('/api/proposals'),
         getClients()
       ]);
-      setProposals(proposalsData);
+      
+      const proposalsResult = await proposalsResponse.json();
+      if (proposalsResult.success) {
+        // Converter datas de strings ISO para objetos Date
+        const proposalsWithDates = proposalsResult.data.map((proposal: any) => ({
+          ...proposal,
+          createdAt: new Date(proposal.createdAt),
+          updatedAt: new Date(proposal.updatedAt),
+          validUntil: new Date(proposal.validUntil),
+          sentAt: proposal.sentAt ? new Date(proposal.sentAt) : undefined
+        }));
+        setProposals(proposalsWithDates);
+      }
       setClients(clientsData);
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
@@ -77,8 +87,17 @@ export default function ProposalsPage() {
   async function handleDeleteProposal(id: string) {
     if (confirm("Tem certeza que deseja deletar esta proposta?")) {
       try {
-        await deleteProposal(id);
-        setProposals(proposals.filter(p => p.id !== id));
+        const response = await fetch(`/api/proposals/${id}`, {
+          method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          setProposals(proposals.filter(p => p.id !== id));
+        } else {
+          console.error("Erro ao deletar proposta:", result.error);
+          alert("Erro ao deletar proposta: " + result.error);
+        }
       } catch (error) {
         console.error("Erro ao deletar proposta:", error);
       }
@@ -93,46 +112,96 @@ export default function ProposalsPage() {
         return;
       }
 
-      // Enviar proposta por email
-      const emailSent = await sendProposalEmail({
-        to_email: client.email,
-        to_name: client.name,
-        client_company: client.company,
-        proposal_title: proposal.title,
-        proposal_description: proposal.description,
-        services: proposal.items.map(item => ({
-          name: item.name,
-          description: item.description,
-          price: item.price * item.quantity
-        })),
-        total_amount: proposal.totalValue,
-        valid_until: proposal.validUntil.toLocaleDateString('pt-PT'),
-        proposal_id: proposal.id || ''
+      // Enviar proposta com PDF via API
+      const response = await fetch('/api/send-proposal', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messageId: proposal.id, // Usando o ID da proposta como messageId por agora
+          proposalId: proposal.id,
+          clientEmail: client.email,
+          clientName: client.name,
+          subject: `Proposta: ${proposal.title}`,
+          messageText: `Segue em anexo a nossa proposta para o projeto "${proposal.title}".`
+        }),
       });
 
-      if (emailSent) {
+      const result = await response.json();
+
+      if (result.success) {
         // Atualizar status para "sent"
         if (proposal.id) {
-          await updateProposal(proposal.id, { 
-            status: 'sent',
-            sentAt: new Date()
+          const updateResponse = await fetch(`/api/proposals/${proposal.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              status: 'sent',
+              sentAt: new Date().toISOString()
+            })
           });
           
-          // Atualizar estado local
-          setProposals(proposals.map(p => 
-            p.id === proposal.id 
-              ? { ...p, status: 'sent' as const, sentAt: new Date() }
-              : p
-          ));
+          const updateResult = await updateResponse.json();
+          if (updateResult.success) {
+            // Atualizar estado local
+            setProposals(proposals.map(p => 
+              p.id === proposal.id 
+                ? { ...p, status: 'sent' as const, sentAt: new Date() }
+                : p
+            ));
+          }
         }
         
         alert("✅ Proposta enviada com sucesso por email!");
       } else {
-        alert("❌ Erro ao enviar proposta por email. Verifique as configurações do EmailJS.");
+        alert(`❌ Erro ao enviar proposta: ${result.error}`);
       }
     } catch (error) {
       console.error("Erro ao enviar proposta:", error);
       alert("❌ Erro ao enviar proposta. Tente novamente.");
+    }
+  }
+
+  async function handleGeneratePDF(proposal: Proposal) {
+    try {
+      const client = clients.find(c => c.id === proposal.clientId);
+      if (!client) {
+        alert("Cliente não encontrado!");
+        return;
+      }
+
+      // Chamar a API para gerar o PDF
+      const response = await fetch('/api/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          proposalId: proposal.id,
+          clientName: client.name,
+          clientEmail: client.email
+        }),
+      });
+
+      if (response.ok) {
+        // Baixar o PDF
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `proposta-${proposal.title?.replace(/[^a-zA-Z0-9]/g, '-') || 'projeto'}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        const errorResult = await response.json();
+        alert(`❌ Erro ao gerar PDF: ${errorResult.error}`);
+      }
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      alert("❌ Erro ao gerar PDF. Tente novamente.");
     }
   }
 
@@ -350,7 +419,7 @@ export default function ProposalsPage() {
                               {proposal.title}
                             </div>
                             <div className="text-sm text-gray-500">
-                              Criada em {proposal.createdAt.toLocaleDateString('pt-PT')}
+                              Criada em {new Date(proposal.createdAt).toLocaleDateString('pt-PT')}
                             </div>
                           </div>
                         </div>
@@ -374,7 +443,7 @@ export default function ProposalsPage() {
                         {getStatusBadge(proposal.status)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {proposal.validUntil.toLocaleDateString('pt-PT')}
+                        {new Date(proposal.validUntil).toLocaleDateString('pt-PT')}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
@@ -384,6 +453,13 @@ export default function ProposalsPage() {
                             title="Visualizar"
                           >
                             <Eye className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleGeneratePDF(proposal)}
+                            className="text-purple-600 hover:text-purple-900"
+                            title="Gerar PDF"
+                          >
+                            <Download className="h-4 w-4" />
                           </button>
                           {proposal.status === 'draft' && (
                             <button
@@ -465,7 +541,7 @@ function ProposalModal({
     title: proposal?.title || "",
     description: proposal?.description || "",
     status: proposal?.status || "draft",
-    validUntil: proposal?.validUntil ? proposal.validUntil.toISOString().split('T')[0] : "",
+    validUntil: proposal?.validUntil ? new Date(proposal.validUntil).toISOString().split('T')[0] : "",
     notes: proposal?.notes || "",
     items: proposal?.items || [{ name: "", description: "", quantity: 1, price: 0 }]
   });
@@ -478,17 +554,41 @@ function ProposalModal({
     setLoading(true);
 
     try {
-      const proposalData = {
+      const proposalData: any = {
         ...formData,
-        validUntil: new Date(formData.validUntil),
-        totalValue,
-        sentAt: formData.status === 'sent' && proposal?.status !== 'sent' ? new Date() : proposal?.sentAt
+        validUntil: new Date(formData.validUntil).toISOString(),
+        totalValue
       };
 
+      // Só adicionar sentAt se a proposta estiver sendo marcada como "sent"
+      if (formData.status === 'sent' && proposal?.status !== 'sent') {
+        proposalData.sentAt = new Date().toISOString();
+      } else if (proposal?.sentAt) {
+        proposalData.sentAt = proposal.sentAt;
+      }
+
       if (proposal?.id) {
-        await updateProposal(proposal.id, proposalData);
+        const response = await fetch(`/api/proposals/${proposal.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(proposalData)
+        });
+        
+        const result = await response.json();
+        if (!result.success) {
+          throw new Error(result.error || 'Erro ao atualizar proposta');
+        }
       } else {
-        await createProposal(proposalData);
+        const response = await fetch('/api/proposals', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(proposalData)
+        });
+        
+        const result = await response.json();
+        if (!result.success) {
+          throw new Error(result.error || 'Erro ao criar proposta');
+        }
       }
 
       onSave();
@@ -767,7 +867,7 @@ function ProposalViewModal({
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Detalhes</h3>
               <p className="text-gray-700">Status: {proposal.status}</p>
-              <p className="text-gray-700">Válida até: {proposal.validUntil.toLocaleDateString('pt-PT')}</p>
+              <p className="text-gray-700">Válida até: {new Date(proposal.validUntil).toLocaleDateString('pt-PT')}</p>
               <p className="text-gray-700">Valor: €{proposal.totalValue.toLocaleString()}</p>
             </div>
           </div>

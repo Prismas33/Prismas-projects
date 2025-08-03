@@ -3,8 +3,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import Modals from '../components/Modals/Modals'
+import ProjectContactModal from '../components/Modals/ProjectContactModal'
 import Particles from '../components/Particles/Particles'
-import { getProjects, type Project } from '../lib/firebase/firestore'
+import { getProjects, type Project } from '../lib/api/admin'
 import { CATEGORIES, getCategoryById, CardBadge } from '../components/Categories/Categories'
 import '../components/Categories/Categories.css'
 import './tech-components.css'
@@ -13,6 +14,7 @@ export default function HomePage() {
   const [currentLang, setCurrentLang] = useState('pt')
   const [showCookieBanner, setShowCookieBanner] = useState(false)
   const [showNotifyModal, setShowNotifyModal] = useState(false)
+  const [showProjectContactModal, setShowProjectContactModal] = useState(false)
   const [currentApp, setCurrentApp] = useState('')
   const [projects, setProjects] = useState<Project[]>([])
   const [isLoadingProjects, setIsLoadingProjects] = useState(true)
@@ -91,32 +93,19 @@ export default function HomePage() {
         setProjects(firebaseProjects)
       } catch (error) {
         console.error('Erro ao carregar projetos:', error)
+        // Em caso de erro, usar array vazio para evitar quebra da interface
         setProjects([])
+        
+        // Se for erro de credenciais do Firebase Admin, não mostrar como erro crítico
+        if (error instanceof Error && error.message.includes('credentials')) {
+          console.warn('⚠️ Firebase Admin não configurado - interface funcionando em modo desenvolvimento')
+        }
       } finally {
         setIsLoadingProjects(false)
       }
     }
 
     loadProjects()
-
-    // Initialize Firebase and EmailJS
-    const initializeServices = async () => {
-      if (typeof window !== 'undefined') {
-        // EmailJS initialization com as configurações das variáveis de ambiente
-        const emailjs = (await import('@emailjs/browser')).default
-        const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
-        
-        if (publicKey) {
-          emailjs.init(publicKey)
-          // Fazer EmailJS disponível globalmente para compatibilidade
-          ;(window as any).emailjs = emailjs
-        } else {
-          console.error('EmailJS Public Key não encontrada nas variáveis de ambiente')
-        }
-      }
-    }
-    
-    initializeServices()
   }, [])
 
   const scrollToMarketplace = () => {
@@ -135,6 +124,21 @@ export default function HomePage() {
 
   const showComingSoon = () => {
     showNotification('Em breve! Esta funcionalidade estará disponível em breve.', 'info')
+  }
+
+  // Função para abrir modal de contato de projeto
+  const openProjectContactModal = () => {
+    setShowProjectContactModal(true)
+  }
+
+  // Função para fechar modal de contato de projeto
+  const closeProjectContactModal = () => {
+    setShowProjectContactModal(false)
+  }
+
+  // Função chamada quando projeto é enviado com sucesso
+  const handleProjectContactSuccess = () => {
+    showNotification('Mensagem enviada com sucesso! Entraremos em contacto em breve.', 'success')
   }
 
   // Função para obter a classe de cor baseada na categoria
@@ -469,9 +473,9 @@ export default function HomePage() {
                 
                 {/* Tech Rings around logo */}
                 <div className="tech-rings">
-                  <div className="ring ring-1"></div>
-                  <div className="ring ring-2"></div>
-                  <div className="ring ring-3"></div>
+                  <div className="tech-ring tech-ring-1"></div>
+                  <div className="tech-ring tech-ring-2"></div>
+                  <div className="tech-ring tech-ring-3"></div>
                 </div>
               </div>
             </motion.div>
@@ -771,7 +775,7 @@ export default function HomePage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <div className="premium-badge">
+            <div className="premium-header-badge">
               <i className="fas fa-rocket"></i>
               <span>Branding Premium</span>
             </div>
@@ -827,7 +831,7 @@ export default function HomePage() {
               className="showcase-explore-btn"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              onClick={showComingSoon}
+              onClick={openProjectContactModal}
             >
               <span>Transformar O Meu Negócio</span>
               <i className="fas fa-rocket"></i>
@@ -911,6 +915,13 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+      {/* Modal de Contato de Projeto */}
+      <ProjectContactModal
+        isOpen={showProjectContactModal}
+        onClose={closeProjectContactModal}
+        onSuccess={handleProjectContactSuccess}
+      />
       </motion.div>
     </main>
   )

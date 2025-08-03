@@ -7,8 +7,8 @@ import {
   createClient, 
   updateClient, 
   deleteClient,
-  Client 
-} from "@/lib/firebase/firestore";
+  type Client 
+} from "@/lib/api/admin";
 import { 
   Plus, 
   Edit, 

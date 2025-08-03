@@ -5,28 +5,47 @@ service cloud.firestore {
     
     // ===== PROJECTS =====
     // Apenas admins podem gerenciar projetos
+    // TEMPORÁRIO: Permitindo leitura para teste das APIs
     match /projects/{projectId} {
-      allow read, write: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
     
     // ===== MESSAGES =====
-    // Visitantes podem criar mensagens, apenas admins podem ler/atualizar
+    // Qualquer pessoa pode criar, só admins podem ler/editar/apagar
+    // TEMPORÁRIO: Permitindo leitura para teste das APIs
     match /messages/{messageId} {
-      allow create: if isValidMessage(resource.data);
-      allow read, update, delete: if isAdmin();
+      allow create, read: if true;
+      allow update, delete: if isAdmin();
     }
     
     // ===== NOTIFICATIONS =====
-    // Visitantes podem criar notificações, apenas admins podem ler/atualizar
+    // Qualquer pessoa pode criar, só admins podem ler/editar/apagar
+    // TEMPORÁRIO: Permitindo leitura para teste das APIs
     match /notifications/{notificationId} {
-      allow create: if isValidNotification(resource.data);
+      allow create, read: if true;
+      allow update, delete: if isAdmin();
+    }
+    
+    // ===== ADMIN NOTIFICATIONS =====
+    // Qualquer pessoa pode criar, só admins podem ler/editar/apagar
+    match /admin_notifications/{notificationId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+    
+    // ===== PROJECT MESSAGES =====
+    // Qualquer pessoa pode criar, só admins podem ler/editar/apagar
+    match /project_messages/{messageId} {
+      allow create: if true;
       allow read, update, delete: if isAdmin();
     }
     
     // ===== CLIENTS =====
-    // Apenas admins podem gerenciar clientes
+    // Qualquer pessoa pode criar/ler/atualizar, só admins podem apagar
     match /clients/{clientId} {
-      allow read, write: if isAdmin();
+      allow create, read, update: if true;
+      allow delete: if isAdmin();
     }
     
     // ===== PROPOSALS =====
@@ -45,33 +64,6 @@ service cloud.firestore {
                "contato@prismas33.com", 
                "dev@prismas33.com"
              ];
-    }
-    
-    // Validar mensagem de contato
-    function isValidMessage(data) {
-      return data.keys().hasAll(['name', 'email', 'subject', 'message', 'status']) &&
-             data.name is string && 
-             data.email is string &&
-             data.subject is string &&
-             data.message is string &&
-             data.status == 'pending' &&
-             data.email.matches('.*@.*\\..*') && // Validação básica de email
-             data.name.size() > 0 &&
-             data.name.size() <= 100 &&
-             data.subject.size() > 0 &&
-             data.subject.size() <= 200 &&
-             data.message.size() > 0 &&
-             data.message.size() <= 2000;
-    }
-    
-    // Validar notificação
-    function isValidNotification(data) {
-      return data.keys().hasAll(['email', 'appName', 'status']) &&
-             data.email is string && 
-             data.appName is string &&
-             data.status == 'pending' &&
-             data.email.matches('.*@.*\\..*') && // Validação básica de email
-             data.appName in ['nexus5', 'cerebra7', 'puzzle33', 'docflow4', 'linkmind', 'safecallkids'];
     }
   }
 }

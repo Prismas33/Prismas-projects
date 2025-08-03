@@ -253,7 +253,7 @@ body {
   z-index: 1;
 }
 
-.tech-rings .ring {
+.tech-rings .tech-ring {
   position: absolute;
   border: 1px solid rgba(255, 107, 53, 0.4);
   border-radius: 50%;
@@ -264,21 +264,21 @@ body {
   box-shadow: none;
 }
 
-.tech-rings .ring-1 {
+.tech-rings .tech-ring-1 {
   width: 280px;
   height: 280px;
   animation: ringRotate 25s linear infinite;
   border-color: rgba(255, 107, 53, 0.6);
 }
 
-.tech-rings .ring-2 {
+.tech-rings .tech-ring-2 {
   width: 320px;
   height: 320px;
   animation: ringRotate 35s linear infinite reverse;
   border-color: rgba(255, 107, 53, 0.4);
 }
 
-.tech-rings .ring-3 {
+.tech-rings .tech-ring-3 {
   width: 360px;
   height: 360px;
   animation: ringRotate 45s linear infinite;
@@ -693,9 +693,9 @@ body {
   .hero-content { gap: 40px; }
   .logo-container { width: 300px; height: 300px; }
   .logo-wrapper { width: 200px; height: 200px; }
-  .tech-rings .ring-1 { width: 220px; height: 220px; }
-  .tech-rings .ring-2 { width: 250px; height: 250px; }
-  .tech-rings .ring-3 { width: 280px; height: 280px; }
+  .tech-rings .tech-ring-1 { width: 220px; height: 220px; }
+  .tech-rings .tech-ring-2 { width: 250px; height: 250px; }
+  .tech-rings .tech-ring-3 { width: 280px; height: 280px; }
   .hero-title { font-size: 3rem; }
   .main-content { padding-left: 20px; }
 }
@@ -724,9 +724,9 @@ body {
   .tech-stats { order: 3; grid-template-columns: 1fr 1fr; gap: 20px 25px; margin-top: 30px; }
   .logo-container { width: 250px; height: 250px; }
   .logo-wrapper { width: 180px; height: 180px; }
-  .tech-rings .ring-1 { width: 180px; height: 180px; }
-  .tech-rings .ring-2 { width: 200px; height: 200px; }
-  .tech-rings .ring-3 { width: 220px; height: 220px; }
+  .tech-rings .tech-ring-1 { width: 180px; height: 180px; }
+  .tech-rings .tech-ring-2 { width: 200px; height: 200px; }
+  .tech-rings .tech-ring-3 { width: 220px; height: 220px; }
   .hero-title { font-size: 2.5rem; }
   .hero-subtitle { font-size: 1rem; line-height: 1.5; }
   .hero-subtitle br { display: none; }
