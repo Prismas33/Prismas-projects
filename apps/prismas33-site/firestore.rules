@@ -1,0 +1,77 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===== PROJECTS =====
+    // Apenas admins podem gerenciar projetos
+    match /projects/{projectId} {
+      allow read, write: if isAdmin();
+    }
+    
+    // ===== MESSAGES =====
+    // Visitantes podem criar mensagens, apenas admins podem ler/atualizar
+    match /messages/{messageId} {
+      allow create: if isValidMessage(resource.data);
+      allow read, update, delete: if isAdmin();
+    }
+    
+    // ===== NOTIFICATIONS =====
+    // Visitantes podem criar notificações, apenas admins podem ler/atualizar
+    match /notifications/{notificationId} {
+      allow create: if isValidNotification(resource.data);
+      allow read, update, delete: if isAdmin();
+    }
+    
+    // ===== CLIENTS =====
+    // Apenas admins podem gerenciar clientes
+    match /clients/{clientId} {
+      allow read, write: if isAdmin();
+    }
+    
+    // ===== PROPOSALS =====
+    // Apenas admins podem gerenciar propostas
+    match /proposals/{proposalId} {
+      allow read, write: if isAdmin();
+    }
+    
+    // ===== HELPER FUNCTIONS =====
+    
+    // Verificar se o usuário é admin
+    function isAdmin() {
+      return request.auth != null && 
+             request.auth.token.email in [
+               "geral.prismas@gmail.com",
+               "contato@prismas33.com", 
+               "dev@prismas33.com"
+             ];
+    }
+    
+    // Validar mensagem de contato
+    function isValidMessage(data) {
+      return data.keys().hasAll(['name', 'email', 'subject', 'message', 'status']) &&
+             data.name is string && 
+             data.email is string &&
+             data.subject is string &&
+             data.message is string &&
+             data.status == 'pending' &&
+             data.email.matches('.*@.*\\..*') && // Validação básica de email
+             data.name.size() > 0 &&
+             data.name.size() <= 100 &&
+             data.subject.size() > 0 &&
+             data.subject.size() <= 200 &&
+             data.message.size() > 0 &&
+             data.message.size() <= 2000;
+    }
+    
+    // Validar notificação
+    function isValidNotification(data) {
+      return data.keys().hasAll(['email', 'appName', 'status']) &&
+             data.email is string && 
+             data.appName is string &&
+             data.status == 'pending' &&
+             data.email.matches('.*@.*\\..*') && // Validação básica de email
+             data.appName in ['nexus5', 'cerebra7', 'puzzle33', 'docflow4', 'linkmind', 'safecallkids'];
+    }
+  }
+}

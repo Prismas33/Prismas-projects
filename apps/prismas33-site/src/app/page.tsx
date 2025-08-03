@@ -4,6 +4,9 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import Modals from '../components/Modals/Modals'
 import Particles from '../components/Particles/Particles'
+import { getProjects, type Project } from '../lib/firebase/firestore'
+import { CATEGORIES, getCategoryById, CardBadge } from '../components/Categories/Categories'
+import '../components/Categories/Categories.css'
 import './tech-components.css'
 
 export default function HomePage() {
@@ -11,6 +14,8 @@ export default function HomePage() {
   const [showCookieBanner, setShowCookieBanner] = useState(false)
   const [showNotifyModal, setShowNotifyModal] = useState(false)
   const [currentApp, setCurrentApp] = useState('')
+  const [projects, setProjects] = useState<Project[]>([])
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true)
   const [notification, setNotification] = useState<{show: boolean, message: string, type: 'success' | 'error' | 'info'}>({
     show: false,
     message: '',
@@ -78,6 +83,22 @@ export default function HomePage() {
       setTimeout(() => setShowCookieBanner(true), 1000)
     }
 
+    // Carregar projetos do Firebase
+    const loadProjects = async () => {
+      try {
+        setIsLoadingProjects(true)
+        const firebaseProjects = await getProjects()
+        setProjects(firebaseProjects)
+      } catch (error) {
+        console.error('Erro ao carregar projetos:', error)
+        setProjects([])
+      } finally {
+        setIsLoadingProjects(false)
+      }
+    }
+
+    loadProjects()
+
     // Initialize Firebase and EmailJS
     const initializeServices = async () => {
       if (typeof window !== 'undefined') {
@@ -115,6 +136,132 @@ export default function HomePage() {
 
   const showComingSoon = () => {
     showNotification('Em breve! Esta funcionalidade estará disponível em breve.', 'info')
+  }
+
+  // Função para obter a classe de cor baseada na categoria
+  const getCategoryColorClass = (category: string): string => {
+    const categoryData = getCategoryById(category)
+    return categoryData.id
+  }
+
+  // Função para abrir preview do projeto
+  const openProjectPreview = (project: Project) => {
+    if (project.demoUrl) {
+      window.open(project.demoUrl, '_blank')
+    } else {
+      showComingSoon()
+    }
+  }
+
+  // Função para gerar cartões de showcase do Firebase
+  const generateShowcaseCards = () => {
+    const showcaseCards: JSX.Element[] = []
+    
+    // Adicionar todos os projetos do Firebase (incluindo os com status 'coming-soon')
+    projects.forEach((project, index) => {
+      const colorClass = getCategoryColorClass(project.category)
+      const isComingSoon = project.status === 'coming-soon'
+      
+      showcaseCards.push(
+        <motion.div 
+          key={`project-${project.id}`}
+          className={`showcase-card ${colorClass} ${isComingSoon ? 'coming-soon' : 'firebase-project'}`}
+          initial={{ opacity: 0, y: 50, rotateY: index % 2 === 0 ? -10 : 10 }}
+          whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
+          transition={{ duration: 0.8, delay: 0.1 * (index + 1) }}
+          whileHover={{ 
+            y: -10, 
+            scale: 1.02,
+            boxShadow: colorClass === 'premium' ? "0 25px 60px rgba(255, 107, 53, 0.3)" :
+                      colorClass === 'enterprise' ? "0 25px 60px rgba(64, 224, 208, 0.3)" :
+                      colorClass === 'creative' ? "0 25px 60px rgba(138, 43, 226, 0.3)" :
+                      "0 25px 60px rgba(255, 215, 0, 0.3)"
+          }}
+          viewport={{ once: true }}
+        >
+          <div className="showcase-media">
+            <div className="preview-screen">
+              {project.images && project.images.length > 0 && !isComingSoon ? (
+                <img 
+                  src={project.images[0]} 
+                  alt={project.name}
+                  className="project-preview-image"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    borderRadius: '8px'
+                  }}
+                />
+              ) : isComingSoon ? (
+                <div className={`screen-content ${colorClass}-preview coming-soon-screen`}>
+                  <div className="coming-soon-icon">
+                    <i className="fas fa-rocket"></i>
+                  </div>
+                  <div className="coming-soon-text">
+                    <span>Em Breve</span>
+                  </div>
+                </div>
+              ) : (
+                <div className={`screen-content ${colorClass}-preview`}>
+                  <div className="default-header"></div>
+                  <div className="default-body"></div>
+                  <div className="default-footer"></div>
+                </div>
+              )}
+            </div>
+            <CardBadge categoryId={project.category} className={isComingSoon ? "coming-soon-badge" : ""} />
+            {/* Hover overlay with description - apenas para projetos não coming-soon */}
+            {!isComingSoon && (
+              <div className="project-hover-overlay">
+                <div className="project-description">
+                  <p>{project.description}</p>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="showcase-info">
+            <div className="showcase-content-top">
+              <h3 className="showcase-name">{project.name}</h3>
+              <div className="tech-description">
+                {project.features && project.features.length > 0 ? (
+                  project.features.join('.\n')
+                ) : (
+                  'React, Next.js e TypeScript.\nFirebase e integração completa.\nDesign responsivo e otimizado.'
+                )}
+              </div>
+            </div>
+            <div className="showcase-content-bottom">
+              <div className="showcase-footer">
+                <div className="price-tag">Sob Orçamento</div>
+                <motion.button 
+                  className={`preview-btn ${isComingSoon ? 'coming-soon-btn' : ''}`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={isComingSoon ? showComingSoon : () => openProjectPreview(project)}
+                  disabled={isComingSoon}
+                >
+                  <i className={isComingSoon ? "fas fa-clock" : "fas fa-eye"}></i>
+                  {isComingSoon ? "Em Breve" : "Preview"}
+                </motion.button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )
+    })
+
+    // Duplicar todos os cartões para o efeito infinito (mínimo de 8 para o efeito funcionar bem)
+    if (showcaseCards.length > 0) {
+      const duplicatedCards = [...showcaseCards, ...showcaseCards]
+      // Se ainda não temos cartões suficientes, duplicar mais uma vez
+      if (duplicatedCards.length < 16) {
+        return [...duplicatedCards, ...showcaseCards]
+      }
+      return duplicatedCards
+    }
+    
+    return showcaseCards
   }
 
   const handleCookieAccept = () => {
@@ -630,440 +777,32 @@ export default function HomePage() {
 
           <div className="showcase-grid" ref={showcaseGridRef}>
             <div className="showcase-track" ref={showcaseTrackRef}>
-              {/* Platform 1 - E-commerce Luxury */}
-              <motion.div 
-                className="showcase-card premium"
-                initial={{ opacity: 0, y: 50, rotateY: -10 }}
-                whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-                transition={{ duration: 0.8, delay: 0.1 }}
-                viewport={{ once: true }}
-              >
-              <div className="showcase-media">
-                <div className="preview-screen">
-                  <div className="screen-content luxury-ecommerce">
-                    <div className="luxury-header"></div>
-                    <div className="luxury-hero"></div>
-                    <div className="luxury-products"></div>
-                  </div>
-                </div>
-                <div className="luxury-badge">
-                  <i className="fas fa-gem"></i>
-                  <span>Luxury</span>
-                </div>
-              </div>
-              <div className="showcase-info">
-                <div className="category-badge ecommerce">E-commerce</div>
-                <h3 className="showcase-name">LuxuryStore Pro</h3>
-                <p className="showcase-description">
-                  Plataforma e-commerce premium com checkout otimizado, 
-                  gestão avançada de inventário e integração com múltiplos gateways de pagamento
-                </p>
-                <div className="tech-stack">
-                  <span className="tech-chip">Next.js</span>
-                  <span className="tech-chip">Stripe</span>
-                  <span className="tech-chip">AI</span>
-                  <span className="tech-chip">PWA</span>
-                </div>
-                <div className="showcase-footer">
-                  <div className="price-tag">€15.999</div>
-                  <motion.button 
-                    className="preview-btn"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={showComingSoon}
+              {isLoadingProjects ? (
+                // Loading placeholder cards
+                Array.from({ length: 8 }).map((_, index) => (
+                  <motion.div 
+                    key={`loading-${index}`}
+                    className="showcase-card loading"
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1 * index }}
                   >
-                    <i className="fas fa-eye"></i>
-                    Preview
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Platform 2 - SaaS Dashboard */}
-            <motion.div 
-              className="showcase-card enterprise"
-              initial={{ opacity: 0, y: 50, rotateY: 10 }}
-              whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              whileHover={{ 
-                y: -10, 
-                scale: 1.02,
-                boxShadow: "0 25px 60px rgba(64, 224, 208, 0.3)"
-              }}
-              viewport={{ once: true }}
-            >
-              <div className="showcase-media">
-                <div className="preview-screen">
-                  <div className="screen-content saas-dashboard">
-                    <div className="dashboard-sidebar"></div>
-                    <div className="dashboard-main">
-                      <div className="dashboard-cards"></div>
-                      <div className="dashboard-charts"></div>
+                    <div className="showcase-media">
+                      <div className="preview-screen loading-screen">
+                        <div className="loading-shimmer"></div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <div className="enterprise-badge">
-                  <i className="fas fa-building"></i>
-                  <span>Enterprise</span>
-                </div>
-              </div>
-              <div className="showcase-info">
-                <div className="category-badge saas">SaaS Platform</div>
-                <h3 className="showcase-name">DataFlow Enterprise</h3>
-                <p className="showcase-description">
-                  Dashboard analítico completo com visualizações em tempo real, 
-                  relatórios customizáveis e integração com múltiplas fontes de dados
-                </p>
-                <div className="tech-stack">
-                  <span className="tech-chip">React</span>
-                  <span className="tech-chip">D3.js</span>
-                  <span className="tech-chip">GraphQL</span>
-                  <span className="tech-chip">Docker</span>
-                </div>
-                <div className="showcase-footer">
-                  <div className="price-tag">€24.999</div>
-                  <motion.button 
-                    className="preview-btn"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={showComingSoon}
-                  >
-                    <i className="fas fa-eye"></i>
-                    Preview
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Platform 3 - Portfolio Luxury */}
-            <motion.div 
-              className="showcase-card creative"
-              initial={{ opacity: 0, y: 50, rotateY: -5 }}
-              whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              whileHover={{ 
-                y: -10, 
-                scale: 1.02,
-                boxShadow: "0 25px 60px rgba(138, 43, 226, 0.3)"
-              }}
-              viewport={{ once: true }}
-            >
-              <div className="showcase-media">
-                <div className="preview-screen">
-                  <div className="screen-content creative-portfolio">
-                    <div className="portfolio-nav"></div>
-                    <div className="portfolio-hero"></div>
-                    <div className="portfolio-gallery"></div>
-                  </div>
-                </div>
-                <div className="creative-badge">
-                  <i className="fas fa-palette"></i>
-                  <span>Creative</span>
-                </div>
-              </div>
-              <div className="showcase-info">
-                <div className="category-badge creative">Portfolio</div>
-                <h3 className="showcase-name">CreativeStudio Pro</h3>
-                <p className="showcase-description">
-                  Portfolio interativo para criativos com galeria 3D, 
-                  animações cinema​ticas e sistema de gestão de projetos integrado
-                </p>
-                <div className="tech-stack">
-                  <span className="tech-chip">Three.js</span>
-                  <span className="tech-chip">GSAP</span>
-                  <span className="tech-chip">Nuxt</span>
-                  <span className="tech-chip">CMS</span>
-                </div>
-                <div className="showcase-footer">
-                  <div className="price-tag">€12.999</div>
-                  <motion.button 
-                    className="preview-btn"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={showComingSoon}
-                  >
-                    <i className="fas fa-eye"></i>
-                    Preview
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Platform 4 - FinTech */}
-            <motion.div 
-              className="showcase-card fintech"
-              initial={{ opacity: 0, y: 50, rotateY: 5 }}
-              whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              whileHover={{ 
-                y: -10, 
-                scale: 1.02,
-                boxShadow: "0 25px 60px rgba(255, 215, 0, 0.3)"
-              }}
-              viewport={{ once: true }}
-            >
-              <div className="showcase-media">
-                <div className="preview-screen">
-                  <div className="screen-content fintech-app">
-                    <div className="fintech-header"></div>
-                    <div className="fintech-dashboard">
-                      <div className="balance-cards"></div>
-                      <div className="transaction-list"></div>
+                    <div className="showcase-info">
+                      <div className="loading-badge"></div>
+                      <div className="loading-title"></div>
+                      <div className="loading-description"></div>
+                      <div className="loading-footer"></div>
                     </div>
-                  </div>
-                </div>
-                <div className="fintech-badge">
-                  <i className="fas fa-university"></i>
-                  <span>FinTech</span>
-                </div>
-              </div>
-              <div className="showcase-info">
-                <div className="category-badge fintech">FinTech</div>
-                <h3 className="showcase-name">WealthManager Pro</h3>
-                <p className="showcase-description">
-                  Plataforma de gestão financeira com análise de investimentos, 
-                  relatórios fiscais automatizados e conformidade bancária
-                </p>
-                <div className="tech-stack">
-                  <span className="tech-chip">Vue.js</span>
-                  <span className="tech-chip">Node.js</span>
-                  <span className="tech-chip">PCI DSS</span>
-                  <span className="tech-chip">ML</span>
-                </div>
-                <div className="showcase-footer">
-                  <div className="price-tag">€35.999</div>
-                  <motion.button 
-                    className="preview-btn"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={showComingSoon}
-                  >
-                    <i className="fas fa-eye"></i>
-                    Preview
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Platform 1 - E-commerce Luxury (Duplicate for infinite scroll) */}
-            <motion.div 
-              className="showcase-card premium"
-              initial={{ opacity: 0, y: 50, rotateY: -10 }}
-              whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              whileHover={{ 
-                y: -10, 
-                scale: 1.02,
-                boxShadow: "0 25px 60px rgba(255, 107, 53, 0.3)"
-              }}
-              viewport={{ once: true }}
-            >
-              <div className="showcase-media">
-                <div className="preview-screen">
-                  <div className="screen-content luxury-ecommerce">
-                    <div className="luxury-header"></div>
-                    <div className="luxury-hero"></div>
-                    <div className="luxury-products"></div>
-                  </div>
-                </div>
-                <div className="luxury-badge">
-                  <i className="fas fa-gem"></i>
-                  <span>Luxury</span>
-                </div>
-              </div>
-              <div className="showcase-info">
-                <div className="category-badge ecommerce">E-commerce</div>
-                <h3 className="showcase-name">LuxuryStore Pro</h3>
-                <p className="showcase-description">
-                  Plataforma e-commerce premium com checkout otimizado, 
-                  gestão avançada de inventário e integração com múltiplos gateways de pagamento
-                </p>
-                <div className="tech-stack">
-                  <span className="tech-chip">Next.js</span>
-                  <span className="tech-chip">Stripe</span>
-                  <span className="tech-chip">AI</span>
-                  <span className="tech-chip">PWA</span>
-                </div>
-                <div className="showcase-footer">
-                  <div className="price-tag">€15.999</div>
-                  <motion.button 
-                    className="preview-btn"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={showComingSoon}
-                  >
-                    <i className="fas fa-eye"></i>
-                    Preview
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Platform 2 - SaaS Dashboard (Duplicate for infinite scroll) */}
-            <motion.div 
-              className="showcase-card enterprise"
-              initial={{ opacity: 0, y: 50, rotateY: 10 }}
-              whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              whileHover={{ 
-                y: -10, 
-                scale: 1.02,
-                boxShadow: "0 25px 60px rgba(64, 224, 208, 0.3)"
-              }}
-              viewport={{ once: true }}
-            >
-              <div className="showcase-media">
-                <div className="preview-screen">
-                  <div className="screen-content saas-dashboard">
-                    <div className="dashboard-sidebar"></div>
-                    <div className="dashboard-main">
-                      <div className="dashboard-cards"></div>
-                      <div className="dashboard-charts"></div>
-                    </div>
-                  </div>
-                </div>
-                <div className="enterprise-badge">
-                  <i className="fas fa-building"></i>
-                  <span>Enterprise</span>
-                </div>
-              </div>
-              <div className="showcase-info">
-                <div className="category-badge saas">SaaS Platform</div>
-                <h3 className="showcase-name">DataFlow Enterprise</h3>
-                <p className="showcase-description">
-                  Dashboard analítico completo com visualizações em tempo real, 
-                  relatórios customizáveis e integração com múltiplas fontes de dados
-                </p>
-                <div className="tech-stack">
-                  <span className="tech-chip">React</span>
-                  <span className="tech-chip">D3.js</span>
-                  <span className="tech-chip">GraphQL</span>
-                  <span className="tech-chip">Docker</span>
-                </div>
-                <div className="showcase-footer">
-                  <div className="price-tag">€24.999</div>
-                  <motion.button 
-                    className="preview-btn"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={showComingSoon}
-                  >
-                    <i className="fas fa-eye"></i>
-                    Preview
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Platform 3 - Portfolio Luxury (Duplicate for infinite scroll) */}
-            <motion.div 
-              className="showcase-card creative"
-              initial={{ opacity: 0, y: 50, rotateY: -5 }}
-              whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              whileHover={{ 
-                y: -10, 
-                scale: 1.02,
-                boxShadow: "0 25px 60px rgba(138, 43, 226, 0.3)"
-              }}
-              viewport={{ once: true }}
-            >
-              <div className="showcase-media">
-                <div className="preview-screen">
-                  <div className="screen-content creative-portfolio">
-                    <div className="portfolio-nav"></div>
-                    <div className="portfolio-hero"></div>
-                    <div className="portfolio-gallery"></div>
-                  </div>
-                </div>
-                <div className="creative-badge">
-                  <i className="fas fa-palette"></i>
-                  <span>Creative</span>
-                </div>
-              </div>
-              <div className="showcase-info">
-                <div className="category-badge creative">Portfolio</div>
-                <h3 className="showcase-name">CreativeStudio Pro</h3>
-                <p className="showcase-description">
-                  Portfolio interativo para criativos com galeria 3D, 
-                  animações cinematicas e sistema de gestão de projetos integrado
-                </p>
-                <div className="tech-stack">
-                  <span className="tech-chip">Three.js</span>
-                  <span className="tech-chip">GSAP</span>
-                  <span className="tech-chip">Nuxt</span>
-                  <span className="tech-chip">CMS</span>
-                </div>
-                <div className="showcase-footer">
-                  <div className="price-tag">€12.999</div>
-                  <motion.button 
-                    className="preview-btn"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={showComingSoon}
-                  >
-                    <i className="fas fa-eye"></i>
-                    Preview
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Platform 4 - FinTech (Duplicate for infinite scroll) */}
-            <motion.div 
-              className="showcase-card fintech"
-              initial={{ opacity: 0, y: 50, rotateY: 5 }}
-              whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              whileHover={{ 
-                y: -10, 
-                scale: 1.02,
-                boxShadow: "0 25px 60px rgba(255, 215, 0, 0.3)"
-              }}
-              viewport={{ once: true }}
-            >
-              <div className="showcase-media">
-                <div className="preview-screen">
-                  <div className="screen-content fintech-app">
-                    <div className="fintech-header"></div>
-                    <div className="fintech-dashboard">
-                      <div className="balance-cards"></div>
-                      <div className="transaction-list"></div>
-                    </div>
-                  </div>
-                </div>
-                <div className="fintech-badge">
-                  <i className="fas fa-university"></i>
-                  <span>FinTech</span>
-                </div>
-              </div>
-              <div className="showcase-info">
-                <div className="category-badge fintech">FinTech</div>
-                <h3 className="showcase-name">WealthManager Pro</h3>
-                <p className="showcase-description">
-                  Plataforma de gestão financeira com análise de investimentos, 
-                  relatórios fiscais automatizados e conformidade bancária
-                </p>
-                <div className="tech-stack">
-                  <span className="tech-chip">Vue.js</span>
-                  <span className="tech-chip">Node.js</span>
-                  <span className="tech-chip">PCI DSS</span>
-                  <span className="tech-chip">ML</span>
-                </div>
-                <div className="showcase-footer">
-                  <div className="price-tag">€35.999</div>
-                  <motion.button 
-                    className="preview-btn"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={showComingSoon}
-                  >
-                    <i className="fas fa-eye"></i>
-                    Preview
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
+                  </motion.div>
+                ))
+              ) : (
+                generateShowcaseCards()
+              )}
             </div>
           </div>
 
@@ -1080,7 +819,7 @@ export default function HomePage() {
               whileTap={{ scale: 0.95 }}
               onClick={showComingSoon}
             >
-              <span>Transformar Meu Negócio</span>
+              <span>Transformar O Meu Negócio</span>
               <i className="fas fa-rocket"></i>
             </motion.button>
             <p className="showcase-note">
@@ -1092,14 +831,13 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="footer">
-        <div className="container">
+\        <div className="container">
           <div className="footer-signature">
             <div className="footer-brand">
               <h4 className="company-name">Prismas 33</h4>
               <p className="company-tagline">Tecnologia que Refrata Soluções</p>
             </div>
             
-            <div className="footer-divider"></div>
             <div className="footer-details">
               <div className="ownership-info">
                 <p>owned by <strong>Prismas e Quadriláteros Unip. Lda.</strong></p>

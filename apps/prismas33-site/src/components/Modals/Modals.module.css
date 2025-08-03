@@ -1,0 +1,469 @@
+/* Modals CSS - Mantendo compatibilidade com sistema original */
+
+/* Modal Backdrop */
+.modal {
+  display: flex;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(5px);
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Modal Content */
+.modalContent {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease;
+  position: relative;
+}
+
+@keyframes slideIn {
+  from { 
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to { 
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Close Button */
+.close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1001;
+  line-height: 1;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  background-color: rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+}
+
+/* Modal Header */
+.modalHeader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 25px 30px 15px;
+  border-bottom: 1px solid #e0e0e0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+.modalIcon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.modalHeader h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+/* Contact Content */
+.contactContent {
+  padding: 25px 30px 30px;
+}
+
+.contactContent p {
+  margin-bottom: 25px;
+  color: #666;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* Form Groups */
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.formGroup input:disabled,
+.formGroup textarea:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Submit Button */
+.submitBtn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.submitBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.submitBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
+}
+
+/* Success Message */
+.successMessage {
+  text-align: center;
+  padding: 30px;
+  color: #27ae60;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.successMessage i {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  display: block;
+}
+
+/* Privacy and Terms Content */
+.privacyContent,
+.termsContent {
+  padding: 25px 30px 30px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.privacyContent h4,
+.termsContent h4 {
+  color: #333;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.privacyContent h4:first-child,
+.termsContent h4:first-child {
+  margin-top: 0;
+}
+
+.privacyContent p,
+.termsContent p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.privacyContent ul,
+.termsContent ul {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 15px;
+  padding-left: 20px;
+}
+
+.privacyContent li,
+.termsContent li {
+  margin-bottom: 5px;
+}
+
+/* Cookie Settings */
+.cookieSettings {
+  padding: 25px 30px 30px;
+}
+
+.cookieSettings p {
+  margin-bottom: 25px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.cookieCategory {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.cookieCategory:hover {
+  border-color: #667eea;
+  background-color: #f8f9ff;
+}
+
+.cookieToggle {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.cookieInfo h4 {
+  margin: 0 0 5px 0;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.cookieInfo p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Switch Toggle */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #667eea;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #667eea;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+input:disabled + .slider {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Cookie Actions */
+.cookieActions {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.cookieBtn {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cookieBtn.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.cookieBtn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.cookieBtn.secondary {
+  background: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.cookieBtn.secondary:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modalContent {
+    width: 95%;
+    max-height: 90vh;
+    margin: 20px;
+  }
+
+  .modalHeader {
+    padding: 20px 20px 15px;
+  }
+
+  .modalHeader h3 {
+    font-size: 1.4rem;
+  }
+
+  .contactContent,
+  .privacyContent,
+  .termsContent,
+  .cookieSettings {
+    padding: 20px;
+  }
+
+  .modalIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .cookieActions {
+    flex-direction: column;
+  }
+
+  .close {
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modalContent {
+    width: 98%;
+    margin: 10px;
+  }
+
+  .modalHeader {
+    padding: 15px 15px 10px;
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .modalHeader h3 {
+    font-size: 1.2rem;
+  }
+
+  .contactContent,
+  .privacyContent, 
+  .termsContent,
+  .cookieSettings {
+    padding: 15px;
+  }
+
+  .formGroup input,
+  .formGroup textarea {
+    padding: 10px 12px;
+  }
+
+  .submitBtn {
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  .cookieToggle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}

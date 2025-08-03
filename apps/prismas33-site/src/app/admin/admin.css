@@ -1,0 +1,116 @@
+/* Admin Dashboard - Override global styles */
+
+/* Specific input styling for admin forms - MAIN FIX */
+.admin-container input,
+.admin-container textarea,
+.admin-container select {
+  color: #1f2937 !important; /* Dark gray text */
+  background-color: #ffffff !important; /* White background */
+}
+
+/* Focus states for inputs */
+.admin-container input:focus,
+.admin-container textarea:focus,
+.admin-container select:focus {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+}
+
+/* Placeholder text */
+.admin-container input::placeholder,
+.admin-container textarea::placeholder {
+  color: #6b7280 !important; /* Medium gray placeholder */
+  opacity: 1 !important;
+}
+
+/* Labels should remain dark */
+.admin-container label {
+  color: #374151 !important; /* Dark gray for labels */
+}
+
+/* Text in cards and content - but NOT buttons */
+.admin-container h1,
+.admin-container h2,
+.admin-container h3,
+.admin-container h4,
+.admin-container h5,
+.admin-container h6,
+.admin-container p:not(button p),
+.admin-container span:not(button span),
+.admin-container div:not(button div) {
+  color: #1f2937 !important;
+}
+
+/* Modal content text color fix */
+.modal .admin-container input,
+.modal .admin-container textarea,
+.modal .admin-container select {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+}
+
+/* Buttons preserve their original colors */
+.admin-container button {
+  /* Remove the color override to let buttons keep their defined colors */
+}
+
+/* Ensure white text on colored buttons works */
+.admin-container button.bg-purple-600,
+.admin-container button.bg-purple-700,
+.admin-container .bg-purple-600,
+.admin-container .bg-purple-700 {
+  color: #ffffff !important;
+}
+
+/* Ensure search inputs are visible */
+.admin-container input[type="search"],
+.admin-container input[type="text"],
+.admin-container input[type="email"],
+.admin-container input[type="url"],
+.admin-container input[type="number"] {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+}
+
+/* Fix for option elements in select */
+.admin-container option {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+}
+
+/* Preserve Tailwind utility classes for colors */
+.admin-container .text-white {
+  color: #ffffff !important;
+}
+
+.admin-container .text-purple-600 {
+  color: #9333ea !important;
+}
+
+.admin-container .text-blue-600 {
+  color: #2563eb !important;
+}
+
+.admin-container .text-green-600 {
+  color: #16a34a !important;
+}
+
+.admin-container .text-red-600 {
+  color: #dc2626 !important;
+}
+
+.admin-container .text-gray-400 {
+  color: #9ca3af !important;
+}
+
+.admin-container .text-gray-500 {
+  color: #6b7280 !important;
+}
+
+.admin-container .text-gray-600 {
+  color: #4b5563 !important;
+}
+
+.admin-container .text-gray-900 {
+  color: #111827 !important;
+}
